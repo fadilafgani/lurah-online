@@ -66,8 +66,7 @@
                 <img
                     src="{{ asset('images/background_home.jpg') }}"
                     alt="Background"
-                    class="absolute inset-0 h-full w-full object-cover"
-                >
+                    class="absolute inset-0 h-full w-full object-cover">
 
                 <div class="absolute inset-0 bg-[#153655]/60"></div>
 
@@ -88,7 +87,6 @@
                         </p>
 
                         <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
-
                             <a href="{{ url('/pengaduan')}}"
                                 class="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3 text-sm font-semibold text-[#153655] transition">
                                 Buat Pengaduan 
@@ -100,8 +98,7 @@
                                     stroke-width="2.5"
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
-                                    class="w-5 h-5"
-                                >
+                                    class="w-5 h-5">
                                     <path d="M5 12h14"/>
                                     <path d="M13 5l7 7-7 7"/>
                                 </svg>
@@ -113,34 +110,29 @@
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 24 24"
                                     fill="none"
-                                    class="w-5 h-5"
-                                >
-                                    <circle
-                                        cx="10"
-                                        cy="10"
-                                        r="6"
-                                        fill="#D9F2FF"
-                                        stroke="#A7D8F5"
-                                        stroke-width="1.5"
-                                    />
+                                    class="w-5 h-5">
+                                <circle
+                                    cx="10"
+                                    cy="10"
+                                    r="6"
+                                    fill="#D9F2FF"
+                                    stroke="#A7D8F5"
+                                    stroke-width="1.5"/>
 
-                                    <circle
-                                        cx="8"
-                                        cy="8"
-                                        r="1.5"
-                                        fill="white"
-                                        opacity="0.8"
-                                    />
+                                <circle
+                                    cx="8"
+                                    cy="8"
+                                    r="1.5"
+                                    fill="white"
+                                    opacity="0.8"/>
 
-                                    <path
-                                        d="M14.5 14.5L20 20"
-                                        stroke="#8B5E3C"
-                                        stroke-width="2.5"
-                                        stroke-linecap="round"
-                                    />
+                                <path
+                                    d="M14.5 14.5L20 20"
+                                    stroke="#8B5E3C"
+                                    stroke-width="2.5"
+                                    stroke-linecap="round"/>
                                 </svg> Lacak Tiket
                             </a>
-
                         </div>
 
                         <div class="mt-8 flex flex-wrap items-center justify-center gap-6 text-sm text-white/80">
@@ -149,22 +141,18 @@
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 24 24"
                                     fill="none"
-                                    class="w-6 h-6"
-                                >
-                                    <path
-                                        d="M12 3L19 6V11C19 16 15.5 19.5 12 21C8.5 19.5 5 16 5 11V6L12 3Z"
-                                        stroke="#22C55E"
-                                        stroke-width="2"
-                                        stroke-linejoin="round"
-                                    />
-
-                                    <path
-                                        d="M9 11.5L11.2 13.7L15 10"
-                                        stroke="#22C55E"
-                                        stroke-width="2"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                    />
+                                    class="w-6 h-6">
+                                <path
+                                    d="M12 3L19 6V11C19 16 15.5 19.5 12 21C8.5 19.5 5 16 5 11V6L12 3Z"
+                                    stroke="#22C55E"
+                                    stroke-width="2"
+                                    stroke-linejoin="round"/>
+                                <path
+                                    d="M9 11.5L11.2 13.7L15 10"
+                                    stroke="#22C55E"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"/>
                                 </svg>Anonim Tersedia
                             </div>
 
@@ -173,31 +161,26 @@
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 24 24"
                                     fill="none"
-                                    class="w-6 h-6"
-                                >
+                                    class="w-6 h-6">
                                     <path
                                         d="M13 2L5 13H11L9 22L19 10H13V2Z"
                                         stroke="#F4C430"
                                         stroke-width="2"
                                         stroke-linejoin="round"
-                                        stroke-linecap="round"
-                                    />
+                                        stroke-linecap="round"/>
 
                                     <path
                                         d="M12.5 4L7 12H11.5L10 18.5L17 10H12.5V4Z"
                                         fill="#FFD95A"
-                                        opacity="0.15"
-                                    />
+                                        opacity="0.15"/>
                                 </svg>Verifikasi Cepat
                             </div>
-                        </div>
-                        
+                        </div>   
                     </div>
                 </div>
-                
             </section>
-            <section class="container mx-auto px-6 py-24">
 
+            <section class="container mx-auto px-6 py-24">
                 <div class="text-center">
                     <h2 class="text-4xl font-extrabold text-[#153655]">
                         Bagaimana cara kerjanya?
@@ -210,101 +193,178 @@
 
                 <div class="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
 
-    <div class="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
+                    <div class="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
+                        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#123B66] text-2xl font-bold text-white shadow-md">
+                            1
+                        </div>
 
-        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#123B66] text-2xl font-bold text-white shadow-md">
-            1
-        </div>
+                        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#DCEBED] text-4xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+                            <!-- Clipboard -->
+                            <rect x="14" y="12" width="36" height="40" rx="4"
+                                    stroke="#183A5A" stroke-width="4"/>
+                            <!-- Top clip -->
+                            <path d="M24 12h16v-2a4 4 0 0 0-4-4h-8a4 4 0 0 0-4 4v2z"
+                                    fill="#183A5A"/>
+                            <!-- Text lines -->
+                            <line x1="22" y1="24" x2="38" y2="24"
+                                    stroke="#183A5A" stroke-width="4" stroke-linecap="round"/>
+                            <line x1="22" y1="32" x2="34" y2="32"
+                                    stroke="#183A5A" stroke-width="4" stroke-linecap="round"/>
+                            <line x1="22" y1="40" x2="30" y2="40"
+                                    stroke="#183A5A" stroke-width="4" stroke-linecap="round"/>
+                            <!-- Pencil -->
+                            <g transform="rotate(-45 46 42)">
+                                <rect x="38" y="36" width="18" height="6" rx="2" fill="#183A5A"/>
+                                <polygon points="56,36 62,39 56,42" fill="#183A5A"/>
+                            </g>
+                            </svg>
+                        </div>
 
-        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#DCEBED] text-4xl">
-            📝
-        </div>
+                        <h3 class="text-2xl font-bold text-black text-center">
+                            Lapor
+                        </h3>
 
-        <h3 class="text-2xl font-bold text-black text-center">
-            Lapor
-        </h3>
-
-        <p class="mt-4 text-base leading-relaxed text-slate-600 text-center">
-            Isi formulir pengaduan
-            dengan foto bukti.
-        </p>
-
-    </div>
-
-
-    <div class="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
-
-        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#123B66] text-2xl font-bold text-white shadow-md">
-            2
-        </div>
-
-        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#DCEBED] text-4xl">
-            🛡️
-        </div>
-
-        <h3 class="text-2xl font-bold text-black">
-            Verifikasi
-        </h3>
-
-        <p class="mt-4 text-base leading-relaxed text-slate-600">
-            Admin kelurahan
-            memverifikasi laporan.
-        </p>
-
-    </div>
+                        <p class="mt-4 text-base leading-relaxed text-slate-600 text-center">
+                            Isi formulir pengaduan
+                            dengan foto bukti.
+                        </p>
+                    </div>
 
 
-    <div class="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
+                    <div class="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
+                        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#123B66] text-2xl font-bold text-white shadow-md">
+                            2
+                        </div>
+                        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#DCEBED] text-4xl">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 64 64"
+                                width="64"
+                                height="64"
+                                fill="none">
+                            <!-- Shield -->
+                            <path
+                                d="M32 8
+                                L50 14
+                                V30
+                                C50 42 42 52 32 56
+                                C22 52 14 42 14 30
+                                V14
+                                Z"
+                                stroke="#183A5A"
+                                stroke-width="4"
+                                stroke-linejoin="round"/>
+                            <!-- Check -->
+                            <path
+                                d="M24 32 L30 38 L41 26"
+                                stroke="#183A5A"
+                                stroke-width="4"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"/>
+                            </svg>
+                        </div>
 
-        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#123B66] text-2xl font-bold text-white shadow-md">
-            3
-        </div>
+                        <h3 class="text-2xl font-bold text-black">
+                            Verifikasi
+                        </h3>
 
-        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#DCEBED] text-4xl">
-            ⚙️
-        </div>
+                        <p class="mt-4 text-base leading-relaxed text-slate-600">
+                            Admin kelurahan
+                            memverifikasi laporan.
+                        </p>
+                    </div>
 
-        <h3 class="text-2xl font-bold text-black">
-            Tindak Lanjut
-        </h3>
+                    <div class="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
+                        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#123B66] text-2xl font-bold text-white shadow-md">
+                            3
+                        </div>
 
-        <p class="mt-4 text-base leading-relaxed text-slate-600">
-            Unit terkait menangani
-            di lapangan.
-        </p>
+                        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#DCEBED] text-4xl">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 64 64"
+                                width="128"
+                                height="128"
+                                fill="none">
+                            <!-- Background -->
+                            <rect x="2" y="2" width="60" height="60" rx="12"
+                                    fill="#D7E4E8"/>
+                            <!-- Left Person -->
+                            <circle cx="28" cy="26" r="5" fill="#183A5A"/>
+                            <path d="M20 43
+                                    V38
+                                    C20 34 25 32 28 32
+                                    C31 32 36 34 36 38
+                                    V43 Z"
+                                    fill="#183A5A"/>
+                            <!-- Right Person -->
+                            <circle cx="41" cy="26" r="5" fill="#183A5A"/>
+                            <path d="M34 43
+                                    V38
+                                    C34 34 38 32 41 32
+                                    C44 32 48 34 48 38
+                                    V43 Z"
+                                    fill="#183A5A"/>
+                            </svg>
+                        </div>
 
-    </div>
+                        <h3 class="text-2xl font-bold text-black">
+                            Tindak Lanjut
+                        </h3>
 
+                        <p class="mt-4 text-base leading-relaxed text-slate-600">
+                            Unit terkait menangani
+                            di lapangan.
+                        </p>
+                    </div>
 
-    <div class="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
+                    <div class="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
+                        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#123B66] text-2xl font-bold text-white shadow-md">
+                            4
+                        </div>
 
-        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#123B66] text-2xl font-bold text-white shadow-md">
-            4
-        </div>
+                        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#DCEBED] text-4xl">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 64 64"
+                                width="128"
+                                height="128"
+                                fill="none">
+                            <!-- Background -->
+                            <rect width="64" height="64" rx="12" fill="#D7E4E8"/>
+                            <!-- Star -->
+                            <path
+                                d="M32 18
+                                L36 27
+                                L46 28
+                                L39 35
+                                L41 45
+                                L32 40
+                                L23 45
+                                L25 35
+                                L18 28
+                                L28 27
+                                Z"
+                                stroke="#183A5A"
+                                stroke-width="4"
+                                stroke-linejoin="round"/>
+                            </svg>
+                        </div>
 
-        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#DCEBED] text-4xl">
-            ⭐
-        </div>
+                        <h3 class="text-2xl font-bold text-black">
+                            Selesai & Nilai
+                        </h3>
 
-        <h3 class="text-2xl font-bold text-black">
-            Selesai & Nilai
-        </h3>
-
-        <p class="mt-4 text-base leading-relaxed text-slate-600">
-            Beri rating untuk hasil
-            yang Anda terima.
-        </p>
-
-    </div>
-
-</div>
-
-</div>
+                        <p class="mt-4 text-base leading-relaxed text-slate-600">
+                            Beri rating untuk hasil
+                            yang Anda terima.
+                        </p>
+                    </div>
+                </div>
             </section>
+
             <section class="container mx-auto px-6 pb-24">
                 <div class="overflow-hidden rounded-[32px] bg-gradient-to-r from-[#153655] to-[#2E77BB] px-8 py-20 text-center shadow-2xl">
 
-                    <h2 class="text-4xl font-extrabold text-white">
+                    <h2 class="text-4xl font-extrabold text-[#FFFBED]">
                         Siap menyampaikan keluhan Anda?
                     </h2>
 
@@ -313,31 +373,39 @@
                     </p>
 
                     <div class="mt-10">
-                        <a href="#"
-                            class="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-sm font-bold text-[#001D45] transition hover:scale-105">
-                            Mulai Sekarang →
+                        <a href="{{ url('/pengaduan')}}" class="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-sm font-bold text-[#001D45] transition hover:scale-105">
+                            Mulai Sekarang
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="w-5 h-5">
+                                <path d="M5 12h14"/>
+                                <path d="M13 5l7 7-7 7"/>
+                            </svg>
                         </a>
                     </div>
-
                 </div>
             </section>
+
             <footer class="bg-white border-t border-slate-200">
                 <div class="container mx-auto">
 
                     <div class="flex flex-col items-center justify-between gap-6 px-6 py-6 text-sm text-slate-500 md:flex-row">
-
                         <div class="flex items-center gap-6">
-
                             <div class="flex items-center gap-3">
                                 <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#0047AB] to-[#001D45] shadow-sm">
                                     <img
                                         src="{{ asset('images/logo.svg') }}"
                                         alt="Logo"
-                                        class="h-6 w-6"
-                                    >
+                                        class="h-6 w-6">
                                 </div>
 
-                                <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-[#0047AB] to-[#001D45] bg-clip-text text-transparent">
+                                <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-[#0047AB] to-[#001D45] bg-clip-text text-transparent">
                                     LurahOnline
                                 </span>
                             </div>
@@ -351,7 +419,6 @@
                         </div>
 
                         <div class="flex items-start gap-3 text-right">
-
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"
@@ -360,29 +427,20 @@
                                 stroke-width="2"
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
-                                class="w-6 h-6"
-                            >
+                                class="w-6 h-6">
                                 <path d="M12 21s-7-4.35-7-11a7 7 0 1 1 14 0c0 6.65-7 11-7 11z"/>
                                 <circle cx="12" cy="10" r="2.5"/>
                             </svg>
 
-                            <div class="leading-tight">
-                                <p>
-                                    Kantor Desa Banjarsari, Kec. Bayongbong, Kab. Garut
-                                </p>
-
-                                <p>
-                                    Senin–Jumat • 08.00–16.00
-                                </p>
+                            <div class="leading-tight text-left">
+                                <p>Kantor Desa Banjarsari, Kec. Bayongbong, Kab. Garut</p>
+                                <p>Senin–Jumat • 08.00–16.00</p>
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
             </footer>
+            
         </main>
-
     </body>
 </html>

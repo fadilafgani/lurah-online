@@ -5,12 +5,12 @@ use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('welcome');
+});
 
 Route::get('/pengaduan', function () {
     return view('pengaduan');
 })->name('pengaduan.buat');
 
-// Menangani pengiriman form
 Route::post('/pengaduan/simpan', function (Request $request) {
     $request->validate([
         'judul' => 'required|string|max:255',
@@ -21,9 +21,5 @@ Route::post('/pengaduan/simpan', function (Request $request) {
         'nama' => 'nullable|string|max:255',
     ]);
 
-    // Proses simpan database bisa ditaruh di sini
-
     return back()->with('success', 'Pengaduan berhasil dikirim!');
 })->name('pengaduan.simpan');
-
-});

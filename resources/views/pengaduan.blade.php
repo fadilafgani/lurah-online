@@ -1,31 +1,63 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LurahOnline - Buat Pengaduan</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-</head>
-<body class="bg-blue-50/30 font-sans text-slate-800 min-h-screen flex flex-col justify-between">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Lurah Online</title>
 
-    <header class="bg-white shadow-xs border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-2 text-blue-900 font-bold text-xl">
-                <span class="p-2 bg-blue-900 text-white rounded-lg text-sm font-semibold">L</span>
-                <span>Lurah<span class="text-blue-500">Online</span></span>
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <style>
+            body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        </style>
+    </head>
+    <body class="bg-white text-slate-900 antialiased">
+
+        <header class="sticky top-0 z-50 border-b border-gray-100 bg-white/80 backdrop-blur-md">
+            <div class="container mx-auto flex h-20 items-center justify-between px-6">
+                
+                <a href="{{ url('/')}}" class="flex items-center gap-3 group">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#0047AB] to-[#001D45]">
+                        <img src="{{ asset('images/logo.svg') }}" alt="Logo" class="w-8 h-8">
+                    </div>
+                    <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-[#0047AB] to-[#001D45] bg-clip-text text-transparent">
+                    LurahOnline
+                    </span>
+                </a>
+            <nav class="hidden md:block">
+                    <ul class="flex items-center gap-2 text-[#464646]">
+                        <li>
+                            <a href="{{ url('/')}}" class="px-4 py-2 text-sm font-medium hover:text-[#0047AB] transition-colors">
+                                Beranda
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url('/pengaduan')}}" class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-bold">
+                                Buat Pengaduan
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url('/lacak')}}" class="px-4 py-2 text-sm font-medium hover:text-[#0047AB] transition-colors">
+                                Lacak Tiket
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url('/laporan')}}" class="px-4 py-2 text-sm font-medium hover:text-[#0047AB] transition-colors">
+                                Laporan Publik
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="hidden md:block">
+                    <a href="{{ url('/admin')}}" class="rounded-lg border border-slate-300 px-6 py-2 text-sm font-semibold text-[#464646] hover:bg-slate-100 transition-all shadow-sm">
+                        Admin
+                    </a>
+                </div>
             </div>
-            <nav class="hidden md:flex space-x-8 text-gray-600 font-medium">
-                <a href="#" class="hover:text-blue-900 transition">Beranda</a>
-                <a href="#" class="text-blue-900 font-semibold border-b-2 border-blue-900 pb-1">Buat Pengaduan</a>
-                <a href="#" class="hover:text-blue-900 transition">Lacak Tiket</a>
-                <a href="#" class="hover:text-blue-900 transition">Laporan Publik</a>
-            </nav>
-            <div>
-                <a href="#" class="px-5 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Admin</a>
-            </div>
-        </div>
-    </header>
+        </header>
 
     <main class="max-w-4xl mx-auto px-4 py-12 w-full">
         <div class="text-center mb-8">
