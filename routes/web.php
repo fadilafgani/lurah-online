@@ -23,3 +23,16 @@ Route::post('/pengaduan/simpan', function (Request $request) {
 
     return back()->with('success', 'Pengaduan berhasil dikirim!');
 })->name('pengaduan.simpan');
+
+Route::get('/lacak', fn() => view('lacak'))->name('lacak');
+
+Route::get('/lacak/cari', function (Request $request) {
+    $tiket = \App\Models\Pengaduan::where('kode_tiket', $request->kode)->first();
+
+    if (!$tiket) {
+        return redirect()->route('lacak.cari', ['kode' => $request->kode])
+                         ->with('error', 'Tiket "' . $request->kode . '" tidak ditemukan.');
+    }
+
+    return view('lacak', compact('tiket'));
+})->name('lacak.cari');
