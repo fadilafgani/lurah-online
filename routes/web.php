@@ -36,3 +36,7 @@ Route::get('/lacak/cari', function (Request $request) {
 
     return view('lacak', compact('tiket'));
 })->name('lacak.cari');
+
+use App\Http\Controllers\LaporanController;
+
+Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
