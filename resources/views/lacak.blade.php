@@ -13,85 +13,47 @@
             body { font-family: 'Plus Jakarta Sans', sans-serif; }
         </style>
     </head>
-    <body class="bg-white text-slate-900 antialiased">
-        <header class="sticky top-0 z-50 border-b border-gray-100 bg-white/80 backdrop-blur-md">
-            <div class="container mx-auto flex h-20 items-center justify-between px-6">
-                
-                <a href="{{ url('/')}}" class="flex items-center gap-3 group">
-                    <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#0047AB] to-[#001D45]">
-                        <img src="{{ asset('images/logo.svg') }}" alt="Logo" class="w-8 h-8">
-                    </div>
-                    <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-[#0047AB] to-[#001D45] bg-clip-text text-transparent">
-                    LurahOnline
-                    </span>
-                </a>
-            <nav class="hidden md:block">
-                    <ul class="flex items-center gap-2 text-[#464646]">
-                        <li>
-                            <a href="{{ url('/')}}" class="px-4 py-2 text-sm font-medium hover:text-[#0047AB] transition-colors">
-                                Beranda
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url('/pengaduan')}}" class="rounded-lg bg-slate-100 px-4 py-2 text-sm font-bold">
-                                Buat Pengaduan
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url('/lacak')}}" class="px-4 py-2 text-sm font-medium hover:text-[#0047AB] transition-colors">
-                                Lacak Tiket
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ url('/laporan')}}" class="px-4 py-2 text-sm font-medium hover:text-[#0047AB] transition-colors">
-                                Laporan Publik
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-
-                <div class="hidden md:block">
-                    <a href="{{ url('/admin')}}" class="rounded-lg border border-slate-300 px-6 py-2 text-sm font-semibold text-[#464646] hover:bg-slate-100 transition-all shadow-sm">
-                        Admin
-                    </a>
-                </div>
-            </div>
-        </header>
-        <main class="min-h-[calc(100vh-80px-88px)] flex items-center justify-center px-4 py-16"
-              style="background: linear-gradient(135deg, #e8eef7 0%, #dce6f5 50%, #e4eaf6 100%);">
+    <body class="min-h-screen flex flex-col bg-white text-slate-900 antialiased">
+        @include('components.navbar')
+        <main class="flex-1 pt-24 px-4 pb-16 flex items-start justify-center"
+        style="background: linear-gradient(135deg,#e8eef7 0%,#dce6f5 50%,#e4eaf6 100%);">
  
-            <div class="w-full max-w-2xl text-center">
- 
-                <h1 class="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-[#0047AB] to-[#153655] bg-clip-text text-transparent mb-3">
+            <div class="w-full max-w-2xl mx-auto text-center">
+                <h1 class="text-5xl font-extrabold leading-[1.3] bg-gradient-to-r from-[#0047AB] to-[#153655] bg-clip-text text-transparent mb-3">
                     Lacak Pengaduan
                 </h1>
-                <p class="text-[#464646] mb-8">
+
+                <p class="text-xl text-[#464646] mb-8">
                     Masukkan kode tiket Anda untuk melihat status terkini.
                 </p>
  
                 {{-- FORM LACAK --}}
-                <form action="{{ route('lacak.cari') }}" method="GET">
-                    <div class="flex items-center bg-white rounded-full shadow-lg px-5 py-2 gap-3">
-                        {{-- Icon kaca pembesar kuning --}}
-                        <svg class="text-yellow-400 shrink-0" width="20" height="20" viewBox="0 0 24 24"
-                             fill="none" stroke="currentColor" stroke-width="2.5">
+                <form action="{{ route('lacak.cari') }}" method="GET" class="mt-8">
+                    <div class="flex items-center bg-white rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.12)] pl-8 pr-2 py-2 max-w-3xl mx-auto">
+
+                        <svg class="text-[#F4B400] shrink-0" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5">
                             <circle cx="11" cy="11" r="8"/>
-                            <path d="m21 21-4.35-4.35"/>
+                            <path d="M21 21l-4.35-4.35"/>
                         </svg>
- 
+
                         <input
                             type="text"
                             name="kode"
                             value="{{ old('kode', request('kode')) }}"
                             placeholder="Contoh: LO-12345-AB789"
                             autocomplete="off"
-                            class="flex-1 border-none outline-none bg-transparent text-sm text-slate-700 placeholder-gray-400 py-2"
+                            class="flex-1 bg-transparent border-0 outline-none focus:ring-0 px-5 text-lg placeholder:text-gray-400"
                         />
- 
-                        <button type="submit"
-                            class="bg-gradient-to-br from-[#0047AB] to-[#001D45] text-white text-sm font-semibold px-6 py-3 rounded-full hover:opacity-90 transition-all shrink-0">
+
+                        <button
+                            type="submit"
+                            class="bg-gradient-to-r from-[#0047AB] to-[#0D2E63] text-white font-semibold rounded-full px-10 py-4 text-lg hover:opacity-90 transition"
+                        >
                             Lacak
                         </button>
+
                     </div>
                 </form>
  
@@ -152,47 +114,6 @@
  
             </div>
         </main>
-        <footer class="bg-white border-t border-slate-200">
-        <div class="container mx-auto">
-         <div class="flex flex-col items-center justify-between gap-6 px-6 py-6 text-sm text-slate-500 md:flex-row">
-            <div class="flex items-center gap-6">
-                <div class="flex items-center gap-3">
-                    <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#0047AB] to-[#001D45] shadow-sm">
-                        <img src="{{ asset('images/logo.svg') }}" alt="Logo" class="h-6 w-6">
-                    </div>
-
-                    <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-[#0047AB] to-[#001D45] bg-clip-text text-transparent">
-                        LurahOnline
-                    </span>
-                </div>
-
-                <div class="hidden h-10 w-px bg-slate-200 md:block"></div>
-                    <p class="hidden md:block">
-                        Platform Pengaduan Warga Desa Banjarsari
-                        </p>
-                </div>
-
-                <div class="flex items-start gap-3 text-right">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="#6B7280"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="w-6 h-6">
-                        <path d="M12 21s-7-4.35-7-11a7 7 0 1 1 14 0c0 6.65-7 11-7 11z"/>
-                        <circle cx="12" cy="10" r="2.5"/>
-                    </svg>
-
-                    <div class="leading-tight text-left">
-                        <p>Kantor Desa Banjarsari, Kec. Bayongbong, Kab. Garut</p>
-                        <p>Senin–Jumat • 08.00–16.00</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </footer>
+        @include('components.footer')
     </body>
 </html>
