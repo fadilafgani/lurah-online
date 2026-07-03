@@ -23,9 +23,7 @@
                     alt="Background"
                     class="absolute inset-0 h-full w-full object-cover">
 
-                <div class="absolute inset-0 bg-[#153655]/60"></div>
-
-                <div class="absolute inset-0 bg-gradient-to-b from-transparent from-50% via-[#153655] via-90% to-[#F8FAFC] to-100%"></div>
+                <div class="absolute inset-0 bg-[linear-gradient(180deg,#153655_0%,rgba(21,54,85,0.30)_46.63%,#153655_100%)]"></div>
                 <div class="relative z-10 flex min-h-[720px] items-center justify-center">
                     <div class="mx-auto max-w-3xl px-6 text-center">
 
@@ -135,13 +133,14 @@
                 </div>
             </section>
 
-            <section class="container mx-auto px-6 py-24">
+            <section class="relative overflow-hidden bg-[linear-gradient(180deg,#153655_0%,#546D84_27.88%,#F8FAFC_100%)]">
+              <div class="container mx-auto px-6 py-24">
                 <div class="text-center">
-                    <h2 class="text-4xl font-extrabold text-[#153655]">
-                        Bagaimana cara kerjanya?
+                    <h2 class="text-4xl font-extrabold text-[#FFFBED] [text-shadow:0_4px_10px_rgba(0,0,0,0.25)]">
+                        Bagaimana Cara Kerjanya?
                     </h2>
 
-                    <p class="mt-3 text-slate-500">
+                    <p class="mt-3 text-white">
                         Empat langkah sederhana, dari laporan hingga selesai.
                     </p>
                 </div>
@@ -149,29 +148,29 @@
                 <div class="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
 
                     <div class="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
-                        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#123B66] text-2xl font-bold text-white shadow-md">
+                        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#153655] text-2xl font-bold text-white shadow-md">
                             1
                         </div>
 
-                        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#DCEBED] text-4xl">
+                        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#318C9E]/20 text-4xl">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
                             <!-- Clipboard -->
                             <rect x="14" y="12" width="36" height="40" rx="4"
-                                    stroke="#183A5A" stroke-width="4"/>
+                                    stroke="#153655" stroke-width="4"/>
                             <!-- Top clip -->
                             <path d="M24 12h16v-2a4 4 0 0 0-4-4h-8a4 4 0 0 0-4 4v2z"
-                                    fill="#183A5A"/>
+                                    fill="#153655"/>
                             <!-- Text lines -->
                             <line x1="22" y1="24" x2="38" y2="24"
-                                    stroke="#183A5A" stroke-width="4" stroke-linecap="round"/>
+                                    stroke="#153655" stroke-width="4" stroke-linecap="round"/>
                             <line x1="22" y1="32" x2="34" y2="32"
-                                    stroke="#183A5A" stroke-width="4" stroke-linecap="round"/>
+                                    stroke="#153655" stroke-width="4" stroke-linecap="round"/>
                             <line x1="22" y1="40" x2="30" y2="40"
-                                    stroke="#183A5A" stroke-width="4" stroke-linecap="round"/>
+                                    stroke="#153655" stroke-width="4" stroke-linecap="round"/>
                             <!-- Pencil -->
                             <g transform="rotate(-45 46 42)">
-                                <rect x="38" y="36" width="18" height="6" rx="2" fill="#183A5A"/>
-                                <polygon points="56,36 62,39 56,42" fill="#183A5A"/>
+                                <rect x="38" y="36" width="18" height="6" rx="2" fill="#153655"/>
+                                <polygon points="56,36 62,39 56,42" fill="#153655"/>
                             </g>
                             </svg>
                         </div>
@@ -188,10 +187,10 @@
 
 
                     <div class="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
-                        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#123B66] text-2xl font-bold text-white shadow-md">
+                        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#153655] text-2xl font-bold text-white shadow-md">
                             2
                         </div>
-                        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#DCEBED] text-4xl">
+                        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#318C9E]/20 text-4xl">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 64 64"
                                 width="64"
@@ -206,13 +205,13 @@
                                 C22 52 14 42 14 30
                                 V14
                                 Z"
-                                stroke="#183A5A"
+                                stroke="#153655"
                                 stroke-width="4"
                                 stroke-linejoin="round"/>
                             <!-- Check -->
                             <path
                                 d="M24 32 L30 38 L41 26"
-                                stroke="#183A5A"
+                                stroke="#153655"
                                 stroke-width="4"
                                 stroke-linecap="round"
                                 stroke-linejoin="round"/>
@@ -230,11 +229,11 @@
                     </div>
 
                     <div class="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
-                        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#123B66] text-2xl font-bold text-white shadow-md">
+                        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#153655] text-2xl font-bold text-white shadow-md">
                             3
                         </div>
 
-                        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#DCEBED] text-4xl">
+                        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#318C9E]/20 text-4xl">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 64 64"
                                 width="128"
@@ -244,21 +243,21 @@
                             <rect x="2" y="2" width="60" height="60" rx="12"
                                     fill="#D7E4E8"/>
                             <!-- Left Person -->
-                            <circle cx="28" cy="26" r="5" fill="#183A5A"/>
+                            <circle cx="28" cy="26" r="5" fill="#153655"/>
                             <path d="M20 43
                                     V38
                                     C20 34 25 32 28 32
                                     C31 32 36 34 36 38
                                     V43 Z"
-                                    fill="#183A5A"/>
+                                    fill="#153655"/>
                             <!-- Right Person -->
-                            <circle cx="41" cy="26" r="5" fill="#183A5A"/>
+                            <circle cx="41" cy="26" r="5" fill="#153655"/>
                             <path d="M34 43
                                     V38
                                     C34 34 38 32 41 32
                                     C44 32 48 34 48 38
                                     V43 Z"
-                                    fill="#183A5A"/>
+                                    fill="#153655"/>
                             </svg>
                         </div>
 
@@ -273,11 +272,11 @@
                     </div>
 
                     <div class="relative rounded-3xl border border-slate-200 bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
-                        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#123B66] text-2xl font-bold text-white shadow-md">
+                        <div class="absolute -right-3 -top-3 flex h-14 w-14 items-center justify-center rounded-full bg-[#153655] text-2xl font-bold text-white shadow-md">
                             4
                         </div>
 
-                        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#DCEBED] text-4xl">
+                        <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#318C9E]/20 text-4xl">
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 64 64"
                                 width="128"
@@ -298,7 +297,7 @@
                                 L18 28
                                 L28 27
                                 Z"
-                                stroke="#183A5A"
+                                stroke="#153655"
                                 stroke-width="4"
                                 stroke-linejoin="round"/>
                             </svg>
@@ -314,13 +313,14 @@
                         </p>
                     </div>
                 </div>
+              </div>
             </section>
 
             <section class="container mx-auto px-6 pb-24">
                 <div class="overflow-hidden rounded-[32px] bg-gradient-to-r from-[#153655] to-[#2E77BB] px-8 py-20 text-center shadow-2xl">
 
                     <h2 class="text-4xl font-extrabold text-[#FFFBED]">
-                        Siap menyampaikan keluhan Anda?
+                        Siap Menyampaikan Keluhan Anda?
                     </h2>
 
                     <p class="mt-4 text-lg text-white/80">
