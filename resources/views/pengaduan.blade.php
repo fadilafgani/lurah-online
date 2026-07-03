@@ -15,8 +15,15 @@
     </head>
     <body class="bg-white text-slate-900 antialiased">
         @include('components.navbar')
-        <main class="max-w-4xl mx-auto w-full px-4 pt-[120px] pb-12">
-            
+        <div class="relative w-full overflow-hidden">
+
+            <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 top-[271px] -z-10 flex justify-between blur-[350px]">
+                <div class="-ml-24 h-[280px] w-[280px] shrink-0 rounded-full bg-[#0047AB]"></div>
+                <div class="-mr-24 h-[220px] w-[460px] shrink-0 rounded-full bg-[#00B4D8] opacity-60"></div>
+            </div>
+
+        <main class="max-w-4xl mx-auto w-full px-4 pt-[126px] pb-12">
+
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-[#0047AB] to-[#153655] bg-clip-text text-transparent">Buat Pengaduan</h1>
                 <p class="text-[#464646]" style="text-shadow: 0 4px 8px rgba(0,0,0,0.3);">Mulai buat pengaduan dan bantu kami meningkatkan pelayanan.</p>
@@ -43,12 +50,12 @@
                             <select name="kategori" required 
                                 class="w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white transition text-sm text-gray-500 appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:1.25rem] bg-[right_1rem_center] bg-no-repeat">
                                 <option value="" disabled selected>Pilih kategori...</option>
-                                <option value="Infrastruktur">Infrastruktur Jalan</option>
-                                <option value="Kebersihan">Kebersihan & Sampah</option>
-                                <option value="Penerangan">Penerangan Jalan</option>
-                                <option value="Air">Saluran Air / Drainase</option>
-                                <option value="Keamanan">Keamanan & Ketertiban</option>
-                                <option value="Administrasi">Administrasi Kependudukan</option>
+                                <option value="Infrastruktur Jalan">Infrastruktur Jalan</option>
+                                <option value="Kebersihan & Sampah">Kebersihan & Sampah</option>
+                                <option value="Penerangan Jalan">Penerangan Jalan</option>
+                                <option value="Saluran Air / Drainase">Saluran Air / Drainase</option>
+                                <option value="Keamanan & Ketertiban">Keamanan & Ketertiban</option>
+                                <option value="Administrasi Kependudukan">Administrasi Kependudukan</option>
                                 <option value="Lainnya">Lainnya</option>
                             </select>
                         </div>
@@ -101,13 +108,14 @@
                                     <p class="text-xs text-gray-500">Identitas Anda tidak akan ditampilkan.</p>
                                 </div>
                             </div>
-                            <button type="button" @click="isAnonim = !isAnonim" 
+                            <button type="button" @click="isAnonim = !isAnonim"
                                 :class="isAnonim ? 'bg-blue-900' : 'bg-gray-200'"
                                 class="relative inline-flex h-8 w-16 shrink-0 cursor-pointer rounded-full border-2 border-gray-400 transition-colors duration-200 ease-in-out focus:outline-none">
-                                <span :class="isAnonim ? 'translate-x-8' : 'translate-x-0'" 
+                                <span :class="isAnonim ? 'translate-x-8' : 'translate-x-0'"
                                     class="pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow-md ring-1 ring-gray-300 transition duration-200 ease-in-out">
                                 </span>
                             </button>
+                            <input type="hidden" name="anonim" :value="isAnonim ? 1 : 0">
                         </div>
                         <div x-show="!isAnonim" x-transition>
                             <input type="text" name="nama" placeholder="Nama Anda (Opsional)" 
@@ -121,6 +129,7 @@
                 </form>
             </div>
         </main>
+        </div>
         @include('components.footer')
     </body>
 </html>
