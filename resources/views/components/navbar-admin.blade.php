@@ -20,17 +20,20 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('laporan') }}" class="text-[20px] font-semibold text-[#464646] hover:text-[#0047AB] transition-colors">
+                <a href="{{ route('admin.laporan') }}"
+                    class="text-[20px] font-semibold transition-colors {{ Request::routeIs('admin.laporan') ? 'text-[#0047AB]' : 'text-[#464646] hover:text-[#0047AB]' }}">
                     Laporan
                 </a>
             </li>
             <li>
-                <a href="#" class="text-[20px] font-semibold text-[#464646] hover:text-[#0047AB] transition-colors">
+                <a href="{{ route('admin.kata-terlarang') }}"
+                    class="text-[20px] font-semibold transition-colors {{ Request::routeIs('admin.kata-terlarang') ? 'text-[#0047AB]' : 'text-[#464646] hover:text-[#0047AB]' }}">
                     Kata Terlarang
                 </a>
             </li>
             <li>
-                <a href="#" class="text-[20px] font-semibold text-[#464646] hover:text-[#0047AB] transition-colors">
+                <a href="{{ route('admin.akun-unit') }}"
+                    class="text-[20px] font-semibold transition-colors {{ Request::routeIs('admin.akun-unit') ? 'text-[#0047AB]' : 'text-[#464646] hover:text-[#0047AB]' }}">
                     Akun Unit
                 </a>
             </li>
