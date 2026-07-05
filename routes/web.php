@@ -67,6 +67,12 @@ Route::get('/admin', fn() => view('login'))->name('admin.login');
 
 Route::get('/admin/dashboard', fn() => view('admin.dashboard'))->name('admin.dashboard');
 
+Route::get('/admin/laporan', fn() => view('admin.laporan'))->name('admin.laporan');
+
+Route::get('/admin/kata-terlarang', fn() => view('admin.kata-terlarang'))->name('admin.kata-terlarang');
+
+Route::get('/admin/akun-unit', fn() => view('admin.akun-unit'))->name('admin.akun-unit');
+
 Route::get('/admin/lupa-kata-sandi', fn() => view('forgot-password'))->name('admin.forgot-password');
 
 Route::get('/admin/reset-kata-sandi', fn() => view('reset-password'))->name('admin.reset-password');
