@@ -12,7 +12,7 @@ class ComplaintController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'nullable|required_if:anonim,false|string|max:255',
             'phone' => 'required',
             'title' => 'required',
             'description' => 'required',
