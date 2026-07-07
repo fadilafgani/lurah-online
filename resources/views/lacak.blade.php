@@ -129,7 +129,7 @@
                             </div>
 
                             @if($tiket->photo)
-                                <img src="{{ asset('storage/' . $tiket->photo) }}" alt="{{ $tiket->title }}" class="w-full max-w-[424px] h-[234px] object-cover rounded-[20px]">
+                                <img src="{{ asset('storage/' . $tiket->photo) }}" alt="Foto laporan" class="w-full max-w-[424px] h-[234px] object-cover rounded-[20px]">
                             @endif
 
                             <div class="flex flex-col items-center gap-1 text-center">
