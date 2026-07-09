@@ -24,6 +24,12 @@
 
     <div class="mx-auto flex w-full max-w-[1283px] flex-col items-start gap-[35px] px-6 sm:px-8 lg:px-4">
 
+        @if (session('success'))
+            <div class="w-full rounded-[15px] border-[0.5px] border-[#098A00] bg-[#C9ECC1] px-6 py-4 text-[15px] font-semibold text-[#098A00]">
+                {{ session('success') }}
+            </div>
+        @endif
+
         {{-- ── Page Header ── --}}
         <div class="flex items-end gap-3.5">
             <div class="flex h-[53px] w-[53px] shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0047AB] to-[#153655]">
@@ -48,7 +54,7 @@
                 ['key' => 'ditolak', 'label' => 'Ditolak', 'jumlah' => 1, 'active' => false],
             ];
 
-            $verifikasiList = $verifikasiList ?? [
+            $laporanList = $laporanList ?? [
                 [
                     'kode' => 'LO-260504-AG9AY',
                     'judul' => 'testing',
@@ -59,19 +65,36 @@
                     'pelapor' => 'Anonim',
                     'diajukan' => '23 Apr 2026, 16.47',
                     'deskripsi' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                    'unit' => null,
                 ],
             ];
+
+            $status = $status ?? 'verifikasi';
+            $unitOptions = $unitOptions ?? ['Unit Infrastruktur', 'Unit Kebersihan', 'Unit Keamanan'];
+            $selectedKode = $selectedKode ?? null;
+            $statusLabel = collect($statusCards)->firstWhere('key', $status)['label'] ?? 'Verifikasi';
         @endphp
 
         {{-- ── Status Cards ── --}}
         <div class="grid w-full grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
             @foreach ($statusCards as $card)
-                <div class="rounded-[15px] p-[34px] {{ $card['active']
-                    ? 'border border-[#0047AB] shadow-[0_0_4px_0_#0047AB]'
-                    : 'border-[0.5px] border-[#A19E9E] shadow-[0_4px_10px_0_rgba(0,0,0,0.25)]' }} bg-white">
-                    <p class="text-[15px] font-medium text-[#464646]">{{ $card['label'] }}</p>
-                    <p class="mt-[10px] text-[18px] font-extrabold text-black">{{ $card['jumlah'] }}</p>
-                </div>
+                <a href="{{ route('admin.dashboard', ['status' => $card['key']]) }}"
+                class="block rounded-[15px] p-[34px]
+                {{ $card['active']
+                        ? 'border border-[#0047AB] shadow-[0_0_4px_0_#0047AB]'
+                        : 'border-[0.5px] border-[#A19E9E] shadow-[0_4px_10px_0_rgba(0,0,0,0.25)]'
+                }}
+                bg-white hover:scale-[1.02] transition">
+
+                    <p class="text-[15px] font-medium text-[#464646]">
+                        {{ $card['label'] }}
+                    </p>
+
+                    <p class="mt-[10px] text-[18px] font-extrabold text-black">
+                        {{ $card['jumlah'] }}
+                    </p>
+
+                </a>
             @endforeach
         </div>
 
@@ -81,11 +104,11 @@
             {{-- Verifikasi List --}}
             <div class="rounded-[20px] border-[0.5px] border-[#A19E9E] bg-white shadow-[0_4px_10px_0_rgba(0,0,0,0.20)] overflow-hidden">
                 <div class="bg-[#F9F9F9] px-6 py-5 border-b border-[#E5E5E5]">
-                    <h2 class="text-[20px] font-extrabold text-[#153655]">Verifikasi ({{ count($verifikasiList) }})</h2>
+                    <h2 class="text-[20px] font-extrabold text-[#153655]">{{ $statusLabel }} ({{ count($laporanList) }})</h2>
                 </div>
 
                 <div class="flex flex-col divide-y divide-[#E5E5E5]">
-                    @forelse ($verifikasiList as $item)
+                    @forelse ($laporanList as $item)
                         @php
                             $badge = match (strtolower($item['status'])) {
                                 'ditolak' => 'border-[#D83D3D] bg-[#FFD9D9] text-[#D83D3D]',
@@ -120,7 +143,7 @@
                             </div>
                         </button>
                     @empty
-                        <p class="px-6 py-8 text-center text-[15px] font-medium text-[#A19E9E]">Tidak ada pengaduan menunggu verifikasi.</p>
+                        <p class="px-6 py-8 text-center text-[15px] font-medium text-[#A19E9E]">Tidak ada pengaduan berstatus {{ $statusLabel }}.</p>
                     @endforelse
                 </div>
             </div>
@@ -128,7 +151,7 @@
             {{-- Detail Panel --}}
             <div>
                 {{-- Empty state --}}
-                <div id="verifikasi-detail-empty" class="{{ count($verifikasiList) === 0 ? '' : 'hidden' }} flex min-h-[240px] items-center justify-center rounded-[20px] border-[0.5px] border-[#A19E9E] bg-white p-10 shadow-[0_4px_10px_0_rgba(0,0,0,0.20)]">
+                <div id="verifikasi-detail-empty" class="flex min-h-[240px] items-center justify-center rounded-[20px] border-[0.5px] border-[#A19E9E] bg-white p-10 shadow-[0_4px_10px_0_rgba(0,0,0,0.20)]">
                     <div class="flex flex-col items-center gap-3 text-center">
                         <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M8.33301 16.6668H41.6663M41.6663 16.6668L33.333 8.3335H16.6663L8.33301 16.6668V37.5002C8.33301 38.6052 8.77199 39.665 9.5534 40.4464C10.3348 41.2278 11.3946 41.6668 12.4997 41.6668H37.4997C38.6047 41.6668 39.6645 41.2278 40.446 40.4464C41.2274 39.665 41.6663 38.6052 41.6663 37.5002V16.6668ZM16.6663 25.0002H24.9997" stroke="#A19E9E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -138,22 +161,44 @@
                 </div>
 
                 {{-- Filled detail per item --}}
-                @foreach ($verifikasiList as $index => $item)
-                    <div id="verifikasi-detail-{{ $item['kode'] }}" data-verifikasi-detail class="{{ $index === 0 ? '' : 'hidden' }} rounded-[20px] border-[0.5px] border-[#A19E9E] bg-white p-9 shadow-[0_4px_10px_0_rgba(0,0,0,0.20)]">
+                @foreach ($laporanList as $index => $item)
+                    @php
+                        $detailBadge = match (strtolower($item['status'])) {
+                            'ditolak' => 'border-[#D83D3D] bg-[#FFD9D9] text-[#D83D3D]',
+                            'diajukan' => 'border-[#2E77BB] bg-[#CCF4FF] text-[#2E77BB]',
+                            'selesai' => 'border-[#098A00] bg-[#C9ECC1] text-[#098A00]',
+                            'diproses', 'disposisi', 'penanganan' => 'border-[#D87A00] bg-[#FFF2C7] text-[#D87A00]',
+                            default => 'border-[#A19E9E] bg-[#E5E5E5] text-[#464646]',
+                        };
+                        $detailDot = match (strtolower($item['status'])) {
+                            'ditolak' => 'bg-[#D83D3D]',
+                            'diajukan' => 'bg-[#2E77BB]',
+                            'selesai' => 'bg-[#098A00]',
+                            'diproses', 'disposisi', 'penanganan' => 'bg-[#D87A00]',
+                            default => 'bg-[#464646]',
+                        };
+                    @endphp
+                    <div id="verifikasi-detail-{{ $item['kode'] }}" data-verifikasi-detail class="hidden rounded-[20px] border-[0.5px] border-[#A19E9E] bg-white p-9 shadow-[0_4px_10px_0_rgba(0,0,0,0.20)]">
                         <div class="flex flex-col items-start gap-5">
 
                             <div class="flex flex-col items-start gap-2">
                                 <p class="text-[15px] font-medium text-[#656565]">{{ $item['kode'] }}</p>
                                 <h2 class="text-[25px] font-extrabold text-[#153655]">{{ $item['judul'] }}</h2>
-                                <span class="inline-flex items-center gap-[3px] rounded-full border-[0.5px] border-[#2E77BB] bg-[#CCF4FF] px-[15px] py-1 text-[13px] font-medium text-[#2E77BB]">
-                                    <span class="h-[5px] w-[5px] rounded-full bg-[#2E77BB]"></span>
+                                <span class="inline-flex items-center gap-[3px] rounded-full border-[0.5px] px-[15px] py-1 text-[13px] font-medium {{ $detailBadge }}">
+                                    <span class="h-[5px] w-[5px] rounded-full {{ $detailDot }}"></span>
                                     {{ $item['status'] }}
                                 </span>
                             </div>
 
                             <div class="flex w-full flex-col items-start gap-[10px]">
                                 <p class="text-[15px] font-medium text-[#656565]">Foto Bukti</p>
-                                <img src="{{ $item['foto'] }}" alt="Foto bukti pengaduan" class="h-[271px] w-full rounded-[20px] object-cover">
+                                @if ($item['foto'])
+                                    <img src="{{ $item['foto'] }}" alt="Foto bukti pengaduan" class="h-[271px] w-full rounded-[20px] object-cover">
+                                @else
+                                    <div class="flex h-[271px] w-full items-center justify-center rounded-[20px] bg-[#F1F1F1] text-[15px] font-medium text-[#A19E9E]">
+                                        Tidak ada foto bukti
+                                    </div>
+                                @endif
                             </div>
 
                             <div class="flex w-full flex-wrap items-start gap-x-[100px] gap-y-5">
@@ -207,28 +252,153 @@
                                 <p class="text-[18px] font-bold text-[#464646]">{{ $item['deskripsi'] }}</p>
                             </div>
 
-                            <div class="w-full rounded-[20px] border-[0.5px] border-[#A19E9E] bg-[#F8FAFC] px-9 py-8">
-                                <form class="flex flex-col items-start gap-[15px]">
-                                    <div class="flex flex-col items-start gap-[5px]">
-                                        <h3 class="text-[18px] font-bold text-[#464646]">Verifikasi Pengaduan</h3>
-                                        <label for="alasan-{{ $item['kode'] }}" class="text-[15px] font-medium text-[#464646]">Alasan penolakan (jika ditolak)</label>
-                                    </div>
-                                    <textarea id="alasan-{{ $item['kode'] }}" rows="3" placeholder="Contoh: Foto tidak jelas, lokasi di luar wilayah..." class="w-full rounded-[15px] border-[0.5px] border-[#656565] px-[23px] py-[18px] text-[15px] font-medium text-[#464646] placeholder:text-[#A19E9E] focus:outline-none focus:ring-1 focus:ring-[#0047AB]"></textarea>
-                                    <div class="flex w-full items-center gap-[23px]">
-                                        <button type="submit" class="flex items-center justify-center gap-[10px] rounded-[10px] bg-[#098A00] px-[91px] py-[6px] text-[15px] font-bold text-white">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM16.59 7.58L10 14.17L7.41 11.59L6 13L10 17L18 9L16.59 7.58Z" fill="white"/>
+                            @if ($status === 'verifikasi')
+                                <div id="verifikasi-form-{{ $item['kode'] }}" class="w-full rounded-[20px] border-[0.5px] border-[#A19E9E] bg-[#F8FAFC] px-9 py-8">
+                                    <form method="POST" action="{{ route('admin.laporan.status', $item['kode']) }}" class="flex flex-col items-start gap-[15px]">
+                                        @csrf
+                                        @method('PUT')
+                                        <div class="flex flex-col items-start gap-[5px]">
+                                            <h3 class="text-[18px] font-bold text-[#464646]">Verifikasi Pengaduan</h3>
+                                            <label for="alasan-{{ $item['kode'] }}" class="text-[15px] font-medium text-[#464646]">Alasan penolakan (jika ditolak)</label>
+                                        </div>
+                                        <textarea id="alasan-{{ $item['kode'] }}" name="rejection_reason" rows="3" placeholder="Contoh: Foto tidak jelas, lokasi di luar wilayah..." class="w-full rounded-[15px] border-[0.5px] border-[#656565] px-[23px] py-[18px] text-[15px] font-medium text-[#464646] placeholder:text-[#A19E9E] focus:outline-none focus:ring-1 focus:ring-[#0047AB]"></textarea>
+                                        <div class="flex w-full items-center gap-[23px]">
+                                            <button type="submit" name="status" value="verified" class="flex items-center justify-center gap-[10px] rounded-[10px] bg-[#098A00] px-[91px] py-[6px] text-[15px] font-bold text-white">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM16.59 7.58L10 14.17L7.41 11.59L6 13L10 17L18 9L16.59 7.58Z" fill="white"/>
+                                                </svg>
+                                                Verifikasi
+                                            </button>
+                                            <button type="submit" name="status" value="rejected" class="flex w-[283px] items-center justify-center gap-[10px] rounded-[10px] bg-[#D83D3D] py-[6px] text-[15px] font-bold text-white">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M8.4 17L12 13.4L15.6 17L17 15.6L13.4 12L17 8.4L15.6 7L12 10.6L8.4 7L7 8.4L10.6 12L7 15.6L8.4 17ZM12 22C10.6167 22 9.31667 21.7373 8.1 21.212C6.88334 20.6867 5.825 19.9743 4.925 19.075C4.025 18.1757 3.31267 17.1173 2.788 15.9C2.26333 14.6827 2.00067 13.3827 2 12C1.99933 10.6173 2.262 9.31733 2.788 8.1C3.314 6.88267 4.02633 5.82433 4.925 4.925C5.82367 4.02567 6.882 3.31333 8.1 2.788C9.318 2.26267 10.618 2 12 2C13.382 2 14.682 2.26267 15.9 2.788C17.118 3.31333 18.1763 4.02567 19.075 4.925C19.9737 5.82433 20.6863 6.88267 21.213 8.1C21.7397 9.31733 22.002 10.6173 22 12C21.998 13.3827 21.7353 14.6827 21.212 15.9C20.6887 17.1173 19.9763 18.1757 19.075 19.075C18.1737 19.9743 17.1153 20.687 15.9 21.213C14.6847 21.739 13.3847 22.0013 12 22ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z" fill="white"/>
+                                                </svg>
+                                                Tolak</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            @elseif ($status === 'disposisi')
+                                <div class="w-full rounded-[20px] border-[0.5px] border-[#A19E9E] bg-[#F8FAFC] px-9 py-8">
+                                    <form method="POST" action="{{ route('admin.laporan.status', $item['kode']) }}" class="flex flex-col items-start gap-[15px]">
+                                        @csrf
+                                        @method('PUT')
+                                        <input type="hidden" name="status" value="process">
+                                        <h3 class="text-[18px] font-bold text-[#464646]">Disposisi ke Unit</h3>
+                                        <div class="relative w-full">
+                                            <select name="unit" required class="w-full appearance-none rounded-[15px] border-[0.5px] border-[#656565] px-[23px] py-[18px] text-[15px] font-medium text-[#464646] focus:outline-none focus:ring-1 focus:ring-[#0047AB]">
+                                                <option value="" disabled {{ $item['unit'] ? '' : 'selected' }}>Pilih unit penanggung jawab...</option>
+                                                @foreach ($unitOptions as $unitOption)
+                                                    <option value="{{ $unitOption }}" {{ $item['unit'] === $unitOption ? 'selected' : '' }}>{{ $unitOption }}</option>
+                                                @endforeach
+                                            </select>
+                                            <svg class="pointer-events-none absolute right-[23px] top-1/2 -translate-y-1/2" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M4 6L8 10L12 6" stroke="#656565" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                             </svg>
-                                            Verifikasi
+                                        </div>
+                                        <button type="submit" class="w-full rounded-[10px] bg-[#153655] py-[10px] text-[15px] font-bold text-white">
+                                            Disposisikan
                                         </button>
-                                        <button type="button" class="flex w-[283px] items-center justify-center gap-[10px] rounded-[10px] bg-[#D83D3D] py-[6px] text-[15px] font-bold text-white">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M8.4 17L12 13.4L15.6 17L17 15.6L13.4 12L17 8.4L15.6 7L12 10.6L8.4 7L7 8.4L10.6 12L7 15.6L8.4 17ZM12 22C10.6167 22 9.31667 21.7373 8.1 21.212C6.88334 20.6867 5.825 19.9743 4.925 19.075C4.025 18.1757 3.31267 17.1173 2.788 15.9C2.26333 14.6827 2.00067 13.3827 2 12C1.99933 10.6173 2.262 9.31733 2.788 8.1C3.314 6.88267 4.02633 5.82433 4.925 4.925C5.82367 4.02567 6.882 3.31333 8.1 2.788C9.318 2.26267 10.618 2 12 2C13.382 2 14.682 2.26267 15.9 2.788C17.118 3.31333 18.1763 4.02567 19.075 4.925C19.9737 5.82433 20.6863 6.88267 21.213 8.1C21.7397 9.31733 22.002 10.6173 22 12C21.998 13.3827 21.7353 14.6827 21.212 15.9C20.6887 17.1173 19.9763 18.1757 19.075 19.075C18.1737 19.9743 17.1153 20.687 15.9 21.213C14.6847 21.739 13.3847 22.0013 12 22ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z" fill="white"/>
-                                            </svg>
-                                            Tolak</button>
+                                    </form>
+                                </div>
+                            @elseif ($status === 'penanganan')
+                                <div class="w-full rounded-[20px] border-[0.5px] border-[#A19E9E] bg-[#F8FAFC] px-9 py-[35px]">
+                                    <div class="flex flex-col items-start gap-[25px]">
+                                        <div class="flex flex-col items-start gap-[5px]">
+                                            <h3 class="text-[18px] font-bold text-[#464646]">Penanganan</h3>
+                                            <p class="text-[15px] font-medium text-[#464646]">Unit: <strong>{{ $item['unit'] ?? '-' }}</strong></p>
+                                        </div>
+
+                                        <form method="POST" action="{{ route('admin.laporan.selesaikan', $item['kode']) }}" enctype="multipart/form-data" class="flex w-full flex-col items-start gap-[15px]">
+                                            @csrf
+                                            @method('PUT')
+
+                                            <div class="flex w-full flex-col items-start gap-[11px]">
+                                                <label for="catatan-{{ $item['kode'] }}" class="text-[15px] font-medium text-[#464646]">Catatan Tindakan</label>
+                                                <textarea id="catatan-{{ $item['kode'] }}" name="catatan" rows="3" placeholder="Apa yang sudah dilakukan di lapangan..." class="w-full rounded-[15px] border-[0.5px] border-[#656565] px-[23px] py-[18px] text-[15px] font-medium text-[#464646] placeholder:text-[#A19E9E] focus:outline-none focus:ring-1 focus:ring-[#0047AB]">{{ $item['catatan'] }}</textarea>
+                                            </div>
+
+                                            <div class="flex w-full flex-col items-start gap-[11px]">
+                                                <label for="tanggapan-{{ $item['kode'] }}" class="text-[15px] font-medium text-[#464646]">Tanggapan untuk Warga</label>
+                                                <textarea id="tanggapan-{{ $item['kode'] }}" name="tanggapan" rows="3" placeholder="Penjelasan dan solusi yang akan disampaikan ke pelapor..." class="w-full rounded-[15px] border-[0.5px] border-[#656565] px-[23px] py-[18px] text-[15px] font-medium text-[#464646] placeholder:text-[#A19E9E] focus:outline-none focus:ring-1 focus:ring-[#0047AB]">{{ $item['tanggapan'] }}</textarea>
+                                            </div>
+
+                                            <div class="flex w-full flex-col items-start gap-[11px]">
+                                                <label class="text-[15px] font-medium text-[#464646]">Foto Hasil (Opsional)</label>
+                                                <label for="foto-hasil-{{ $item['kode'] }}" class="flex w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-[15px] border border-dashed border-[#A19E9E] px-6 py-[18px] text-center">
+                                                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M12 16V4M12 4L7 9M12 4L17 9" stroke="#464646" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        <path d="M5 20H19" stroke="#464646" stroke-width="2" stroke-linecap="round"/>
+                                                    </svg>
+                                                    <span data-foto-hasil-label="{{ $item['kode'] }}" class="text-[15px] font-medium text-[#464646]">Klik untuk unggah foto</span>
+                                                    <span class="text-[12px] font-medium text-[#656565]">JPG, PNG • Maks 5MB</span>
+                                                </label>
+                                                <input type="file" id="foto-hasil-{{ $item['kode'] }}" name="foto_hasil" accept="image/jpeg,image/png" class="hidden" onchange="showFotoHasilName('{{ $item['kode'] }}', this)">
+                                            </div>
+
+                                            <div class="flex w-full items-center gap-[23px]">
+                                                <button type="submit" formaction="{{ route('admin.laporan.catatan', $item['kode']) }}" class="flex items-center justify-center gap-[10px] rounded-[10px] border border-[#A19E9E] bg-white px-[83px] py-2 text-[15px] font-bold text-[#656565]">
+                                                    Simpan Catatan
+                                                </button>
+                                                <button type="submit" class="flex items-center justify-center gap-[10px] rounded-[10px] bg-[#098A00] px-[85px] py-[5px] text-[15px] font-bold text-white">
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM16.59 7.58L10 14.17L7.41 11.59L6 13L10 17L18 9L16.59 7.58Z" fill="white"/>
+                                                    </svg>
+                                                    Selesaikan
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
-                                </form>
-                            </div>
+                                </div>
+                            @elseif ($status === 'selesai')
+                                <div class="flex w-full flex-col items-start gap-5">
+                                    <div class="w-full rounded-[20px] border-[0.5px] border-[#0047AB] bg-[#0047AB]/20 px-[30px] py-[22px]">
+                                        <p class="text-[15px] font-bold text-[#001D45]">Tanggapan</p>
+                                        <p class="mt-[5px] text-[15px] font-medium text-[#464646]">{{ $item['tanggapan'] ?: 'Belum ada tanggapan.' }}</p>
+                                    </div>
+
+                                    <p class="text-[15px] font-medium text-[#656565]">Belum ada penilaian dari warga.</p>
+
+                                    <div class="flex w-full flex-wrap items-center justify-between gap-5 rounded-[20px] border-[0.5px] border-[#D83D3D] bg-[#FFE4E4] px-[30px] py-[22px]">
+                                        <div class="flex flex-col items-start gap-[5px]">
+                                            <p class="text-[15px] font-bold text-[#D83D3D]">Hapus Pengaduan</p>
+                                            <p class="text-[15px] font-medium text-[#464646]">Tindakan permanen, data tidak dapat dikembalikan.</p>
+                                        </div>
+                                        <form method="POST" action="{{ route('admin.laporan.destroy', $item['kode']) }}" onsubmit="return confirm('Yakin ingin menghapus pengaduan ini secara permanen? Tindakan ini tidak dapat dibatalkan.')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="flex items-center justify-center gap-2 rounded-[10px] bg-[#D83D3D] px-5 py-[6px] text-[15px] font-bold text-white">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M7 21C6.45 21 5.97933 20.8043 5.588 20.413C5.19667 20.0217 5.00067 19.5507 5 19V6H4V4H9V3H15V4H20V6H19V19C19 19.55 18.8043 20.021 18.413 20.413C18.0217 20.805 17.5507 21.0007 17 21H7ZM17 6H7V19H17V6ZM9 17H11V8H9V17ZM13 17H15V8H13V17Z" fill="white"/>
+                                                </svg>
+                                                Hapus Permanen
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @elseif ($status === 'ditolak')
+                                <div class="flex w-full flex-col items-start gap-5">
+                                    <div class="w-full rounded-[20px] border-[0.5px] border-[#D83D3D] bg-[#FFE4E4] px-[30px] py-[22px]">
+                                        <p class="text-[15px] font-bold text-[#D83D3D]">Alasan Penolakan</p>
+                                        <p class="mt-[5px] text-[15px] font-medium text-[#464646]">{{ $item['alasan'] ?: '-' }}</p>
+                                    </div>
+                                    <div class="flex w-full flex-wrap items-center justify-between gap-5 rounded-[20px] border-[0.5px] border-[#D83D3D] bg-[#FFE4E4] px-[30px] py-[22px]">
+                                        <div class="flex flex-col items-start gap-[5px]">
+                                            <p class="text-[15px] font-bold text-[#D83D3D]">Hapus Pengaduan</p>
+                                            <p class="text-[15px] font-medium text-[#464646]">Tindakan permanen, data tidak dapat dikembalikan.</p>
+                                        </div>
+                                        <form method="POST" action="{{ route('admin.laporan.destroy', $item['kode']) }}" onsubmit="return confirm('Yakin ingin menghapus pengaduan ini secara permanen? Tindakan ini tidak dapat dibatalkan.')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="flex items-center justify-center gap-2 rounded-[10px] bg-[#D83D3D] px-5 py-[6px] text-[15px] font-bold text-white">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M7 21C6.45 21 5.97933 20.8043 5.588 20.413C5.19667 20.0217 5.00067 19.5507 5 19V6H4V4H9V3H15V4H20V6H19V19C19 19.55 18.8043 20.021 18.413 20.413C18.0217 20.805 17.5507 21.0007 17 21H7ZM17 6H7V19H17V6ZM9 17H11V8H9V17ZM13 17H15V8H13V17Z" fill="white"/>
+                                                </svg>
+                                                Hapus Permanen
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endif
 
                         </div>
                     </div>
@@ -246,6 +416,15 @@ function showVerifikasiDetail(kode) {
         el.classList.toggle('hidden', el.id !== 'verifikasi-detail-' + kode);
     });
 }
+
+function showFotoHasilName(kode, input) {
+    var label = document.querySelector('[data-foto-hasil-label="' + kode + '"]');
+    if (label) label.textContent = input.files[0] ? input.files[0].name : 'Klik untuk unggah foto';
+}
+
+@if ($selectedKode)
+    showVerifikasiDetail(@json($selectedKode));
+@endif
 </script>
 
 @include('components.footer')

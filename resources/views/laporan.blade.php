@@ -151,13 +151,13 @@
 
                 @php
                 $laporans = $laporans ?? [
-                    ['kode'=>'LO-260423-*****','judul'=>'Jalan Rusak',                'kategori'=>'Infrastruktur Jalan',          'status'=>'Ditolak'],
-                    ['kode'=>'LO-260420-*****','judul'=>'Pelayanan lama',              'kategori'=>'Administrasi Kependudukan',     'status'=>'Diajukan'],
-                    ['kode'=>'LO-260417-*****','judul'=>'jalan rusak lagi',            'kategori'=>'Infrastruktur Jalan',           'status'=>'Selesai'],
-                    ['kode'=>'LO-260417-*****','judul'=>'Jalan Rusak dan Bergelombang','kategori'=>'Infrastruktur Jalan',           'status'=>'Selesai'],
-                    ['kode'=>'LO-260423-*****','judul'=>'Saluran air tersumbat',       'kategori'=>'Saluran Air / Drainase',        'status'=>'Diproses'],
-                    ['kode'=>'LO-260417-*****','judul'=>'mati listrik',                'kategori'=>'Infrastruktur Jalan',           'status'=>'Selesai'],
-                    ['kode'=>'LO-260428-*****','judul'=>'Pelayanan Kurang',            'kategori'=>'Administrasi Kependudukan',     'status'=>'Selesai'],
+                    ['kode'=>'LO-260423-*****','judul'=>'Jalan Rusak',                'kategori'=>'Infrastruktur Jalan',          'status'=>'Ditolak', 'foto'=>null],
+                    ['kode'=>'LO-260420-*****','judul'=>'Pelayanan lama',              'kategori'=>'Administrasi Kependudukan',     'status'=>'Diajukan', 'foto'=>null],
+                    ['kode'=>'LO-260417-*****','judul'=>'jalan rusak lagi',            'kategori'=>'Infrastruktur Jalan',           'status'=>'Selesai', 'foto'=>null],
+                    ['kode'=>'LO-260417-*****','judul'=>'Jalan Rusak dan Bergelombang','kategori'=>'Infrastruktur Jalan',           'status'=>'Selesai', 'foto'=>null],
+                    ['kode'=>'LO-260423-*****','judul'=>'Saluran air tersumbat',       'kategori'=>'Saluran Air / Drainase',        'status'=>'Diproses', 'foto'=>null],
+                    ['kode'=>'LO-260417-*****','judul'=>'mati listrik',                'kategori'=>'Infrastruktur Jalan',           'status'=>'Selesai', 'foto'=>null],
+                    ['kode'=>'LO-260428-*****','judul'=>'Pelayanan Kurang',            'kategori'=>'Administrasi Kependudukan',     'status'=>'Selesai', 'foto'=>null],
                 ];
                 @endphp
 
@@ -165,6 +165,7 @@
                     <table class="w-full min-w-[720px] border-collapse text-left">
                         <thead>
                             <tr class="text-lg font-medium text-[#464646]">
+                                <th class="pb-4 font-medium">Foto</th>
                                 <th class="pb-4 font-medium">Kode Tiket</th>
                                 <th class="pb-4 font-medium">Judul</th>
                                 <th class="pb-4 font-medium">Kategori</th>
@@ -190,6 +191,13 @@
                                 };
                             @endphp
                             <tr class="border-t-[0.5px] border-[#A19E9E]">
+                                <td class="py-5 pr-4">
+                                    @if ($lap['foto'] ?? null)
+                                        <img src="{{ $lap['foto'] }}" alt="Foto {{ $lap['judul'] }}" class="h-14 w-14 rounded-[10px] object-cover">
+                                    @else
+                                        <div class="flex h-14 w-14 items-center justify-center rounded-[10px] bg-[#F1F1F1] text-[11px] font-medium text-[#A19E9E]">Tanpa foto</div>
+                                    @endif
+                                </td>
                                 <td class="py-5 pr-4 text-[17px] font-medium text-black">{{ $lap['kode'] }}</td>
                                 <td class="py-5 pr-4 text-[17px] font-medium text-black">{{ $lap['judul'] }}</td>
                                 <td class="py-5 pr-4 text-[17px] font-medium text-black">{{ $lap['kategori'] }}</td>

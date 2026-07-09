@@ -25,7 +25,7 @@
     <div class="mx-auto flex w-full max-w-[979px] flex-col items-center gap-[34px] px-6 sm:px-8 lg:px-4">
 
         @php
-            $unitOptions = ['Unit Infrastruktur', 'Unit Kebersihan', 'Unit Keamanan'];
+            $unitOptions = $unitOptions ?? ['Unit Infrastruktur', 'Unit Kebersihan', 'Unit Keamanan', 'Unit Administrasi', 'Unit Umum'];
             $akunUnit = $akunUnit ?? [
                 ['email' => 'unit_infrastruktur@lurah.local', 'unit' => 'Unit Infrastruktur', 'dibuat' => '11/6/2026'],
                 ['email' => 'unit_kebersihan@lurah.local', 'unit' => 'Unit Kebersihan', 'dibuat' => '11/6/2026'],

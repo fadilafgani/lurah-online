@@ -17,5 +17,10 @@ class Complaint extends Model
         'category',
         'photo',
         'status',
+        'unit',
+        'handling_note',
+        'response_note',
+        'result_photo',
+        'rejection_reason',
     ];
 }
