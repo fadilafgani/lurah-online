@@ -16,9 +16,7 @@ return new class extends Migration
 
             $table->string('ticket_code')->unique();
 
-            $table->string('name');
-            $table->string('phone');
-            $table->string('email')->nullable();
+            $table->string('name')->nullable();
 
             $table->string('title');
             $table->text('description');

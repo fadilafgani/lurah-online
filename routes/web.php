@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\Admin\ComplaintController;
+use App\Http\Controllers\Admin\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -59,15 +62,32 @@ Route::get('/lacak/cari', function (Request $request) {
     return view('lacak', compact('tiket'));
 })->name('lacak.cari');
 
-use App\Http\Controllers\LaporanController;
-
 Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
 
 Route::get('/admin', fn() => view('login'))->name('admin.login');
 
-Route::get('/admin/dashboard', fn() => view('admin.dashboard'))->name('admin.dashboard');
+Route::get('/admin/dashboard', [DashboardController::class, 'index'])
+    ->name('admin.dashboard');
 
-Route::get('/admin/laporan', fn() => view('admin.laporan'))->name('admin.laporan');
+Route::get('/admin/laporan',
+    [ComplaintController::class,'index'])
+    ->name('admin.laporan');
+
+Route::put('/admin/laporan/{complaint:ticket_code}/status',
+    [ComplaintController::class,'updateStatus'])
+    ->name('admin.laporan.status');
+
+Route::put('/admin/laporan/{complaint:ticket_code}/catatan',
+    [ComplaintController::class,'saveHandling'])
+    ->name('admin.laporan.catatan');
+
+Route::put('/admin/laporan/{complaint:ticket_code}/selesaikan',
+    [ComplaintController::class,'complete'])
+    ->name('admin.laporan.selesaikan');
+
+Route::delete('/admin/laporan/{ticketCode}',
+    [ComplaintController::class,'destroy'])
+    ->name('admin.laporan.destroy');
 
 Route::get('/admin/kata-terlarang', fn() => view('admin.kata-terlarang'))->name('admin.kata-terlarang');
 
