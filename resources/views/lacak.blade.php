@@ -15,10 +15,15 @@
     </head>
     <body class="min-h-screen flex flex-col bg-white text-slate-900 antialiased">
         @include('components.navbar')
-        <main class="flex-1 pt-24 px-4 pb-16 flex items-start justify-center"
+        <main class="relative overflow-hidden flex-1 pt-24 px-4 pb-16 flex items-start justify-center"
         style="background: linear-gradient(135deg,#e8eef7 0%,#dce6f5 50%,#e4eaf6 100%);">
- 
-            <div class="w-full max-w-2xl mx-auto text-center">
+
+            <svg class="pointer-events-none absolute bottom-[-120px] left-1/2 -translate-x-1/2 blur-[120px] z-0" width="1495" height="384" viewBox="0 0 1495 384" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M298 192C298 298.039 231.29 384 149 384C66.7096 384 0 298.039 0 192C0 85.9613 66.7096 0 149 0C231.29 0 298 85.9613 298 192Z" fill="#0047AB"/>
+                <path d="M1495 192C1495 250.542 1421.35 298 1330.5 298C1239.65 298 1166 250.542 1166 192C1166 133.458 1239.65 86 1330.5 86C1421.35 86 1495 133.458 1495 192Z" fill="#00B4D8" fill-opacity="0.6"/>
+            </svg>
+
+            <div class="relative z-10 w-full max-w-2xl mx-auto text-center">
                 <h1 class="text-5xl font-extrabold leading-[1.3] bg-gradient-to-r from-[#0047AB] to-[#153655] bg-clip-text text-transparent mb-3">
                     Lacak Pengaduan
                 </h1>
@@ -84,8 +89,8 @@
                     <h2 class="text-[22px] font-extrabold text-[#153655] mb-6">Progres Laporan</h2>
 
                     <div class="relative flex items-start justify-between">
-                        <div class="absolute h-[6px] bg-[#E5E5E5] rounded-full" style="top:35px; left:35px; right:35px;"></div>
-                        <div class="absolute h-[6px] rounded-full {{ $activeGradient }}" style="top:35px; left:35px; width:calc((100% - 70px) * {{ $progressPercent / 100 }});"></div>
+                        <div class="absolute h-[6px] bg-[#E5E5E5] rounded-full" style="top:35px; left:12.5%; right:12.5%;"></div>
+                        <div class="absolute h-[6px] rounded-full {{ $activeGradient }}" style="top:35px; left:12.5%; width:calc(75% * {{ $progressPercent / 100 }});"></div>
 
                         @foreach ($steps as $i => $step)
                             @php $isActive = $i <= $currentIndex; @endphp
@@ -183,6 +188,83 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- TINDAK LANJUT --}}
+                @if(in_array($tiket->status, ['process', 'completed']) && $tiket->unit)
+                <div class="mt-8 flex flex-col md:flex-row gap-8 items-stretch">
+                    <div class="flex-1 bg-white rounded-[20px] border-[0.5px] border-[#E5E5E5] shadow-[0_0_4px_rgba(0,0,0,0.25)] px-6 py-8 md:px-[52px] md:py-9 text-left">
+                        <h2 class="text-[22px] font-extrabold text-[#153655] mb-4">Tindak Lanjut</h2>
+                        <div class="flex flex-col gap-5">
+                            <div class="flex flex-col gap-1">
+                                <p class="text-[#656565] text-[20px] font-medium">Ditangani oleh</p>
+                                <p class="text-[#464646] text-[20px] font-bold">{{ $tiket->unit }}</p>
+                            </div>
+                            @if($tiket->handling_note)
+                            <div class="flex flex-col gap-1">
+                                <p class="text-[#656565] text-[20px] font-medium">Catatan</p>
+                                <p class="text-[#464646] text-[20px] font-bold">{{ $tiket->handling_note }}</p>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- PENILAIAN ANDA --}}
+                    @if($tiket->status === 'completed')
+                    <div class="flex-1 bg-white rounded-[20px] border-[0.5px] border-[#E5E5E5] shadow-[0_0_4px_rgba(0,0,0,0.25)] px-6 py-8 md:px-9 md:py-9 text-left">
+                        <h2 class="text-[22px] font-extrabold text-[#153655] mb-4">Penilaian Anda</h2>
+
+                        <div x-data="{ rating: 0, hovered: 0, comment: '', submitted: false }">
+                            <template x-if="submitted">
+                                <div>
+                                    <div class="flex items-center gap-[6px] mb-3">
+                                        <template x-for="i in 5" :key="i">
+                                            <svg class="w-[36px] h-[36px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.62L12 2L9.19 8.62L2 9.24L7.46 13.97L5.82 21L12 17.27Z" :fill="i <= rating ? '#FFC400' : '#E5E5E5'"/>
+                                            </svg>
+                                        </template>
+                                    </div>
+                                    <p class="text-[#464646] text-[18px] font-medium" x-show="comment.trim() !== ''" x-text="comment"></p>
+                                    <p class="text-[#656565] text-[16px] font-medium mt-2">Terima kasih atas penilaian Anda.</p>
+                                </div>
+                            </template>
+                            <div class="flex flex-col gap-4" x-show="!submitted">
+                                <div class="flex items-center gap-[6px]">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                    <button
+                                        type="button"
+                                        @click="rating = {{ $i }}"
+                                        @mouseenter="hovered = {{ $i }}"
+                                        @mouseleave="hovered = 0"
+                                        class="leading-none"
+                                    >
+                                        <svg class="w-[36px] h-[36px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.62L12 2L9.19 8.62L2 9.24L7.46 13.97L5.82 21L12 17.27Z"
+                                                :fill="(hovered || rating) >= {{ $i }} ? '#FFC400' : '#E5E5E5'"/>
+                                        </svg>
+                                    </button>
+                                    @endfor
+                                </div>
+                                <textarea
+                                    x-model="comment"
+                                    rows="3"
+                                    placeholder="Tulis komentar Anda (Opsional)"
+                                    class="w-full rounded-[20px] border-[0.5px] border-[#A19E9E] bg-[#F9F9F9] px-[22px] py-[14px] text-[18px] text-[#464646] placeholder:text-[#A19E9E] outline-none resize-none"
+                                ></textarea>
+                                <button
+                                    type="button"
+                                    @click="submitted = true"
+                                    :disabled="rating === 0 && comment.trim() === ''"
+                                    :class="(rating === 0 && comment.trim() === '') ? 'opacity-50 cursor-not-allowed' : ''"
+                                    class="self-start bg-gradient-to-r from-[#0047AB] to-[#153655] text-white font-semibold text-[18px] rounded-[20px] px-[40px] py-[10px] shadow-[2px_2px_4px_rgba(0,0,0,0.25)]"
+                                >
+                                    Kirim
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+                @endif
                 @endisset
 
                 {{-- TIKET TIDAK DITEMUKAN --}}
