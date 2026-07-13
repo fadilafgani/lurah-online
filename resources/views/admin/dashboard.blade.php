@@ -37,11 +37,11 @@
                     <path d="M18.9583 13.125V4.375H30.625V13.125H18.9583ZM4.375 18.9583V4.375H16.0417V18.9583H4.375ZM18.9583 30.625V16.0417H30.625V30.625H18.9583ZM4.375 30.625V21.875H16.0417V30.625H4.375ZM7.29167 16.0417H13.125V7.29167H7.29167V16.0417ZM21.875 27.7083H27.7083V18.9583H21.875V27.7083ZM21.875 10.2083H27.7083V7.29167H21.875V10.2083ZM7.29167 27.7083H13.125V24.7917H7.29167V27.7083Z" fill="white"/>
                 </svg>
             </div>
-            <div class="flex w-[300px] flex-col items-start gap-0.5">
-                <h1 class="bg-gradient-to-r from-[#0047AB] to-[#153655] bg-clip-text text-[30px] font-extrabold leading-none text-transparent">
+            <div class="flex min-w-0 flex-1 flex-col items-start gap-0.5">
+                <h1 class="bg-gradient-to-r from-[#0047AB] to-[#153655] bg-clip-text text-[22px] sm:text-[30px] font-extrabold leading-tight sm:leading-none text-transparent">
                     Dashboard Admin
                 </h1>
-                <p class="w-[300px] text-[18px] font-medium text-[#464646]">Kelola pengaduan warga.</p>
+                <p class="text-[15px] sm:text-[18px] font-medium text-[#464646]">Kelola pengaduan warga.</p>
             </div>
         </div>
 
@@ -79,7 +79,7 @@
         <div class="grid w-full grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
             @foreach ($statusCards as $card)
                 <a href="{{ route('admin.dashboard', ['status' => $card['key']]) }}"
-                class="block rounded-[15px] p-[34px]
+                class="block rounded-[15px] p-4 sm:p-6 lg:p-[34px]
                 {{ $card['active']
                         ? 'border border-[#0047AB] shadow-[0_0_4px_0_#0047AB]'
                         : 'border-[0.5px] border-[#A19E9E] shadow-[0_4px_10px_0_rgba(0,0,0,0.25)]'
@@ -201,7 +201,7 @@
                                 @endif
                             </div>
 
-                            <div class="flex w-full flex-wrap items-start gap-x-[100px] gap-y-5">
+                            <div class="flex w-full flex-wrap items-start gap-x-10 sm:gap-x-[100px] gap-y-5">
                                 <div class="flex flex-col items-start gap-[11px]">
                                     <div class="flex items-start gap-[7px]">
                                         <svg width="19" height="23" viewBox="0 0 19 23" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
@@ -262,14 +262,14 @@
                                             <label for="alasan-{{ $item['kode'] }}" class="text-[15px] font-medium text-[#464646]">Alasan penolakan (jika ditolak)</label>
                                         </div>
                                         <textarea id="alasan-{{ $item['kode'] }}" name="rejection_reason" rows="3" placeholder="Contoh: Foto tidak jelas, lokasi di luar wilayah..." class="w-full rounded-[15px] border-[0.5px] border-[#656565] px-[23px] py-[18px] text-[15px] font-medium text-[#464646] placeholder:text-[#A19E9E] focus:outline-none focus:ring-1 focus:ring-[#0047AB]"></textarea>
-                                        <div class="flex w-full items-center gap-[23px]">
-                                            <button type="submit" name="status" value="verified" class="flex items-center justify-center gap-[10px] rounded-[10px] bg-[#098A00] px-[91px] py-[6px] text-[15px] font-bold text-white">
+                                        <div class="flex w-full flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-[23px]">
+                                            <button type="submit" name="status" value="verified" class="flex flex-1 items-center justify-center gap-[10px] rounded-[10px] bg-[#098A00] px-6 py-[10px] sm:py-[6px] text-[15px] font-bold text-white">
                                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM16.59 7.58L10 14.17L7.41 11.59L6 13L10 17L18 9L16.59 7.58Z" fill="white"/>
                                                 </svg>
                                                 Verifikasi
                                             </button>
-                                            <button type="submit" name="status" value="rejected" class="flex w-[283px] items-center justify-center gap-[10px] rounded-[10px] bg-[#D83D3D] py-[6px] text-[15px] font-bold text-white">
+                                            <button type="submit" name="status" value="rejected" class="flex flex-1 items-center justify-center gap-[10px] rounded-[10px] bg-[#D83D3D] px-6 py-[10px] sm:py-[6px] text-[15px] font-bold text-white">
                                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M8.4 17L12 13.4L15.6 17L17 15.6L13.4 12L17 8.4L15.6 7L12 10.6L8.4 7L7 8.4L10.6 12L7 15.6L8.4 17ZM12 22C10.6167 22 9.31667 21.7373 8.1 21.212C6.88334 20.6867 5.825 19.9743 4.925 19.075C4.025 18.1757 3.31267 17.1173 2.788 15.9C2.26333 14.6827 2.00067 13.3827 2 12C1.99933 10.6173 2.262 9.31733 2.788 8.1C3.314 6.88267 4.02633 5.82433 4.925 4.925C5.82367 4.02567 6.882 3.31333 8.1 2.788C9.318 2.26267 10.618 2 12 2C13.382 2 14.682 2.26267 15.9 2.788C17.118 3.31333 18.1763 4.02567 19.075 4.925C19.9737 5.82433 20.6863 6.88267 21.213 8.1C21.7397 9.31733 22.002 10.6173 22 12C21.998 13.3827 21.7353 14.6827 21.212 15.9C20.6887 17.1173 19.9763 18.1757 19.075 19.075C18.1737 19.9743 17.1153 20.687 15.9 21.213C14.6847 21.739 13.3847 22.0013 12 22ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z" fill="white"/>
                                                 </svg>
@@ -335,11 +335,11 @@
                                                 <input type="file" id="foto-hasil-{{ $item['kode'] }}" name="foto_hasil" accept="image/jpeg,image/png" class="hidden" onchange="showFotoHasilName('{{ $item['kode'] }}', this)">
                                             </div>
 
-                                            <div class="flex w-full items-center gap-[23px]">
-                                                <button type="submit" formaction="{{ route('admin.laporan.catatan', $item['kode']) }}" class="flex items-center justify-center gap-[10px] rounded-[10px] border border-[#A19E9E] bg-white px-[83px] py-2 text-[15px] font-bold text-[#656565]">
+                                            <div class="flex w-full flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-[23px]">
+                                                <button type="submit" formaction="{{ route('admin.laporan.catatan', $item['kode']) }}" class="flex flex-1 items-center justify-center gap-[10px] rounded-[10px] border border-[#A19E9E] bg-white px-6 py-[10px] sm:py-2 text-[15px] font-bold text-[#656565]">
                                                     Simpan Catatan
                                                 </button>
-                                                <button type="submit" class="flex items-center justify-center gap-[10px] rounded-[10px] bg-[#098A00] px-[85px] py-[5px] text-[15px] font-bold text-white">
+                                                <button type="submit" class="flex flex-1 items-center justify-center gap-[10px] rounded-[10px] bg-[#098A00] px-6 py-[10px] sm:py-[5px] text-[15px] font-bold text-white">
                                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                         <path d="M12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM16.59 7.58L10 14.17L7.41 11.59L6 13L10 17L18 9L16.59 7.58Z" fill="white"/>
                                                     </svg>

@@ -175,11 +175,11 @@
                             </svg>
                         </div>
 
-                        <h3 class="text-2xl font-bold text-black text-center">
+                        <h3 class="text-2xl font-bold text-black">
                             Lapor
                         </h3>
 
-                        <p class="mt-4 text-base leading-relaxed text-slate-600 text-center">
+                        <p class="mt-4 text-base leading-relaxed text-slate-600">
                             Isi formulir pengaduan
                             dengan foto bukti.
                         </p>
