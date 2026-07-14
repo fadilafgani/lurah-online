@@ -11,8 +11,8 @@ $menus = [
 
         <!-- Logo -->
         <a href="{{ url('/')}}" class="flex items-center gap-2 sm:gap-3 group shrink-0">
-                <div class="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#0047AB] to-[#001D45]">
-                    <img src="{{ asset('images/logo.svg') }}" alt="Logo" class="w-6 h-6 sm:w-8 sm:h-8">
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-black shadow-sm">
+                    <img src="{{ asset('images/LurahOnline-logo.jpeg') }}" alt="Logo" class="w-6 h-6 sm:w-8 sm:h-8">
                 </div>
             <span class="text-lg sm:text-xl font-bold tracking-tight bg-gradient-to-r from-[#0047AB] to-[#001D45] bg-clip-text text-transparent">
                 LurahOnline
