@@ -50,9 +50,17 @@
                             Kembali ke Login
                         </a>
 
-                        <a href="{{ route('admin.forgot-password') }}" class="self-stretch text-[19px] font-medium text-center text-[#0047AB] hover:underline">
-                            Kirim Ulang Email
-                        </a>
+                        <form method="POST" action="{{ route('password.email') }}">
+                            @csrf
+
+                            <input type="hidden" name="email" value="{{ session('email') }}">
+
+                            <button
+                                type="submit"
+                                class="self-stretch text-[19px] font-medium text-center text-[#0047AB] hover:underline">
+                                Kirim Ulang Email
+                            </button>
+                        </form>
                     </div>
                 </div>
 
