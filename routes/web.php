@@ -6,6 +6,8 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\Admin\ComplaintController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -98,3 +100,19 @@ Route::get('/admin/lupa-kata-sandi', fn() => view('forgot-password'))->name('adm
 Route::get('/admin/reset-kata-sandi', fn() => view('reset-password'))->name('admin.reset-password');
 
 Route::get('/admin/periksa-email', fn() => view('check-email'))->name('admin.check-email');
+
+Route::get('/forgot-password', [ForgotPasswordController::class, 'create'])
+    ->name('password.request');
+
+Route::post('/forgot-password', [ForgotPasswordController::class, 'send'])
+    ->name('password.email');
+
+Route::get('/check-email', function () {
+    return view('admin.check-email');
+})->name('admin.check-email');
+
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])
+    ->name('password.reset');
+
+Route::post('/reset-password', [ResetPasswordController::class, 'store'])
+    ->name('password.update');
