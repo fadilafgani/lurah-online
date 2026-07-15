@@ -6,8 +6,8 @@
             <div class="flex items-center gap-6">
 
                 <a href="{{ url('/') }}" class="flex items-center gap-3">
-                    <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-black shadow-sm">
-                        <img src="{{ asset('images/LurahOnline-logo.jpeg') }}" alt="Logo" class="w-6 h-6 sm:w-8 sm:h-8">
+                    <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-transparent shadow-sm">
+                        <img src="{{ asset('images/LurahOnline-logo.png') }}" alt="Logo" class="w-6 h-6 sm:w-8 sm:h-8">
                     </div>
 
                     <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-[#0047AB] to-[#001D45] bg-clip-text text-transparent">
