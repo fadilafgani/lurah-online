@@ -23,7 +23,7 @@
                 <path d="M1495 192C1495 250.542 1421.35 298 1330.5 298C1239.65 298 1166 250.542 1166 192C1166 133.458 1239.65 86 1330.5 86C1421.35 86 1495 133.458 1495 192Z" fill="#00B4D8" fill-opacity="0.6"/>
             </svg>
 
-            <div class="relative z-10 w-full max-w-2xl mx-auto text-center">
+            <div class="relative z-10 w-full max-w-5xl mx-auto text-center">
                 <h1 class="text-5xl font-extrabold leading-[1.3] bg-gradient-to-r from-[#0047AB] to-[#153655] bg-clip-text text-transparent mb-3">
                     Lacak Pengaduan
                 </h1>
@@ -31,10 +31,10 @@
                 <p class="text-xl text-[#464646] mb-8">
                     Masukkan kode tiket Anda untuk melihat status terkini.
                 </p>
- 
+
                 {{-- FORM LACAK --}}
                 <form action="{{ route('lacak.cari') }}" method="GET" class="mt-8">
-                    <div class="flex items-center bg-white rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.12)] pl-8 pr-2 py-2 max-w-3xl mx-auto">
+                    <div class="flex items-center {{ request('kode') ? 'bg-[#EAF0FB]' : 'bg-white' }} rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.12)] pl-8 pr-2 py-2 max-w-4xl mx-auto transition-colors">
 
                         <svg class="text-[#F4B400] shrink-0" width="24" height="24"
                             viewBox="0 0 24 24" fill="none"
@@ -49,7 +49,7 @@
                             value="{{ old('kode', request('kode')) }}"
                             placeholder="Contoh: LO-12345-AB789"
                             autocomplete="off"
-                            class="flex-1 bg-transparent border-0 outline-none focus:ring-0 px-5 text-lg placeholder:text-gray-400"
+                            class="flex-1 bg-transparent border-0 outline-none focus:ring-0 px-5 text-lg placeholder:text-gray-400 {{ request('kode') ? 'font-semibold text-[#153655]' : '' }}"
                         />
 
                         <button
@@ -61,89 +61,56 @@
 
                     </div>
                 </form>
- 
+
                 {{-- HASIL TIKET DITEMUKAN --}}
                 @isset($tiket)
                 @php
-                    $steps = [
-                        ['key' => 'submitted', 'label' => 'Laporan Diajukan'],
-                        ['key' => 'verified', 'label' => 'Verifikasi'],
-                        ['key' => 'process', 'label' => 'Diproses'],
-                        ['key' => 'completed', 'label' => 'Selesai'],
+                    $statusMeta = [
+                        'submitted' => ['label' => 'Diajukan',     'desc' => 'Laporan Anda sudah diterima dan menunggu verifikasi.', 'dot' => 'bg-blue-500',    'pill' => 'bg-blue-50 text-blue-700'],
+                        'verified'  => ['label' => 'Diverifikasi', 'desc' => 'Laporan Anda sedang diverifikasi oleh petugas.',        'dot' => 'bg-blue-500',    'pill' => 'bg-blue-50 text-blue-700'],
+                        'process'   => ['label' => 'Diproses',     'desc' => 'Laporan Anda sedang diproses oleh unit terkait.',       'dot' => 'bg-amber-500',   'pill' => 'bg-amber-50 text-amber-700'],
+                        'completed' => ['label' => 'Selesai',      'desc' => 'Pengaduan telah selesai ditangani.',                    'dot' => 'bg-emerald-500', 'pill' => 'bg-emerald-50 text-emerald-700'],
+                        'rejected'  => ['label' => 'Ditolak',      'desc' => 'Mohon maaf, laporan Anda tidak dapat kami proses.',     'dot' => 'bg-rose-500',    'pill' => 'bg-rose-50 text-rose-700'],
                     ];
-                    $statusOrder = array_column($steps, 'key');
-                    $isRejected = $tiket->status === 'rejected';
-                    $currentIndex = array_search($tiket->status, $statusOrder);
-                    $currentIndex = $currentIndex === false ? 0 : $currentIndex;
-                    $progressPercent = ($currentIndex / (count($steps) - 1)) * 100;
-                    $activeGradient = $isRejected
-                        ? 'bg-gradient-to-r from-rose-600 to-rose-400'
-                        : 'bg-gradient-to-r from-[#0047AB] to-[#2E77BB]';
-                    $activeTextGradient = $isRejected
-                        ? 'bg-gradient-to-r from-rose-600 to-rose-400 bg-clip-text text-transparent'
-                        : 'bg-gradient-to-r from-[#0047AB] to-[#2E77BB] bg-clip-text text-transparent';
+                    $meta = $statusMeta[$tiket->status] ?? $statusMeta['submitted'];
                 @endphp
 
-                {{-- PROGRES LAPORAN --}}
-                <div class="mt-8 bg-white rounded-[20px] border-[0.5px] border-[#E5E5E5] shadow-[0_0_4px_rgba(0,0,0,0.25)] px-6 py-8 md:px-[50px] md:py-[41px] text-left">
-                    <h2 class="text-[22px] font-extrabold text-[#153655] mb-6">Progres Laporan</h2>
-
-                    <div class="relative flex items-start justify-between">
-                        <div class="absolute h-[6px] bg-[#E5E5E5] rounded-full" style="top:35px; left:12.5%; right:12.5%;"></div>
-                        <div class="absolute h-[6px] rounded-full {{ $activeGradient }}" style="top:35px; left:12.5%; width:calc(75% * {{ $progressPercent / 100 }});"></div>
-
-                        @foreach ($steps as $i => $step)
-                            @php $isActive = $i <= $currentIndex; @endphp
-                            <div class="relative z-10 flex flex-col items-center gap-[7px] w-1/4 px-1">
-                                <div class="w-[70px] h-[70px] rounded-full flex items-center justify-center {{ $isActive ? $activeGradient : 'bg-[#E5E5E5]' }}">
-                                    @if ($i === 0)
-                                        <svg width="30" height="30" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M39.375 13.1252L16.875 35.6252L6.5625 25.3127L9.20625 22.6689L16.875 30.3189L36.7313 10.4814L39.375 13.1252Z" fill="{{ $isActive ? '#FFFFFF' : '#656565' }}"/>
-                                        </svg>
-                                    @elseif ($i === 1)
-                                        <svg width="32" height="32" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M22.8125 26.4584L19.7917 23.4897C19.4097 23.1077 18.9327 22.9167 18.3604 22.9167C17.7882 22.9167 17.2931 23.1251 16.875 23.5417C16.4931 23.9237 16.3021 24.4098 16.3021 25.0001C16.3021 25.5904 16.4931 26.0765 16.875 26.4584L21.3542 30.9376C21.7709 31.3542 22.257 31.5626 22.8125 31.5626C23.3681 31.5626 23.8542 31.3542 24.2709 30.9376L33.125 22.0834C33.5417 21.6667 33.741 21.1806 33.7229 20.6251C33.7049 20.0695 33.5056 19.5834 33.125 19.1667C32.7084 18.7501 32.2139 18.5334 31.6417 18.5167C31.0695 18.5001 30.5743 18.6994 30.1563 19.1147L22.8125 26.4584ZM16.9792 45.3126L13.9584 40.2084L8.22919 38.9584C7.70835 38.8543 7.29169 38.5855 6.97919 38.1522C6.66669 37.7188 6.54516 37.2411 6.6146 36.7188L7.18752 30.8334L3.28127 26.3542C2.93405 25.9723 2.76044 25.5209 2.76044 25.0001C2.76044 24.4792 2.93405 24.0279 3.28127 23.6459L7.18752 19.1667L6.6146 13.2813C6.54516 12.7605 6.66669 12.2827 6.97919 11.848C7.29169 11.4133 7.70835 11.1445 8.22919 11.0417L13.9584 9.79175L16.9792 4.68758C17.257 4.23619 17.6389 3.93203 18.125 3.77508C18.6111 3.61814 19.0972 3.64453 19.5834 3.85425L25 6.14592L30.4167 3.85425C30.9028 3.64592 31.3889 3.61953 31.875 3.77508C32.3611 3.93064 32.7431 4.2348 33.0209 4.68758L36.0417 9.79175L41.7708 11.0417C42.2917 11.1459 42.7084 11.4154 43.0209 11.8501C43.3334 12.2848 43.4549 12.7619 43.3854 13.2813L42.8125 19.1667L46.7188 23.6459C47.066 24.0279 47.2396 24.4792 47.2396 25.0001C47.2396 25.5209 47.066 25.9723 46.7188 26.3542L42.8125 30.8334L43.3854 36.7188C43.4549 37.2397 43.3334 37.7174 43.0209 38.1522C42.7084 38.5869 42.2917 38.8556 41.7708 38.9584L36.0417 40.2084L33.0209 45.3126C32.7431 45.764 32.3611 46.0681 31.875 46.2251C31.3889 46.382 30.9028 46.3556 30.4167 46.1459L25 43.8542L19.5834 46.1459C19.0972 46.3542 18.6111 46.3806 18.125 46.2251C17.6389 46.0695 17.257 45.7654 16.9792 45.3126ZM19.6875 41.5626L25 39.2709L30.4167 41.5626L33.3334 36.5626L39.0625 35.2084L38.5417 29.3751L42.3959 25.0001L38.5417 20.5209L39.0625 14.6876L33.3334 13.4376L30.3125 8.43758L25 10.7292L19.5834 8.43758L16.6667 13.4376L10.9375 14.6876L11.4584 20.5209L7.60419 25.0001L11.4584 29.3751L10.9375 35.3126L16.6667 36.5626L19.6875 41.5626Z" fill="{{ $isActive ? '#FFFFFF' : '#656565' }}"/>
-                                        </svg>
-                                    @elseif ($i === 2)
-                                        <svg width="30" height="30" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M16.1719 15.9375H7.73438C7.23709 15.9375 6.76018 15.74 6.40855 15.3883C6.05692 15.0367 5.85938 14.5598 5.85938 14.0625V5.625C5.85938 5.12772 6.05692 4.65081 6.40855 4.29917C6.76018 3.94754 7.23709 3.75 7.73438 3.75C8.23166 3.75 8.70857 3.94754 9.0602 4.29917C9.41183 4.65081 9.60938 5.12772 9.60938 5.625V12.1875H16.1719C16.6692 12.1875 17.1461 12.385 17.4977 12.7367C17.8493 13.0883 18.0469 13.5652 18.0469 14.0625C18.0469 14.5598 17.8493 15.0367 17.4977 15.3883C17.1461 15.74 16.6692 15.9375 16.1719 15.9375Z" fill="{{ $isActive ? '#FFFFFF' : '#656565' }}"/>
-                                            <path d="M39.375 24.3749C38.8777 24.3749 38.4008 24.1773 38.0492 23.8257C37.6975 23.4741 37.5 22.9972 37.5 22.4999C37.5014 19.199 36.4133 15.99 34.4046 13.3707C32.3958 10.7514 29.5787 8.86843 26.3903 8.01387C23.202 7.1593 19.8208 7.38097 16.7713 8.64447C13.7218 9.90798 11.1746 12.1427 9.525 15.0018C9.27586 15.4322 8.86596 15.746 8.38545 15.8741C7.90495 16.0023 7.39321 15.9343 6.96282 15.6852C6.53242 15.4361 6.21862 15.0262 6.09045 14.5456C5.96228 14.0651 6.03024 13.5534 6.27938 13.123C8.34235 9.54971 11.5269 6.7571 15.339 5.17842C19.1511 3.59975 23.3777 3.32327 27.363 4.39186C31.3482 5.46046 34.8695 7.8144 37.3804 11.0885C39.8913 14.3626 41.2515 18.3738 41.25 22.4999C41.25 22.9972 41.0525 23.4741 40.7008 23.8257C40.3492 24.1773 39.8723 24.3749 39.375 24.3749ZM37.2656 41.2499C36.7683 41.2499 36.2914 41.0523 35.9398 40.7007C35.5882 40.3491 35.3906 39.8722 35.3906 39.3749V32.8124H28.8281C28.3308 32.8124 27.8539 32.6148 27.5023 32.2632C27.1507 31.9116 26.9531 31.4347 26.9531 30.9374C26.9531 30.4401 27.1507 29.9632 27.5023 29.6116C27.8539 29.2599 28.3308 29.0624 28.8281 29.0624H37.2656C37.7629 29.0624 38.2398 29.2599 38.5915 29.6116C38.9431 29.9632 39.1406 30.4401 39.1406 30.9374V39.3749C39.1406 39.8722 38.9431 40.3491 38.5915 40.7007C38.2398 41.0523 37.7629 41.2499 37.2656 41.2499Z" fill="{{ $isActive ? '#FFFFFF' : '#656565' }}"/>
-                                            <path d="M22.5 41.25C17.5287 41.245 12.7625 39.268 9.24723 35.7528C5.732 32.2375 3.75496 27.4713 3.75 22.5C3.75 22.0027 3.94754 21.5258 4.29917 21.1742C4.65081 20.8225 5.12772 20.625 5.625 20.625C6.12228 20.625 6.59919 20.8225 6.95083 21.1742C7.30246 21.5258 7.5 22.0027 7.5 22.5C7.49857 25.8009 8.58667 29.0099 10.5954 31.6292C12.6042 34.2484 15.4214 36.1315 18.6097 36.986C21.798 37.8406 25.1793 37.6189 28.2287 36.3554C31.2782 35.0919 33.8254 32.8572 35.475 29.9981C35.5984 29.785 35.7625 29.5983 35.958 29.4486C36.1535 29.2989 36.3766 29.1892 36.6145 29.1258C36.8525 29.0623 37.1006 29.0463 37.3447 29.0787C37.5888 29.1111 37.8241 29.1913 38.0372 29.3147C38.2503 29.438 38.437 29.6022 38.5867 29.7977C38.7364 29.9932 38.8461 30.2163 38.9095 30.4542C38.973 30.6922 38.989 30.9402 38.9566 31.1843C38.9242 31.4284 38.844 31.6638 38.7206 31.8769C37.0719 34.7205 34.7066 37.0824 31.8605 38.727C29.0145 40.3716 25.787 41.2415 22.5 41.25Z" fill="{{ $isActive ? '#FFFFFF' : '#656565' }}"/>
-                                        </svg>
-                                    @else
-                                        <svg width="32" height="32" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M25 4.1665C13.4942 4.1665 4.16675 13.4939 4.16675 24.9998C4.16675 36.5057 13.4942 45.8332 25 45.8332C36.5059 45.8332 45.8335 36.5057 45.8335 24.9998C45.8335 13.4939 36.506 4.1665 25 4.1665ZM32.8454 17.5565L35.7914 20.5025L22.9167 33.4311L15.1938 25.7081L18.1397 22.7621L22.9167 27.5392L32.8454 17.5565Z" fill="{{ $isActive ? '#FFFFFF' : '#656565' }}"/>
-                                        </svg>
-                                    @endif
-                                </div>
-                                <span class="text-sm md:text-[20px] font-semibold text-center {{ $isActive ? $activeTextGradient : 'text-[#656565]' }}">{{ $step['label'] }}</span>
-                            </div>
-                        @endforeach
+                {{-- RINGKASAN TIKET --}}
+                <div class="mt-8 bg-white rounded-[20px] border-[0.5px] border-[#E5E5E5] shadow-[0_0_4px_rgba(0,0,0,0.25)] px-6 py-7 md:px-[50px] md:py-[34px] text-left">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <p class="text-[#656565] text-base font-medium font-['Cascadia_Code']">{{ $tiket->ticket_code }}</p>
+                            <p class="text-[#153655] text-[26px] font-extrabold mt-1">{{ $tiket->title }}</p>
+                        </div>
+                        <span class="shrink-0 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold {{ $meta['pill'] }}">
+                            <span class="w-2 h-2 rounded-full {{ $meta['dot'] }}"></span>
+                            {{ $meta['label'] }}
+                        </span>
                     </div>
+                    <p class="text-[#656565] text-lg mt-3">{{ $meta['desc'] }}</p>
                 </div>
 
                 {{-- DETAIL LAPORAN --}}
-                <div class="mt-8 bg-white rounded-[20px] border-[0.5px] border-[#E5E5E5] shadow-[0_0_4px_rgba(0,0,0,0.25)] px-6 py-8 md:px-[54px] md:py-[46px] text-left">
-                    <h2 class="text-[22px] font-extrabold text-[#153655] mb-6">Detail Laporan</h2>
-
+                <div class="mt-8 bg-white rounded-[20px] border-[0.5px] border-[#E5E5E5] shadow-[0_0_4px_rgba(0,0,0,0.25)] px-6 py-8 md:px-[50px] md:py-[41px] text-left">
                     <div class="flex flex-col md:flex-row gap-10">
-                        <div class="flex-1 flex flex-col items-center gap-5">
-                            <div class="text-center">
-                                <p class="font-['Cascadia_Code'] text-[#0047AB] font-bold text-[25px]">#{{ $tiket->ticket_code }}</p>
-                                <p class="text-[#0047AB] font-bold text-[25px]">{{ $tiket->title }}</p>
-                            </div>
-
-                            @if($tiket->photo)
-                                <img src="{{ asset('storage/' . $tiket->photo) }}" alt="Foto laporan" class="w-full max-w-[424px] h-[234px] object-cover rounded-[20px]">
-                            @endif
-
-                            <div class="flex flex-col items-center gap-1 text-center">
-                                <p class="text-[#656565] text-[20px] font-medium">Deskripsi</p>
-                                <p class="text-[#464646] text-[20px] font-bold">{{ $tiket->description }}</p>
-                            </div>
+                        @if($tiket->photo)
+                        <div class="md:w-[45%] shrink-0">
+                            <img src="{{ asset('storage/' . $tiket->photo) }}" alt="Foto laporan" class="w-full h-[234px] object-cover rounded-[20px]">
                         </div>
+                        @endif
 
-                        <div class="flex flex-col gap-5 md:w-[220px] md:pt-[3px]">
+                        <div class="flex-1 flex flex-col gap-5">
+                            <div class="flex items-start gap-[7px]">
+                                <svg class="shrink-0 mt-1" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M1.72 5.79822V5.80179C1.62813 6.44165 1.5992 7.07529 1.5769 7.71054C1.51256 9.30525 1.52161 11.1815 1.72939 12.5905C1.74707 12.6746 1.79135 12.7513 1.85589 12.8113L10.2427 21.1981C10.3439 21.2993 10.4808 21.3562 10.6236 21.3562C10.7663 21.3562 10.9032 21.2993 11.0044 21.1981L17.1332 15.0693C17.2344 14.9681 17.2913 14.8312 17.2913 14.6884C17.2913 14.5457 17.2344 14.4088 17.1332 14.3076L8.75652 5.93097C8.6963 5.86622 8.6169 5.82284 8.53002 5.80714C7.13437 5.60019 5.24773 5.5917 3.67014 5.65432C3.01596 5.6791 2.35935 5.72046 1.7 5.77916L1.72 5.79822ZM0.75 4.83488C0.646 4.9328 0.216 9.7448 0.663 12.7203C0.71075 13.0345 0.868198 13.3212 1.10783 13.5478L9.53583 21.9758C9.83598 22.2758 10.2437 22.4444 10.6689 22.4444C11.0942 22.4444 11.5018 22.2758 11.802 21.9758L17.9308 15.847C18.2309 15.5469 18.3994 15.1392 18.3994 14.714C18.3994 14.2888 18.2309 13.8811 17.9308 13.581L9.50276 5.15291C9.27817 4.9241 8.98895 4.76863 8.67352 4.70694C5.68276 4.26178 0.849 4.68584 0.75 4.79218" fill="#0047AB"/>
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M6.1416 10.4176C6.09024 10.4678 6.04943 10.5278 6.02159 10.594C5.99376 10.6602 5.97946 10.7313 5.97951 10.8032C5.97957 10.875 5.99399 10.9461 6.02194 11.0122C6.04988 11.0783 6.09079 11.1382 6.14224 11.1884C6.19369 11.2385 6.25464 11.278 6.32148 11.3044C6.38832 11.3308 6.45972 11.3437 6.53157 11.3423C6.60342 11.341 6.6743 11.3255 6.74011 11.2967C6.80591 11.2678 6.86534 11.2261 6.91491 11.174C7.01394 11.0715 7.06874 10.9345 7.06749 10.7923C7.06624 10.6501 7.00905 10.5141 6.90824 10.4133C6.80744 10.3125 6.67144 10.2553 6.52923 10.254C6.38702 10.2528 6.24999 10.3076 6.1476 10.4066" fill="#0047AB"/>
+                                </svg>
+                                <div class="flex flex-col gap-1">
+                                    <p class="text-[#656565] text-[20px] font-medium">Kategori</p>
+                                    <p class="text-[#464646] text-[20px] font-bold">{{ $tiket->category }}</p>
+                                </div>
+                            </div>
+
                             <div class="flex items-start gap-[7px]">
                                 <svg class="shrink-0 mt-1" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M11 2.2002C9.8331 2.2002 8.71394 2.66377 7.88878 3.48893C7.06362 4.31409 6.60005 5.43324 6.60005 6.6002C6.60005 7.76715 7.06362 8.88631 7.88878 9.71147C8.71394 10.5366 9.8331 11.0002 11 11.0002C12.167 11.0002 13.2862 10.5366 14.1113 9.71147C14.9365 8.88631 15.4 7.76715 15.4 6.6002C15.4 5.43324 14.9365 4.31409 14.1113 3.48893C13.2862 2.66377 12.167 2.2002 11 2.2002ZM7.70005 6.6002C7.70005 5.72498 8.04773 4.88561 8.6666 4.26674C9.28547 3.64787 10.1248 3.3002 11 3.3002C11.8753 3.3002 12.7146 3.64787 13.3335 4.26674C13.9524 4.88561 14.3 5.72498 14.3 6.6002C14.3 7.47541 13.9524 8.31478 13.3335 8.93365C12.7146 9.55252 11.8753 9.9002 11 9.9002C10.1248 9.9002 9.28547 9.55252 8.6666 8.93365C8.04773 8.31478 7.70005 7.47541 7.70005 6.6002ZM5.50995 12.1002C5.22021 12.0989 4.93306 12.1548 4.665 12.2648C4.39694 12.3748 4.15325 12.5366 3.94791 12.741C3.74257 12.9455 3.57963 13.1884 3.46846 13.456C3.35728 13.7236 3.30005 14.0105 3.30005 14.3002C3.30005 16.1603 4.21635 17.5628 5.64855 18.4769C7.05875 19.3756 8.95955 19.8002 11 19.8002C13.0405 19.8002 14.9413 19.3756 16.3515 18.4769C17.7837 17.5639 18.7 16.1592 18.7 14.3002C18.7 13.7167 18.4683 13.1571 18.0557 12.7446C17.6431 12.332 17.0835 12.1002 16.5 12.1002H5.50995ZM4.40005 14.3002C4.40005 13.6919 4.89285 13.2002 5.50995 13.2002H16.5C16.7918 13.2002 17.0716 13.3161 17.2779 13.5224C17.4842 13.7287 17.6 14.0085 17.6 14.3002C17.6 15.7401 16.9158 16.8126 15.7597 17.5485C14.5827 18.2998 12.9085 18.7002 11 18.7002C9.09155 18.7002 7.41735 18.2998 6.24035 17.5485C5.08535 16.8115 4.40005 15.7412 4.40005 14.3002Z" fill="#0047AB"/>
@@ -174,18 +141,12 @@
                                     <p class="text-[#464646] text-[20px] font-bold">{{ \Carbon\Carbon::parse($tiket->created_at)->translatedFormat('d M Y, H.i') }}</p>
                                 </div>
                             </div>
-
-                            <div class="flex items-start gap-[7px]">
-                                <svg class="shrink-0 mt-1" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M1.72 5.79822V5.80179C1.62813 6.44165 1.5992 7.07529 1.5769 7.71054C1.51256 9.30525 1.52161 11.1815 1.72939 12.5905C1.74707 12.6746 1.79135 12.7513 1.85589 12.8113L10.2427 21.1981C10.3439 21.2993 10.4808 21.3562 10.6236 21.3562C10.7663 21.3562 10.9032 21.2993 11.0044 21.1981L17.1332 15.0693C17.2344 14.9681 17.2913 14.8312 17.2913 14.6884C17.2913 14.5457 17.2344 14.4088 17.1332 14.3076L8.75652 5.93097C8.6963 5.86622 8.6169 5.82284 8.53002 5.80714C7.13437 5.60019 5.24773 5.5917 3.67014 5.65432C3.01596 5.6791 2.35935 5.72046 1.7 5.77916L1.72 5.79822ZM0.75 4.83488C0.646 4.9328 0.216 9.7448 0.663 12.7203C0.71075 13.0345 0.868198 13.3212 1.10783 13.5478L9.53583 21.9758C9.83598 22.2758 10.2437 22.4444 10.6689 22.4444C11.0942 22.4444 11.5018 22.2758 11.802 21.9758L17.9308 15.847C18.2309 15.5469 18.3994 15.1392 18.3994 14.714C18.3994 14.2888 18.2309 13.8811 17.9308 13.581L9.50276 5.15291C9.27817 4.9241 8.98895 4.76863 8.67352 4.70694C5.68276 4.26178 0.849 4.68584 0.75 4.79218" fill="#0047AB"/>
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M6.1416 10.4176C6.09024 10.4678 6.04943 10.5278 6.02159 10.594C5.99376 10.6602 5.97946 10.7313 5.97951 10.8032C5.97957 10.875 5.99399 10.9461 6.02194 11.0122C6.04988 11.0783 6.09079 11.1382 6.14224 11.1884C6.19369 11.2385 6.25464 11.278 6.32148 11.3044C6.38832 11.3308 6.45972 11.3437 6.53157 11.3423C6.60342 11.341 6.6743 11.3255 6.74011 11.2967C6.80591 11.2678 6.86534 11.2261 6.91491 11.174C7.01394 11.0715 7.06874 10.9345 7.06749 10.7923C7.06624 10.6501 7.00905 10.5141 6.90824 10.4133C6.80744 10.3125 6.67144 10.2553 6.52923 10.254C6.38702 10.2528 6.24999 10.3076 6.1476 10.4066" fill="#0047AB"/>
-                                </svg>
-                                <div class="flex flex-col gap-1">
-                                    <p class="text-[#656565] text-[20px] font-medium">Kategori</p>
-                                    <p class="text-[#464646] text-[20px] font-bold">{{ $tiket->category }}</p>
-                                </div>
-                            </div>
                         </div>
+                    </div>
+
+                    <div class="w-full flex flex-col items-start gap-1 mt-8 text-left">
+                        <p class="text-[#656565] text-[20px] font-medium text-left">Deskripsi</p>
+                        <p class="text-[#464646] text-[20px] font-bold text-left">{{ $tiket->description }}</p>
                     </div>
                 </div>
 
@@ -205,6 +166,15 @@
                                 <p class="text-[#464646] text-[20px] font-bold">{{ $tiket->handling_note }}</p>
                             </div>
                             @endif
+
+                            {{-- Ringkasan/tanggapan akhir dari petugas.
+                                 Ganti $tiket->final_note dengan nama kolom Anda jika berbeda. --}}
+                            @if($tiket->final_note ?? $tiket->handling_note ?? false)
+                            <div class="rounded-[16px] bg-[#EAF6F2] border border-[#CFEBE1] px-5 py-4">
+                                <p class="text-[#0F766E] text-base font-bold mb-1">Tanggapan Akhir</p>
+                                <p class="text-[#464646] text-base">{{ $tiket->final_note ?? $tiket->handling_note }}</p>
+                            </div>
+                            @endif
                         </div>
                     </div>
 
@@ -213,21 +183,12 @@
                     <div class="flex-1 bg-white rounded-[20px] border-[0.5px] border-[#E5E5E5] shadow-[0_0_4px_rgba(0,0,0,0.25)] px-6 py-8 md:px-9 md:py-9 text-left">
                         <h2 class="text-[22px] font-extrabold text-[#153655] mb-4">Penilaian Anda</h2>
 
-                        <div x-data="{ rating: 0, hovered: 0, comment: '', submitted: false }">
-                            <template x-if="submitted">
-                                <div>
-                                    <div class="flex items-center gap-[6px] mb-3">
-                                        <template x-for="i in 5" :key="i">
-                                            <svg class="w-[36px] h-[36px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.62L12 2L9.19 8.62L2 9.24L7.46 13.97L5.82 21L12 17.27Z" :fill="i <= rating ? '#FFC400' : '#E5E5E5'"/>
-                                            </svg>
-                                        </template>
-                                    </div>
-                                    <p class="text-[#464646] text-[18px] font-medium" x-show="comment.trim() !== ''" x-text="comment"></p>
-                                    <p class="text-[#656565] text-[16px] font-medium mt-2">Terima kasih atas penilaian Anda.</p>
-                                </div>
-                            </template>
-                            <div class="flex flex-col gap-4" x-show="!submitted">
+                        <div x-data="{
+                                rating: {{ (int) ($tiket->rating ?? 0) }},
+                                hovered: 0,
+                                comment: @js($tiket->rating_comment ?? ''),
+                             }">
+                            <div class="flex flex-col gap-4">
                                 <div class="flex items-center gap-[6px]">
                                     @for ($i = 1; $i <= 5; $i++)
                                     <button
@@ -250,15 +211,40 @@
                                     placeholder="Tulis komentar Anda (Opsional)"
                                     class="w-full rounded-[20px] border-[0.5px] border-[#A19E9E] bg-[#F9F9F9] px-[22px] py-[14px] text-[18px] text-[#464646] placeholder:text-[#A19E9E] outline-none resize-none"
                                 ></textarea>
-                                <button
-                                    type="button"
-                                    @click="submitted = true"
-                                    :disabled="rating === 0 && comment.trim() === ''"
-                                    :class="(rating === 0 && comment.trim() === '') ? 'opacity-50 cursor-not-allowed' : ''"
-                                    class="self-start bg-gradient-to-r from-[#0047AB] to-[#153655] text-white font-semibold text-[18px] rounded-[20px] px-[40px] py-[10px] shadow-[2px_2px_4px_rgba(0,0,0,0.25)]"
-                                >
-                                    Kirim
-                                </button>
+
+                                <div class="flex flex-col gap-2">
+                                    <div class="flex items-center gap-3">
+                                        <form action="{{ Route::has('lacak.nilai') ? route('lacak.nilai', $tiket->ticket_code) : '#' }}" method="POST" x-bind:data-rating="rating">
+                                            @csrf
+                                            <input type="hidden" name="rating" :value="rating">
+                                            <input type="hidden" name="comment" :value="comment">
+                                            <button
+                                                type="submit"
+                                                :disabled="rating === 0"
+                                                :class="rating === 0 ? 'opacity-50 cursor-not-allowed' : ''"
+                                                class="bg-gradient-to-r from-[#0047AB] to-[#153655] text-white font-semibold text-[18px] rounded-[20px] px-[32px] py-[10px] shadow-[2px_2px_4px_rgba(0,0,0,0.25)]"
+                                            >
+                                                Perbarui Penilaian
+                                            </button>
+                                        </form>
+
+                                        {{-- Sesuaikan action route ini dengan endpoint "buka kembali" tiket Anda --}}
+                                        <form action="{{ Route::has('lacak.buka-kembali') ? route('lacak.buka-kembali', $tiket->ticket_code) : '#' }}" method="POST">
+                                            @csrf
+                                            <button
+                                                type="submit"
+                                                class="flex items-center gap-2 border border-[#A19E9E] text-[#464646] font-semibold text-[18px] rounded-[20px] px-[24px] py-[10px] hover:bg-[#F5F5F5] transition"
+                                            >
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M1 4v6h6"/>
+                                                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                                                </svg>
+                                                Buka Kembali
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <p x-show="rating === 0" class="text-[#A19E9E] text-sm">Pilih bintang dahulu sebelum menyimpan penilaian.</p>
+                                </div>
                             </div>
                         </div>
                     </div>

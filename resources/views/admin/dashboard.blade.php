@@ -356,7 +356,24 @@
                                         <p class="mt-[5px] text-[15px] font-medium text-[#464646]">{{ $item['tanggapan'] ?: 'Belum ada tanggapan.' }}</p>
                                     </div>
 
-                                    <p class="text-[15px] font-medium text-[#656565]">Belum ada penilaian dari warga.</p>
+                                    @if ($item['rating'] ?? null)
+                                        <div class="w-full rounded-[20px] border-[0.5px] border-[#F4B400] bg-[#FFF8E1] px-[30px] py-[22px]">
+                                            <p class="text-[15px] font-bold text-[#8A6D00]">Penilaian dari Warga</p>
+                                            <div class="mt-2 flex items-center gap-1">
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.62L12 2L9.19 8.62L2 9.24L7.46 13.97L5.82 21L12 17.27Z" fill="{{ $i <= (int) $item['rating'] ? '#FFC400' : '#E5E5E5' }}"/>
+                                                    </svg>
+                                                @endfor
+                                                <span class="ml-1 text-[15px] font-bold text-[#464646]">{{ $item['rating'] }}/5</span>
+                                            </div>
+                                            @if ($item['rating_comment'] ?? null)
+                                                <p class="mt-2 text-[15px] font-medium text-[#464646]">{{ $item['rating_comment'] }}</p>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <p class="text-[15px] font-medium text-[#656565]">Belum ada penilaian dari warga.</p>
+                                    @endif
 
                                     <div class="flex w-full flex-wrap items-center justify-between gap-5 rounded-[20px] border-[0.5px] border-[#D83D3D] bg-[#FFE4E4] px-[30px] py-[22px]">
                                         <div class="flex flex-col items-start gap-[5px]">
