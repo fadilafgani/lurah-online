@@ -175,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     `).join('');
                 }
             })
-            .catch(err => console.error("Error fetching notifications", err));
+            .catch(err => console.error("Gagal mengambil notifikasi", err));
     }
 
     window.markAsRead = function(kode) {

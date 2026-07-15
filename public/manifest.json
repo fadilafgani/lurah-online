@@ -1,0 +1,22 @@
+{
+  "name": "LurahOnline",
+  "short_name": "LurahOnline",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#153655",
+  "theme_color": "#0047AB",
+  "icons": [
+    {
+      "src": "/images/LurahOnline-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/LurahOnline-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

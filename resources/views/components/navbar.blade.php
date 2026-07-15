@@ -45,7 +45,10 @@ $menus = [
             </ul>
         </div>
 
-        <div class="hidden md:block shrink-0">
+        <div class="hidden md:block shrink-0 flex items-center gap-2">
+            <button id="pwa-install-btn" class="hidden rounded-lg bg-[#0047AB] px-6 py-2 text-sm font-semibold text-white hover:bg-[#003780] transition-all shadow-sm">
+                Pasang Aplikasi
+            </button>
             <a href="{{ url('/admin')}}" class="rounded-lg border border-slate-300 px-6 py-2 text-sm font-semibold text-[#464646] hover:bg-slate-100 transition-all shadow-sm">
                 Admin
             </a>
@@ -89,6 +92,9 @@ $menus = [
             Laporan Publik
         </a>
 
+        <button id="pwa-install-btn-mobile" class="hidden w-full mt-3 px-5 py-2 text-center rounded-[10px] bg-[#0047AB] text-white text-[18px] font-semibold">
+            Pasang Aplikasi
+        </button>
         <a href="{{ url('/admin') }}"
             class="block mt-3 px-5 py-2 text-center rounded-[10px] border border-[#A19E9E] text-[#464646] text-[18px] font-semibold">
             Admin
@@ -109,5 +115,31 @@ document.addEventListener("DOMContentLoaded", function () {
         iconOpen.classList.toggle("hidden");
         iconClose.classList.toggle("hidden");
     });
+
+    // PWA Install Prompt Logic
+    let deferredPrompt;
+    const installBtn = document.getElementById('pwa-install-btn');
+    const installBtnMobile = document.getElementById('pwa-install-btn-mobile');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn?.classList.remove('hidden');
+        installBtnMobile?.classList.remove('hidden');
+    });
+
+    const handleInstall = async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            deferredPrompt = null;
+            installBtn?.classList.add('hidden');
+            installBtnMobile?.classList.add('hidden');
+        }
+    };
+
+    installBtn?.addEventListener('click', handleInstall);
+    installBtnMobile?.addEventListener('click', handleInstall);
 });
 </script>

@@ -6,6 +6,7 @@
     <title>Laporan Publik – LurahOnline</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="manifest" href="/manifest.json">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
