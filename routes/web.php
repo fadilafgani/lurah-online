@@ -78,6 +78,18 @@ Route::get('/admin', fn() => view('login'))->name('admin.login');
 Route::get('/admin/dashboard', [DashboardController::class, 'index'])
     ->name('admin.dashboard');
 
+Route::get('/admin/api/notifications', function () {
+    $items = \App\Models\Complaint::where('status', 'submitted')->latest()->take(5)->get();
+    return response()->json([
+        'count' => $items->count(),
+        'items' => $items->map(fn($i) => [
+            'ticket_code' => $i->ticket_code,
+            'title' => $i->title,
+            'time' => optional($i->created_at)->diffForHumans() ?? '-'
+        ])
+    ]);
+})->name('admin.api.notifications');
+
 Route::get('/admin/laporan',
     [ComplaintController::class,'index'])
     ->name('admin.laporan');
