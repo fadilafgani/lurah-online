@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\ComplaintController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\LacakController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -63,6 +64,12 @@ Route::get('/lacak/cari', function (Request $request) {
 
     return view('lacak', compact('tiket'));
 })->name('lacak.cari');
+
+Route::post('/lacak/{ticket_code}/nilai', [LacakController::class, 'nilai'])
+    ->name('lacak.nilai');
+
+Route::post('/lacak/{ticket_code}/buka-kembali', [LacakController::class, 'bukaKembali'])
+    ->name('lacak.buka-kembali');
 
 Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
 
