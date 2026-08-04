@@ -90,6 +90,16 @@ Route::get('/admin/api/notifications', function () {
     ]);
 })->name('admin.api.notifications');
 
+Route::get('/admin/notifikasi', function (\Illuminate\Http\Request $request) {
+    $statusFilter = $request->get('filter', 'all');
+    $query = \App\Models\Complaint::latest();
+    if ($statusFilter !== 'all') {
+        $query->where('status', $statusFilter);
+    }
+    $notifikasiList = $query->paginate(10)->withQueryString();
+    return view('admin.notifikasi', compact('notifikasiList', 'statusFilter'));
+})->name('admin.notifikasi');
+
 Route::get('/admin/laporan',
     [ComplaintController::class,'index'])
     ->name('admin.laporan');

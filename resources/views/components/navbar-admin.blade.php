@@ -56,6 +56,9 @@
                     <div id="notification-list" class="max-h-60 overflow-y-auto divide-y divide-slate-100">
                         <p class="px-4 py-3 text-center text-slate-400 text-xs">Memuat...</p>
                     </div>
+                    <a href="{{ route('admin.notifikasi') }}" class="block px-4 py-2.5 bg-slate-50 text-center text-xs font-bold text-[#0047AB] hover:bg-slate-100 transition-colors border-t border-slate-100">
+                        Lihat Semua Notifikasi →
+                    </a>
                 </div>
             </div>
 
