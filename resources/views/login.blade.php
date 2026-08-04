@@ -67,7 +67,7 @@
 
                         <div class="flex items-center justify-between">
                             <label class="flex items-center gap-[10px] cursor-pointer">
-                                <input type="checkbox" name="remember" class="h-5 w-5 rounded-[5px] border border-[#A19E9E] text-[#0047AB] focus:ring-0">
+                                <input type="checkbox" id="remember" name="remember" class="h-5 w-5 rounded-[5px] border border-[#A19E9E] text-[#0047AB] focus:ring-0">
                                 <span class="text-[19px] font-medium text-[#464646]">Ingat Saya</span>
                             </label>
                             <a href="{{ route('admin.forgot-password') }}" class="text-[19px] font-medium text-[#0047AB] hover:underline">Lupa Kata Sandi?</a>
@@ -87,13 +87,28 @@
         </main>
 
         <script>
-            document.getElementById('toggle-password').addEventListener('click', function () {
+            document.addEventListener('DOMContentLoaded', function () {
+                const savedEmail = localStorage.getItem('remembered_email');
+                const rememberCheckbox = document.getElementById('remember');
+                const emailInput = document.getElementById('email');
+
+                if (savedEmail && emailInput) {
+                    emailInput.value = savedEmail;
+                    if (rememberCheckbox) rememberCheckbox.checked = true;
+                }
+            });
+
+            document.getElementById('toggle-password')?.addEventListener('click', function () {
                 const input = document.getElementById('password');
                 input.type = input.type === 'password' ? 'text' : 'password';
             });
 
-            document.getElementById('login-form').addEventListener('submit', async function (e) {
+            document.getElementById('login-form')?.addEventListener('submit', async function (e) {
                 e.preventDefault();
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const remember = document.getElementById('remember')?.checked;
 
                 const response = await fetch('/api/admin/login', {
                     method: 'POST',
@@ -101,17 +116,29 @@
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
                     },
-                    body: JSON.stringify({
-                        email: document.getElementById('email').value,
-                        password: document.getElementById('password').value,
-                    }),
+                    body: JSON.stringify({ email, password }),
                 });
 
                 const data = await response.json();
 
                 if (!response.ok) {
-                    alert(data.message ?? 'Email atau password salah');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal Masuk',
+                            text: data.message ?? 'Email atau password salah',
+                            confirmButtonColor: '#0047AB'
+                        });
+                    } else {
+                        alert(data.message ?? 'Email atau password salah');
+                    }
                     return;
+                }
+
+                if (remember) {
+                    localStorage.setItem('remembered_email', email);
+                } else {
+                    localStorage.removeItem('remembered_email');
                 }
 
                 localStorage.setItem('admin_token', data.token);
