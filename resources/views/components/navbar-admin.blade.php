@@ -60,7 +60,7 @@
             </div>
 
             <button type="button" id="admin-logout-btn"
-                class="whitespace-nowrap rounded-[10px] border border-[#A19E9E] px-3 py-1.5 text-sm sm:px-4 sm:text-base lg:px-[23px] lg:py-[8px] lg:text-[20px] font-semibold text-[#464646] hover:bg-slate-50 transition shrink-0">
+                class="whitespace-nowrap rounded-[10px] bg-[#D83D3D] px-3 py-1.5 text-sm sm:px-4 sm:text-base lg:px-[23px] lg:py-[8px] lg:text-[20px] font-semibold text-white hover:bg-red-700 transition shrink-0 shadow-sm">
                 Keluar
             </button>
 
