@@ -11,32 +11,46 @@
             </span>
         </a>
 
+@php
+    $adminNavs = [
+        [
+            'route' => 'admin.dashboard',
+            'label' => 'Dashboard',
+            'active' => Request::routeIs('admin.dashboard'),
+            'icon' => '<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>'
+        ],
+        [
+            'route' => 'admin.laporan',
+            'label' => 'Laporan',
+            'active' => Request::routeIs('admin.laporan'),
+            'icon' => '<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>'
+        ],
+        [
+            'route' => 'admin.kata-terlarang',
+            'label' => 'Kata Terlarang',
+            'active' => Request::routeIs('admin.kata-terlarang'),
+            'icon' => '<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+        ],
+        [
+            'route' => 'admin.akun-unit',
+            'label' => 'Akun Unit',
+            'active' => Request::routeIs('admin.akun-unit'),
+            'icon' => '<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
+        ],
+    ];
+@endphp
+
         <!-- Menu (desktop) -->
-        <ul class="hidden md:flex items-center gap-5">
-            <li>
-                <a href="{{ route('admin.dashboard') }}"
-                    class="whitespace-nowrap text-[20px] font-semibold transition-colors {{ Request::routeIs('admin.dashboard') ? 'text-[#0047AB]' : 'text-[#464646] hover:text-[#0047AB]' }}">
-                    Dashboard
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('admin.laporan') }}"
-                    class="whitespace-nowrap text-[20px] font-semibold transition-colors {{ Request::routeIs('admin.laporan') ? 'text-[#0047AB]' : 'text-[#464646] hover:text-[#0047AB]' }}">
-                    Laporan
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('admin.kata-terlarang') }}"
-                    class="whitespace-nowrap text-[20px] font-semibold transition-colors {{ Request::routeIs('admin.kata-terlarang') ? 'text-[#0047AB]' : 'text-[#464646] hover:text-[#0047AB]' }}">
-                    Kata Terlarang
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('admin.akun-unit') }}"
-                    class="whitespace-nowrap text-[20px] font-semibold transition-colors {{ Request::routeIs('admin.akun-unit') ? 'text-[#0047AB]' : 'text-[#464646] hover:text-[#0047AB]' }}">
-                    Akun Unit
-                </a>
-            </li>
+        <ul class="hidden md:flex items-center gap-1 lg:gap-2">
+            @foreach ($adminNavs as $nav)
+                <li>
+                    <a href="{{ route($nav['route']) }}"
+                       class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-base lg:text-[17px] font-bold transition-all duration-200 {{ $nav['active'] ? 'bg-[#0047AB]/10 text-[#0047AB] shadow-xs' : 'text-[#464646] hover:bg-slate-100/80 hover:text-[#0047AB]' }}">
+                        {!! $nav['icon'] !!}
+                        <span>{{ $nav['label'] }}</span>
+                    </a>
+                </li>
+            @endforeach
         </ul>
 
         <!-- Actions -->
@@ -84,23 +98,14 @@
     </div>
 
     <!-- Mobile Menu -->
-    <div id="admin-mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 pb-4">
-        <a href="{{ route('admin.dashboard') }}"
-            class="block py-3 text-[16px] font-semibold border-b border-gray-50 {{ Request::routeIs('admin.dashboard') ? 'text-[#0047AB]' : 'text-[#464646]' }}">
-            Dashboard
-        </a>
-        <a href="{{ route('admin.laporan') }}"
-            class="block py-3 text-[16px] font-semibold border-b border-gray-50 {{ Request::routeIs('admin.laporan') ? 'text-[#0047AB]' : 'text-[#464646]' }}">
-            Laporan
-        </a>
-        <a href="{{ route('admin.kata-terlarang') }}"
-            class="block py-3 text-[16px] font-semibold border-b border-gray-50 {{ Request::routeIs('admin.kata-terlarang') ? 'text-[#0047AB]' : 'text-[#464646]' }}">
-            Kata Terlarang
-        </a>
-        <a href="{{ route('admin.akun-unit') }}"
-            class="block py-3 text-[16px] font-semibold {{ Request::routeIs('admin.akun-unit') ? 'text-[#0047AB]' : 'text-[#464646]' }}">
-            Akun Unit
-        </a>
+    <div id="admin-mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-1">
+        @foreach ($adminNavs as $nav)
+            <a href="{{ route($nav['route']) }}"
+               class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-base font-bold transition-colors {{ $nav['active'] ? 'bg-[#0047AB]/10 text-[#0047AB]' : 'text-[#464646] hover:bg-slate-50' }}">
+                {!! $nav['icon'] !!}
+                <span>{{ $nav['label'] }}</span>
+            </a>
+        @endforeach
     </div>
 </nav>
 
