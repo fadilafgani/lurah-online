@@ -26,9 +26,7 @@
     <div class="mx-auto flex w-full max-w-[1283px] flex-col items-start gap-[35px] px-6 sm:px-8 lg:px-4">
 
         @if (session('success'))
-            <div class="w-full rounded-[15px] border-[0.5px] border-[#098A00] bg-[#C9ECC1] px-6 py-4 text-[15px] font-semibold text-[#098A00]">
-                {{ session('success') }}
-            </div>
+            <div id="flash-success-data" data-message="{{ session('success') }}" class="hidden"></div>
         @endif
 
         {{-- ── Page Header ── --}}
@@ -194,7 +192,7 @@
                             <div class="flex w-full flex-col items-start gap-[10px]">
                                 <p class="text-[15px] font-medium text-[#656565]">Foto Bukti</p>
                                 @if ($item['foto'])
-                                    <img src="{{ $item['foto'] }}" alt="Foto bukti pengaduan" class="h-[271px] w-full rounded-[20px] object-cover">
+                                    <img src="{{ $item['foto'] }}" alt="Foto bukti pengaduan" loading="lazy" class="h-[271px] w-full rounded-[20px] object-cover">
                                 @else
                                     <div class="flex h-[271px] w-full items-center justify-center rounded-[20px] bg-[#F1F1F1] text-[15px] font-medium text-[#A19E9E]">
                                         Tidak ada foto bukti
@@ -381,7 +379,7 @@
                                             <p class="text-[15px] font-bold text-[#D83D3D]">Hapus Pengaduan</p>
                                             <p class="text-[15px] font-medium text-[#464646]">Tindakan permanen, data tidak dapat dikembalikan.</p>
                                         </div>
-                                        <form method="POST" action="{{ route('admin.laporan.destroy', $item['kode']) }}" onsubmit="return confirm('Yakin ingin menghapus pengaduan ini secara permanen? Tindakan ini tidak dapat dibatalkan.')">
+                                        <form method="POST" action="{{ route('admin.laporan.destroy', $item['kode']) }}" data-confirm="Yakin ingin menghapus pengaduan ini secara permanen? Tindakan ini tidak dapat dibatalkan.">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="flex items-center justify-center gap-2 rounded-[10px] bg-[#D83D3D] px-5 py-[6px] text-[15px] font-bold text-white">
@@ -404,7 +402,7 @@
                                             <p class="text-[15px] font-bold text-[#D83D3D]">Hapus Pengaduan</p>
                                             <p class="text-[15px] font-medium text-[#464646]">Tindakan permanen, data tidak dapat dikembalikan.</p>
                                         </div>
-                                        <form method="POST" action="{{ route('admin.laporan.destroy', $item['kode']) }}" onsubmit="return confirm('Yakin ingin menghapus pengaduan ini secara permanen? Tindakan ini tidak dapat dibatalkan.')">
+                                        <form method="POST" action="{{ route('admin.laporan.destroy', $item['kode']) }}" data-confirm="Yakin ingin menghapus pengaduan ini secara permanen? Tindakan ini tidak dapat dibatalkan.">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="flex items-center justify-center gap-2 rounded-[10px] bg-[#D83D3D] px-5 py-[6px] text-[15px] font-bold text-white">

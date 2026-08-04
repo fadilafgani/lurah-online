@@ -8,3 +8,15 @@
 @theme {
     --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+#page-loader-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #0047AB, #00B4D8);
+    z-index: 9999;
+    transition: width 0.3s ease, opacity 0.4s ease;
+    pointer-events: none;
+    width: 0%;
+}

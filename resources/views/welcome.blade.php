@@ -22,6 +22,7 @@
                 <img
                     src="{{ asset('images/background_home.jpg') }}"
                     alt="Background"
+                    loading="lazy"
                     class="absolute inset-0 h-full w-full object-cover">
 
                 <div class="absolute inset-0 bg-[linear-gradient(180deg,#153655_0%,rgba(21,54,85,0.30)_46.63%,#153655_100%)]"></div>
