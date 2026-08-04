@@ -72,27 +72,70 @@
             $unitOptions = $unitOptions ?? ['Unit Infrastruktur', 'Unit Kebersihan', 'Unit Keamanan'];
             $selectedKode = $selectedKode ?? null;
             $statusLabel = collect($statusCards)->firstWhere('key', $status)['label'] ?? 'Verifikasi';
+
+            $cardStyles = [
+                'verifikasi' => [
+                    'bgActive' => 'bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 text-white shadow-xl shadow-blue-500/25 scale-[1.03] border-blue-500',
+                    'bgInactive' => 'bg-white text-slate-700 border-slate-200 hover:border-blue-300 hover:shadow-lg hover:-translate-y-1',
+                    'badge' => 'bg-blue-100 text-blue-700',
+                    'icon' => '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+                    'tag' => 'Baru'
+                ],
+                'disposisi' => [
+                    'bgActive' => 'bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-700 text-white shadow-xl shadow-purple-500/25 scale-[1.03] border-purple-500',
+                    'bgInactive' => 'bg-white text-slate-700 border-slate-200 hover:border-purple-300 hover:shadow-lg hover:-translate-y-1',
+                    'badge' => 'bg-purple-100 text-purple-700',
+                    'icon' => '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>',
+                    'tag' => 'Unit'
+                ],
+                'penanganan' => [
+                    'bgActive' => 'bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 text-white shadow-xl shadow-amber-500/25 scale-[1.03] border-amber-500',
+                    'bgInactive' => 'bg-white text-slate-700 border-slate-200 hover:border-amber-300 hover:shadow-lg hover:-translate-y-1',
+                    'badge' => 'bg-amber-100 text-amber-700',
+                    'icon' => '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+                    'tag' => 'Proses'
+                ],
+                'selesai' => [
+                    'bgActive' => 'bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-600 text-white shadow-xl shadow-emerald-500/25 scale-[1.03] border-emerald-500',
+                    'bgInactive' => 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:shadow-lg hover:-translate-y-1',
+                    'badge' => 'bg-emerald-100 text-emerald-700',
+                    'icon' => '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>',
+                    'tag' => 'Tuntas'
+                ],
+                'ditolak' => [
+                    'bgActive' => 'bg-gradient-to-br from-rose-500 via-red-600 to-rose-600 text-white shadow-xl shadow-rose-500/25 scale-[1.03] border-rose-500',
+                    'bgInactive' => 'bg-white text-slate-700 border-slate-200 hover:border-rose-300 hover:shadow-lg hover:-translate-y-1',
+                    'badge' => 'bg-rose-100 text-rose-700',
+                    'icon' => '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>',
+                    'tag' => 'Batal'
+                ],
+            ];
         @endphp
 
         {{-- ── Status Cards ── --}}
-        <div class="grid w-full grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
+        <div class="grid w-full grid-cols-2 gap-4 sm:gap-5 sm:grid-cols-3 lg:grid-cols-5">
             @foreach ($statusCards as $card)
+                @php
+                    $style = $cardStyles[$card['key']] ?? $cardStyles['verifikasi'];
+                @endphp
                 <a href="{{ route('admin.dashboard', ['status' => $card['key']]) }}"
-                class="block rounded-[15px] p-4 sm:p-6 lg:p-[34px]
-                {{ $card['active']
-                        ? 'border border-[#0047AB] shadow-[0_0_4px_0_#0047AB]'
-                        : 'border-[0.5px] border-[#A19E9E] shadow-[0_4px_10px_0_rgba(0,0,0,0.25)]'
-                }}
-                bg-white hover:scale-[1.02] transition">
-
-                    <p class="text-[15px] font-medium text-[#464646]">
-                        {{ $card['label'] }}
-                    </p>
-
-                    <p class="mt-[10px] text-[18px] font-extrabold text-black">
-                        {{ $card['jumlah'] }}
-                    </p>
-
+                   class="group relative flex flex-col justify-between rounded-2xl p-5 transition-all duration-300 border {{ $card['active'] ? $style['bgActive'] : $style['bgInactive'] }}">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs sm:text-sm font-bold tracking-wide {{ $card['active'] ? 'text-white/90' : 'text-slate-600' }}">
+                            {{ $card['label'] }}
+                        </span>
+                        <div class="flex h-9 w-9 items-center justify-center rounded-xl transition-transform group-hover:scale-110 {{ $card['active'] ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600' }}">
+                            {!! $style['icon'] !!}
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-baseline justify-between">
+                        <span class="text-2xl sm:text-3xl font-extrabold tracking-tight {{ $card['active'] ? 'text-white' : 'text-slate-900' }}">
+                            {{ $card['jumlah'] }}
+                        </span>
+                        <span class="rounded-full px-2.5 py-0.5 text-[11px] font-bold {{ $card['active'] ? 'bg-white/20 text-white' : $style['badge'] }}">
+                            {{ $style['tag'] }}
+                        </span>
+                    </div>
                 </a>
             @endforeach
         </div>
