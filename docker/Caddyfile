@@ -1,0 +1,61 @@
+{
+	# Email untuk notifikasi Let's Encrypt (wajib diisi di .env)
+	email {$LETSENCRYPT_EMAIL}
+	admin off
+
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+# Domain diambil dari APP_DOMAIN. Caddy otomatis menerbitkan &
+# memperpanjang sertifikat TLS untuk domain ini.
+{$APP_DOMAIN} {
+	root * /var/www/html/public
+	encode zstd gzip
+
+	# Blokir akses ke path sensitif sebelum diteruskan ke PHP
+	@forbidden {
+		path /.env /.git /.git/* /composer.json /composer.lock /package.json
+		path /storage/logs/* /vendor/* /artisan
+	}
+	respond @forbidden 404
+
+	# Endpoint internal PHP-FPM tidak boleh terekspos publik
+	@fpm_internal path /fpm-status /fpm-ping
+	respond @fpm_internal 404
+
+	# Default php_fastcgi sudah menangani routing Laravel
+	# (file nyata dilayani langsung, sisanya ke index.php)
+	php_fastcgi app:9000
+
+	file_server
+
+	# Aset build Vite sudah ber-hash, aman di-cache selamanya
+	@immutable path /build/*
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+	@uploads path /storage/*
+	header @uploads Cache-Control "public, max-age=604800"
+
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+		-X-Powered-By
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}
+
+# Endpoint health internal (tidak dipublikasikan ke luar container).
+# Dipakai oleh healthcheck Docker untuk memastikan Caddy hidup.
+:8080 {
+	respond /health "ok" 200
+	respond 404
+}

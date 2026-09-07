@@ -1,0 +1,64 @@
+# Git & CI
+.git
+.gitignore
+.gitattributes
+.github
+
+# Duplikat proyek lama (jangan masuk image)
+lurah-online/
+
+# Dependencies (di-install ulang di dalam image)
+node_modules
+vendor
+
+# Build artifacts (dibuild ulang di dalam image)
+public/build
+public/hot
+public/storage
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+auth.json
+
+# Cache framework dari environment dev — HARUS dibuang, jika tidak container
+# akan mereferensikan package dev (mis. laravel/pail) yang tidak ada di image
+bootstrap/cache/*.php
+
+# Storage runtime (di-mount via volume)
+storage/app/public/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+storage/logs/*
+storage/pail
+storage/*.key
+
+# Testing & tooling
+tests
+phpunit.xml
+.phpunit.result.cache
+.phpunit.cache
+.editorconfig
+.idea
+.vscode
+.zed
+.nova
+.cursor
+.codex
+_ide_helper.php
+Homestead.*
+
+# Docker & docs (tidak diperlukan runtime)
+docker-compose*.yml
+Dockerfile
+.dockerignore
+DEPLOYMENT.md
+deploy.sh
+README.md
+
+# OS junk
+.DS_Store
+Thumbs.db

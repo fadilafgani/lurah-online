@@ -1,0 +1,68 @@
+name: lurah-online
+
+services:
+  # ---------------------------------------------------------------------------
+  # Aplikasi Laravel (PHP-FPM)
+  # ---------------------------------------------------------------------------
+  app:
+    build:
+      context: .
+      target: app
+    image: lurah-online-app:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Jalankan migrasi otomatis saat container start
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
+    volumes:
+      # Upload pengguna (storage/app/public) harus persisten
+      - uploads:/var/www/html/storage/app/public
+      - app_logs:/var/www/html/storage/logs
+    networks:
+      - internal
+    expose:
+      - "9000"
+
+  # ---------------------------------------------------------------------------
+  # Web server + auto-HTTPS (Let's Encrypt)
+  # ---------------------------------------------------------------------------
+  web:
+    build:
+      context: .
+      target: web
+    image: lurah-online-web:latest
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_started
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?APP_DOMAIN wajib diset di .env}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL:?LETSENCRYPT_EMAIL wajib diset di .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"   # HTTP/3
+    volumes:
+      # Upload pengguna di-mount ke path yang dilayani Caddy (public/storage)
+      - uploads:/var/www/html/public/storage:ro
+      # Sertifikat & state Caddy — WAJIB persisten agar tidak kena rate limit LE
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 40s
+      retries: 3
+
+volumes:
+  uploads:
+  app_logs:
+  caddy_data:
+  caddy_config:
+
+networks:
+  internal:
+    driver: bridge
