@@ -23,14 +23,6 @@ class DashboardController extends Controller
         'completed' => 'Selesai',
         'rejected' => 'Ditolak',
     ];
-    
-    private const UNIT_OPTIONS = [
-    'Unit Infrastruktur',
-    'Unit Kebersihan',
-    'Unit Keamanan',
-    'Unit Administrasi',
-    'Unit Umum',
-    ];
 
     public function index(Request $request)
     {
@@ -93,7 +85,9 @@ class DashboardController extends Controller
             
         $selectedComplaint = $laporanList ->firstWhere('kode', $selectedKode) ?? $laporanList->first();
 
-        $unitOptions = self::UNIT_OPTIONS;
+        // Sumber tunggal daftar unit ada di config/units.php, dipakai bersama
+        // validasi akun unit dan opsi di form akun.
+        $unitOptions = config('units.options');
 
         return view('admin.dashboard', compact(
             'statusCards',

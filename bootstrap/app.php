@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Satu-satunya jalan masuk ke container adalah Caddy, jadi batasi
         // port 80 VPS ke IP proxy lewat firewall (lihat DEPLOYMENT.md).
         $middleware->trustProxies(at: '*');
+
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

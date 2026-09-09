@@ -28,9 +28,25 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
+            // Akun bawaan adalah admin kelurahan; akun unit dibuat lewat
+            // state eksplisit agar kolom role/unit terisi konsisten.
+            'role' => User::ROLE_ADMIN,
+            'unit' => null,
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
+    }
+
+    /**
+     * Akun unit untuk unit tertentu.
+     */
+    public function unit(string $unit = 'Unit Umum'): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'name' => $unit,
+            'role' => User::ROLE_UNIT,
+            'unit' => $unit,
+        ]);
     }
 
     /**
