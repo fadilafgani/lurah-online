@@ -1,0 +1,65 @@
+{
+	# TLS ditangani oleh proxy di depan (Cloudflare / Nginx), bukan oleh Caddy.
+	# auto_https off mematikan penerbitan sertifikat ACME dan redirect ke HTTPS.
+	admin off
+
+	servers {
+		# Rentang IP proxy yang boleh dipercaya untuk header X-Forwarded-*.
+		# Default private_ranges cocok untuk proxy di host yang sama.
+		# Di belakang Cloudflare, isi TRUSTED_PROXIES di .env dengan daftar
+		# rentang IP Cloudflare (dipisah spasi).
+		trusted_proxies static {$TRUSTED_PROXIES:private_ranges}
+	}
+}
+
+# Hanya melayani HTTP di port 80 — proxy di depan yang menangani HTTPS.
+lurahonline-banjarsarigarut.com, www.lurahonline-banjarsarigarut.com {
+	root * /var/www/html/public
+	encode zstd gzip
+
+	# Blokir akses ke path sensitif sebelum diteruskan ke PHP
+	@forbidden {
+		path /.env /.git /.git/* /composer.json /composer.lock /package.json
+		path /storage/logs/* /vendor/* /artisan
+	}
+	respond @forbidden 404
+
+	# Endpoint internal PHP-FPM tidak boleh terekspos publik
+	@fpm_internal path /fpm-status /fpm-ping
+	respond @fpm_internal 404
+
+	# Default php_fastcgi sudah menangani routing Laravel
+	# (file nyata dilayani langsung, sisanya ke index.php)
+	php_fastcgi app:9000
+
+	file_server
+
+	# Aset build Vite sudah ber-hash, aman di-cache selamanya
+	@immutable path /build/*
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+	@uploads path /storage/*
+	header @uploads Cache-Control "public, max-age=604800"
+
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		# Diteruskan ke browser oleh proxy yang melayani HTTPS
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+		-X-Powered-By
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}
+
+# Endpoint health internal (tidak dipublikasikan ke luar container).
+# Dipakai oleh healthcheck Docker untuk memastikan Caddy hidup.
+http://:8080 {
+	respond /health "ok" 200
+	respond 404
+}

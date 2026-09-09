@@ -12,7 +12,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // HTTPS diterminasi oleh proxy di depan (Cloudflare/Nginx), lalu
+        // diteruskan sebagai HTTP ke Caddy. Tanpa ini Laravel menganggap
+        // request sebagai http:// sehingga URL & redirect ikut salah skema.
+        // Satu-satunya jalan masuk ke container adalah Caddy, jadi batasi
+        // port 80 VPS ke IP proxy lewat firewall (lihat DEPLOYMENT.md).
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
