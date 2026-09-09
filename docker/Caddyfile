@@ -1,7 +1,6 @@
 {
 	# TLS ditangani oleh proxy di depan (Cloudflare / Nginx), bukan oleh Caddy.
 	# auto_https off mematikan penerbitan sertifikat ACME dan redirect ke HTTPS.
-	auto_https off
 	admin off
 
 	servers {
@@ -14,7 +13,7 @@
 }
 
 # Hanya melayani HTTP di port 80 — proxy di depan yang menangani HTTPS.
-http://{$APP_DOMAIN} {
+lurahonline-banjarsarigarut.com, www.lurahonline-banjarsarigarut.com {
 	root * /var/www/html/public
 	encode zstd gzip
 
