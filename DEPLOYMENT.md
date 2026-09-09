@@ -1,7 +1,7 @@
 # Deployment ke VPS dengan Docker
 
-Stack: **PHP-FPM 8.3 (Alpine)** + **Caddy 2** (auto-HTTPS Let's Encrypt), database MySQL
-eksternal (Aiven). Aset Vite dan dependency Composer dibuild di dalam image, jadi VPS
+Stack: **PHP-FPM 8.3 (Alpine)** + **Caddy 2** (HTTP-only; HTTPS diterminasi oleh proxy
+di depan seperti Cloudflare atau Nginx), database MySQL eksternal (Aiven). Aset Vite dan dependency Composer dibuild di dalam image, jadi VPS
 tidak perlu PHP, Node, atau Composer terpasang — hanya Docker.
 
 ## Ringkasan file
@@ -9,8 +9,8 @@ tidak perlu PHP, Node, atau Composer terpasang — hanya Docker.
 | File | Fungsi |
 |---|---|
 | `Dockerfile` | Multi-stage: build aset Vite → install vendor Composer → image PHP-FPM → image Caddy |
-| `docker-compose.yml` | Dua service: `app` (PHP-FPM) dan `web` (Caddy + TLS) |
-| `docker/Caddyfile` | Reverse proxy ke PHP-FPM, auto-HTTPS, header keamanan, cache aset |
+| `docker-compose.yml` | Dua service: `app` (PHP-FPM) dan `web` (Caddy, port 80) |
+| `docker/Caddyfile` | Reverse proxy ke PHP-FPM, header keamanan, cache aset (tanpa TLS) |
 | `docker/entrypoint.sh` | Siapkan storage, cache config/route/view, jalankan migrasi |
 | `docker/php/php.ini` | Setting PHP produksi (OPcache, limit upload, error ke log) |
 | `docker/php/www.conf` | Pool PHP-FPM (jumlah worker, log ke stdout) |
@@ -31,18 +31,35 @@ curl -fsSL https://get.docker.com | sh
 adduser --disabled-password --gecos "" deploy
 usermod -aG docker deploy
 
-# Firewall: hanya SSH, HTTP, HTTPS
-ufw allow OpenSSH && ufw allow 80 && ufw allow 443 && ufw --force enable
+# Firewall: hanya SSH + HTTP
+ufw allow OpenSSH && ufw allow 80 && ufw --force enable
 ```
+
+Port 443 tidak dipakai lagi — Caddy hanya melayani HTTP di port 80 dan HTTPS
+diterminasi oleh proxy di depannya.
+
+> **Penting.** Karena Caddy mempercayai header `X-Forwarded-*`, port 80 sebaiknya
+> hanya bisa diakses dari IP proxy, bukan dari seluruh internet. Kalau memakai
+> Cloudflare (proxied / orange cloud), batasi dengan:
+>
+> ```bash
+> ufw delete allow 80
+> for ip in $(curl -s https://www.cloudflare.com/ips-v4) \
+>            $(curl -s https://www.cloudflare.com/ips-v6); do
+>     ufw allow from "$ip" to any port 80 proto tcp
+> done
+> ufw reload
+> ```
 
 ## 2. Arahkan domain
 
-Buat DNS record ke IP VPS **sebelum** menjalankan container — Caddy butuh domain yang
-sudah resolve untuk menerbitkan sertifikat:
+Arahkan DNS ke proxy/VPS sesuai setup Anda:
 
-```
-A    lurah-online.example.com    <IP_VPS>
-```
+- **Cloudflare (proxied):** buat A record ke IP VPS lalu aktifkan orange cloud, dan set
+  SSL/TLS mode ke **Full**. Sertifikat untuk pengunjung disediakan Cloudflare.
+- **Nginx/load balancer sendiri:** arahkan DNS ke proxy tersebut, lalu proxy
+  meneruskan ke `http://<IP_VPS>:80` dengan header `X-Forwarded-Proto: https`,
+  `X-Forwarded-For`, dan `Host` yang benar.
 
 Verifikasi: `dig +short lurah-online.example.com`
 
@@ -63,8 +80,8 @@ Yang **wajib** diisi di `.env`:
 |---|---|
 | `APP_KEY` | Lihat langkah 4 |
 | `APP_URL` | `https://domain-anda` |
-| `APP_DOMAIN` | Domain tanpa skema, dipakai Caddy untuk menerbitkan sertifikat |
-| `LETSENCRYPT_EMAIL` | Email notifikasi sertifikat |
+| `APP_DOMAIN` | Domain tanpa skema, dipakai Caddy sebagai site address |
+| `TRUSTED_PROXIES` | Rentang IP proxy yang dipercaya (`private_ranges`, atau daftar IP Cloudflare dipisah spasi) |
 | `DB_HOST` / `DB_PORT` / `DB_DATABASE` / `DB_USERNAME` / `DB_PASSWORD` | Kredensial Aiven |
 | `MAIL_*` | Kredensial SMTP (untuk fitur lupa kata sandi) |
 
@@ -100,10 +117,13 @@ Cek hasilnya:
 ```bash
 docker compose ps                 # kedua service harus "healthy"
 docker compose logs -f            # ikuti log
-curl -I https://domain-anda/up    # harus 200
-```
 
-Sertifikat TLS diterbitkan otomatis pada request pertama (butuh beberapa detik).
+# Lewat proxy (yang dilihat pengunjung)
+curl -I https://domain-anda/up    # harus 200
+
+# Langsung ke Caddy, melewati proxy
+curl -I -H "Host: domain-anda" http://<IP_VPS>/up   # harus 200
+```
 
 ---
 
@@ -115,7 +135,7 @@ Sertifikat TLS diterbitkan otomatis pada request pertama (butuh beberapa detik).
 
 # Lihat log
 docker compose logs -f app        # PHP & Laravel
-docker compose logs -f web        # akses & TLS
+docker compose logs -f web        # log akses Caddy
 
 # Jalankan perintah artisan
 docker compose exec app php artisan migrate:status
@@ -164,8 +184,18 @@ Kalau ingin mengontrol manual, set `RUN_MIGRATIONS=false` di `.env` lalu jalanka
 ini — `docker compose down -v` akan menghapus semua upload pengguna. Gunakan
 `docker compose down` (tanpa `-v`).
 
-**Sertifikat TLS persisten.** Volume `caddy_data` menyimpan sertifikat. Jangan hapus,
-karena Let's Encrypt punya rate limit (5 sertifikat per domain per minggu).
+**TLS ada di proxy, bukan di Caddy.** Caddy dijalankan dengan `auto_https off` dan
+hanya mendengarkan HTTP di port 80, jadi tidak ada sertifikat yang dikelola di VPS —
+pembaruan sertifikat jadi tanggung jawab Cloudflare / proxy Anda. Konsekuensinya:
+
+- `SESSION_SECURE_COOKIE=true` dan `APP_URL=https://...` tetap benar, karena pengunjung
+  memang mengakses lewat HTTPS di proxy.
+- Laravel mempercayai `X-Forwarded-*` (`trustProxies` di `bootstrap/app.php`) supaya
+  URL, redirect, dan IP pengunjung terbaca benar. Karena itu port 80 wajib dibatasi ke
+  IP proxy lewat firewall (lihat langkah 1).
+- Volume `caddy_data` / `caddy_config` sudah tidak dipakai. Kalau sebelumnya pernah
+  deploy dengan Let's Encrypt, sisa volumenya bisa dibuang:
+  `docker volume rm lurah-online_caddy_data lurah-online_caddy_config`
 
 **Queue worker belum diperlukan.** Aplikasi ini belum punya job/notification yang
 di-queue, jadi tidak ada service worker. Kalau nanti menambahkan job, tambahkan service
@@ -211,7 +241,9 @@ lalu `systemctl restart docker`.
 
 | Gejala | Penyebab & solusi |
 |---|---|
-| Sertifikat gagal diterbitkan | DNS belum mengarah ke VPS, atau port 80/443 diblokir firewall. Cek `docker compose logs web`. |
+| Redirect loop, atau aset/CSS gagal load | Proxy tidak mengirim `X-Forwarded-Proto: https`, atau `TRUSTED_PROXIES` tidak mencakup IP proxy. Di Cloudflare pastikan SSL/TLS mode **Full**, bukan Flexible. |
+| IP pengunjung tercatat sebagai IP proxy | `TRUSTED_PROXIES` belum diisi rentang IP proxy. Cek `docker compose logs web`. |
+| 502 / tidak bisa diakses dari proxy | Port 80 diblokir firewall, atau proxy menunjuk ke port yang salah (lihat `WEB_HTTP_PORT`). |
 | `SQLSTATE[HY000] [2002] Connection refused` | IP VPS belum masuk allowlist Aiven, atau `DB_*` salah. |
 | Halaman 500 tanpa detail | Normal di produksi (`APP_DEBUG=false`). Detail ada di `docker compose logs app`. |
 | Container `app` restart terus | Cek `docker compose logs app`. Penyebab umum: `APP_KEY` kosong, atau nama route duplikat sehingga `route:cache` gagal. |

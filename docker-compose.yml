@@ -24,7 +24,7 @@ services:
       - "9000"
 
   # ---------------------------------------------------------------------------
-  # Web server + auto-HTTPS (Let's Encrypt)
+  # Web server (Caddy, HTTP-only — TLS diterminasi proxy di depan)
   # ---------------------------------------------------------------------------
   web:
     build:
@@ -37,17 +37,14 @@ services:
         condition: service_started
     environment:
       APP_DOMAIN: ${APP_DOMAIN:?APP_DOMAIN wajib diset di .env}
-      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL:?LETSENCRYPT_EMAIL wajib diset di .env}
+      # Rentang IP proxy yang dipercaya untuk header X-Forwarded-*
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-private_ranges}
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"   # HTTP/3
+      # Hanya HTTP — HTTPS diterminasi oleh proxy di depan (Cloudflare/Nginx)
+      - "${WEB_HTTP_PORT:-80}:80"
     volumes:
       # Upload pengguna di-mount ke path yang dilayani Caddy (public/storage)
       - uploads:/var/www/html/public/storage:ro
-      # Sertifikat & state Caddy — WAJIB persisten agar tidak kena rate limit LE
-      - caddy_data:/data
-      - caddy_config:/config
     networks:
       - internal
     healthcheck:
@@ -60,8 +57,6 @@ services:
 volumes:
   uploads:
   app_logs:
-  caddy_data:
-  caddy_config:
 
 networks:
   internal:

@@ -1,16 +1,20 @@
 {
-	# Email untuk notifikasi Let's Encrypt (wajib diisi di .env)
-	email {$LETSENCRYPT_EMAIL}
+	# TLS ditangani oleh proxy di depan (Cloudflare / Nginx), bukan oleh Caddy.
+	# auto_https off mematikan penerbitan sertifikat ACME dan redirect ke HTTPS.
+	auto_https off
 	admin off
 
 	servers {
-		trusted_proxies static private_ranges
+		# Rentang IP proxy yang boleh dipercaya untuk header X-Forwarded-*.
+		# Default private_ranges cocok untuk proxy di host yang sama.
+		# Di belakang Cloudflare, isi TRUSTED_PROXIES di .env dengan daftar
+		# rentang IP Cloudflare (dipisah spasi).
+		trusted_proxies static {$TRUSTED_PROXIES:private_ranges}
 	}
 }
 
-# Domain diambil dari APP_DOMAIN. Caddy otomatis menerbitkan &
-# memperpanjang sertifikat TLS untuk domain ini.
-{$APP_DOMAIN} {
+# Hanya melayani HTTP di port 80 — proxy di depan yang menangani HTTPS.
+http://{$APP_DOMAIN} {
 	root * /var/www/html/public
 	encode zstd gzip
 
@@ -42,6 +46,7 @@
 		X-Content-Type-Options "nosniff"
 		X-Frame-Options "SAMEORIGIN"
 		Referrer-Policy "strict-origin-when-cross-origin"
+		# Diteruskan ke browser oleh proxy yang melayani HTTPS
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		-Server
 		-X-Powered-By
@@ -55,7 +60,7 @@
 
 # Endpoint health internal (tidak dipublikasikan ke luar container).
 # Dipakai oleh healthcheck Docker untuk memastikan Caddy hidup.
-:8080 {
+http://:8080 {
 	respond /health "ok" 200
 	respond 404
 }

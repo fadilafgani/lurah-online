@@ -101,7 +101,7 @@ CMD ["php-fpm", "--nodaemonize"]
 
 
 # ==============================================================================
-# Stage 5 — Web server (Caddy, auto-HTTPS) — hanya butuh direktori public/
+# Stage 5 — Web server (Caddy, HTTP-only) — hanya butuh direktori public/
 # ==============================================================================
 FROM caddy:2-alpine AS web
 
