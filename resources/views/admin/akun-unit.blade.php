@@ -25,12 +25,8 @@
     <div class="mx-auto flex w-full max-w-[979px] flex-col items-center gap-[34px] px-6 sm:px-8 lg:px-4">
 
         @php
-            $unitOptions = $unitOptions ?? ['Unit Infrastruktur', 'Unit Kebersihan', 'Unit Keamanan', 'Unit Administrasi', 'Unit Umum'];
-            $akunUnit = $akunUnit ?? [
-                ['email' => 'unit_infrastruktur@lurah.local', 'unit' => 'Unit Infrastruktur', 'dibuat' => '11/6/2026'],
-                ['email' => 'unit_kebersihan@lurah.local', 'unit' => 'Unit Kebersihan', 'dibuat' => '11/6/2026'],
-                ['email' => 'unit_keamanan@lurah.local', 'unit' => 'Unit Keamanan', 'dibuat' => '11/6/2026'],
-            ];
+            // Sumber tunggal daftar unit ada di config/units.php.
+            $unitOptions = $unitOptions ?? config('units.options');
         @endphp
 
         {{-- ── Page Header ── --}}
@@ -46,6 +42,16 @@
                 </h1>
                 <p class="text-[18px] font-medium text-[#464646]">Kelola akun pengguna untuk tiap unit</p>
             </div>
+        </div>
+
+        {{-- ── Akun yang sedang masuk ── --}}
+        <div class="w-full rounded-[20px] border-[0.5px] border-[#A19E9E] bg-[#F9F9F9] px-[26px] py-[18px] shadow-[0_4px_10px_0_rgba(0,71,171,0.10)]">
+            <p class="text-[13px] font-semibold uppercase tracking-[0.08em] text-[#656565]">Sedang masuk sebagai</p>
+            <p class="mt-[6px] flex flex-wrap items-center gap-2 text-[18px] font-extrabold text-[#153655]">
+                <span id="akun-saya-email">Memuat...</span>
+                <span class="text-[#A19E9E]">-</span>
+                <span id="akun-saya-peran" class="text-[#0047AB]"></span>
+            </p>
         </div>
 
         {{-- ── Tambah Akun Unit ── --}}
@@ -111,54 +117,11 @@
         {{-- ── Daftar Akun Unit ── --}}
         <div class="w-full rounded-[20px] border-[0.5px] border-[#A19E9E] bg-white shadow-[0_4px_10px_0_rgba(0,0,0,0.20)]">
             <div class="border-b-[0.5px] border-[#A19E9E] bg-[#F9F9F9] px-[21px] py-[18px]">
-                <h2 id="daftar-akun-title" class="text-[20px] font-extrabold text-[#153655]">Daftar Akun Unit ({{ count($akunUnit) }})</h2>
+                <h2 id="daftar-akun-title" class="text-[20px] font-extrabold text-[#153655]">Daftar Akun</h2>
             </div>
 
             <div id="daftar-akun-list" class="flex flex-col divide-y divide-[#E5E5E5] px-[21px]">
-                @foreach ($akunUnit as $akun)
-                    <div class="akun-row flex flex-wrap items-center justify-between gap-6 py-[18px]">
-                        <div class="flex min-w-[216px] flex-col gap-[7px]">
-                            <p class="akun-email text-[15px] font-semibold text-black">{{ $akun['email'] }}</p>
-                            <div class="flex items-center gap-[5px]">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M2.77936 2.77942V2.78182C2.73647 3.26497 2.7058 3.74913 2.68736 4.23382C2.64096 5.40182 2.64736 6.78822 2.80096 7.81782C2.8142 7.8821 2.84687 7.94075 2.89456 7.98582L9.09776 14.189C9.17277 14.264 9.2745 14.3061 9.38056 14.3061C9.48663 14.3061 9.58835 14.264 9.66336 14.189L14.189 9.66342C14.2639 9.58841 14.3061 9.48669 14.3061 9.38062C14.3061 9.27456 14.2639 9.17283 14.189 9.09782L7.98576 2.89462C7.94068 2.84694 7.88203 2.81426 7.81776 2.80102C6.78816 2.64742 5.40176 2.64102 4.23376 2.68742C3.74906 2.70586 3.26491 2.73653 2.78176 2.77942H2.77936ZM2.07216 2.07222C1.99456 2.14582 1.68096 5.72582 2.01056 7.93622C2.04576 8.17142 2.16256 8.38422 2.33056 8.55222L8.53296 14.7554C8.75799 14.9804 9.06316 15.1068 9.38136 15.1068C9.69956 15.1068 10.0047 14.9804 10.2298 14.7554L14.7554 10.2298C14.9803 10.0048 15.1067 9.69962 15.1067 9.38142C15.1067 9.06323 14.9803 8.75806 14.7554 8.53302L8.55136 2.32822C8.3851 2.15901 8.1694 2.04696 7.93536 2.00822C5.72496 1.67942 2.14496 1.99222 2.07136 2.07062" fill="#0047AB"/>
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M6.06101 6.12927C6.0228 6.16616 5.99233 6.2103 5.97137 6.2591C5.9504 6.30791 5.93937 6.36039 5.93891 6.41351C5.93844 6.46662 5.94856 6.51929 5.96868 6.56845C5.98879 6.61761 6.01849 6.66227 6.05605 6.69982C6.0936 6.73738 6.13827 6.76708 6.18742 6.78719C6.23658 6.80731 6.28925 6.81743 6.34237 6.81697C6.39548 6.8165 6.44797 6.80547 6.49677 6.78451C6.54557 6.76354 6.58971 6.73307 6.62661 6.69487C6.69947 6.61942 6.73979 6.51838 6.73888 6.41351C6.73796 6.30863 6.6959 6.2083 6.62173 6.13414C6.54757 6.05998 6.44725 6.01791 6.34237 6.017C6.23749 6.01608 6.13645 6.0564 6.06101 6.12927ZM5.49621 7.26047C5.37965 7.15027 5.28637 7.01784 5.22188 6.87098C5.15739 6.72412 5.12299 6.56582 5.12073 6.40544C5.11846 6.24507 5.14836 6.08586 5.20868 5.93724C5.26899 5.78861 5.35849 5.65359 5.47188 5.54015C5.58527 5.42671 5.72025 5.33715 5.86884 5.27676C6.01744 5.21638 6.17663 5.1864 6.33701 5.18859C6.49739 5.19078 6.6557 5.2251 6.80259 5.28953C6.94948 5.35395 7.08196 5.44717 7.19221 5.56367C7.40699 5.79063 7.52476 6.09243 7.52049 6.40488C7.51622 6.71733 7.39024 7.01579 7.16933 7.2368C6.94843 7.45781 6.65002 7.58394 6.33757 7.58836C6.02512 7.59278 5.72327 7.47514 5.49621 7.26047Z" fill="#0047AB"/>
-                                </svg>
-                                <span class="akun-unit-label text-[15px] font-medium text-[#0047AB]">{{ $akun['unit'] }}</span>
-                            </div>
-                            <p class="text-[15px] font-semibold text-[#656565]">Dibuat: {{ $akun['dibuat'] }}</p>
-                        </div>
-
-                        <div class="flex items-center gap-[10px]">
-                            <div class="relative">
-                                <select
-                                    class="akun-unit-select w-[292px] appearance-none rounded-[10px] border-[0.5px] border-[#A19E9E] bg-[#F9F9F9] px-[22px] py-[8px] text-[14px] font-medium text-[#464646] outline-none">
-                                    @foreach ($unitOptions as $unit)
-                                        <option value="{{ $unit }}" @selected($unit === $akun['unit'])>{{ $unit }}</option>
-                                    @endforeach
-                                </select>
-                                <svg class="pointer-events-none absolute right-[22px] top-1/2 -translate-y-1/2" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M8 10L12 14L16 10" stroke="#464646" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </div>
-
-                            <button type="button" title="Reset password" aria-label="Reset password"
-                                class="reset-akun-btn flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[6px] border-[0.5px] border-[#A19E9E] bg-[#F9F9F9]">
-                                <svg width="18" height="18" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M17.2599 17.9405C19.8774 17.9405 22 15.827 22 13.2199C22 10.6128 19.8774 8.5 17.2599 8.5C14.6423 8.5 12.522 10.6136 12.522 13.2199C12.522 14.4274 13.0725 15.3057 13.0725 15.3057L7.34084 21.0133C7.08359 21.2699 6.72358 21.9359 7.34084 22.5509L8.00236 23.2094C8.25962 23.4292 8.90614 23.7367 9.4349 23.2094L10.2074 22.4414C10.9784 23.2094 11.8605 22.7706 12.1912 22.3311C12.7417 21.5631 12.081 20.7943 12.081 20.7943L12.3015 20.5746C13.359 21.6291 14.2853 21.0141 14.616 20.5746C15.1673 19.8066 14.616 19.0378 14.616 19.0378C14.3955 18.599 13.9545 18.599 14.5058 18.05L15.1673 17.3915C15.6961 17.8303 16.7836 17.9405 17.2614 17.9405H17.2599Z" stroke="#464646" stroke-linejoin="round"/>
-                                    <path d="M18.914 13.2208C18.913 13.6583 18.7383 14.0775 18.4283 14.3862C18.1183 14.6949 17.6984 14.8679 17.261 14.8671C16.8235 14.8679 16.4036 14.6949 16.0936 14.3862C15.7836 14.0775 15.6089 13.6583 15.6079 13.2208C15.6083 13.0041 15.6514 12.7896 15.7347 12.5896C15.8179 12.3895 15.9398 12.2078 16.0933 12.0549C16.2468 11.902 16.4289 11.7807 16.6293 11.6982C16.8296 11.6156 17.0443 11.5733 17.261 11.5737C17.4776 11.5733 17.6923 11.6156 17.8926 11.6982C18.093 11.7807 18.2751 11.902 18.4286 12.0549C18.5821 12.2078 18.704 12.3895 18.7873 12.5896C18.8705 12.7896 18.9136 13.0041 18.914 13.2208Z" stroke="#464646"/>
-                                </svg>
-                            </button>
-
-                            <button type="button" title="Hapus akun" aria-label="Hapus akun"
-                                class="hapus-akun-btn flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[6px] bg-[#D83D3D]">
-                                <svg width="18" height="18" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M10.0469 24.2812C9.48828 24.2812 9.01026 24.0825 8.61282 23.6851C8.21537 23.2876 8.01631 22.8093 8.01563 22.25V9.04687C7.72787 9.04687 7.48683 8.94937 7.2925 8.75437C7.09818 8.55937 7.00068 8.31833 7 8.03125C6.99933 7.74417 7.09683 7.50312 7.2925 7.30812C7.48818 7.11312 7.72922 7.01562 8.01563 7.01562H12.0781C12.0781 6.72786 12.1756 6.48682 12.3706 6.2925C12.5656 6.09818 12.8067 6.00068 13.0938 6H17.1562C17.444 6 17.6854 6.0975 17.8804 6.2925C18.0754 6.4875 18.1726 6.72854 18.1719 7.01562H22.2344C22.5221 7.01562 22.7635 7.11312 22.9585 7.30812C23.1535 7.50312 23.2507 7.74417 23.25 8.03125C23.2493 8.31833 23.1518 8.55971 22.9575 8.75539C22.7632 8.95107 22.5221 9.04823 22.2344 9.04687V22.25C22.2344 22.8086 22.0356 23.2869 21.6382 23.6851C21.2408 24.0832 20.7624 24.2819 20.2031 24.2812H10.0469ZM20.2031 9.04687H10.0469V22.25H20.2031V9.04687ZM13.8179 19.9273C14.0122 19.7323 14.1094 19.4909 14.1094 19.2031V12.0937C14.1094 11.806 14.0119 11.5649 13.8169 11.3706C13.6219 11.1763 13.3808 11.0788 13.0938 11.0781C12.8067 11.0774 12.5656 11.1749 12.3706 11.3706C12.1756 11.5663 12.0781 11.8073 12.0781 12.0937V19.2031C12.0781 19.4909 12.1756 19.7323 12.3706 19.9273C12.5656 20.1223 12.8067 20.2194 13.0938 20.2187C13.3808 20.2181 13.6222 20.1216 13.8179 19.9273ZM17.8804 19.9262C18.0747 19.7326 18.1719 19.4916 18.1719 19.2031V12.0937C18.1719 11.806 18.0744 11.5649 17.8794 11.3706C17.6844 11.1763 17.4433 11.0788 17.1562 11.0781C16.8692 11.0774 16.6281 11.1749 16.4331 11.3706C16.2381 11.5663 16.1406 11.8073 16.1406 12.0937V19.2031C16.1406 19.4909 16.2381 19.7323 16.4331 19.9273C16.6281 20.1223 16.8692 20.2194 17.1562 20.2187C17.4433 20.2181 17.6847 20.1206 17.8804 19.9262Z" fill="white"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                @endforeach
+                <p class="py-[18px] text-[15px] font-medium text-[#656565]">Memuat daftar akun...</p>
             </div>
         </div>
 
@@ -167,13 +130,62 @@
 
 <script>
 (function () {
+    var endpoint = '/api/admin/unit-accounts';
+    var loginUrl = @json(route('admin.login'));
+    var dashboardUrl = @json(route('admin.dashboard'));
+    var unitOptions = @json($unitOptions);
+
     var list = document.getElementById('daftar-akun-list');
     var title = document.getElementById('daftar-akun-title');
     var form = document.getElementById('tambah-akun-form');
-    var unitOptions = @json($unitOptions);
+    var submitBtn = form.querySelector('button[type="submit"]');
+    var token = localStorage.getItem('admin_token');
 
-    function updateCount() {
-        title.textContent = 'Daftar Akun Unit (' + list.querySelectorAll('.akun-row').length + ')';
+    // Halaman ini hanya berguna bagi admin: tanpa token tidak ada yang bisa
+    // dimuat, dan akun unit ditolak API-nya (403) lalu dikembalikan ke
+    // dashboard oleh apiFetch di bawah.
+    if (!token) {
+        window.location.replace(loginUrl);
+        return;
+    }
+
+    function firstError(payload) {
+        var fields = payload.errors ? Object.keys(payload.errors) : [];
+        if (fields.length) return payload.errors[fields[0]][0];
+        return payload.message || 'Terjadi kesalahan. Coba lagi.';
+    }
+
+    function apiFetch(path, options) {
+        options = options || {};
+
+        return fetch(endpoint + path, {
+            method: options.method || 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: options.body ? JSON.stringify(options.body) : undefined
+        }).then(function (response) {
+            if (response.status === 401) {
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_identity');
+                window.location.replace(loginUrl);
+                return Promise.reject(new Error('redirected'));
+            }
+
+            if (response.status === 403) {
+                // Akun unit tidak boleh melihat pengelolaan akun.
+                window.location.replace(dashboardUrl);
+                return Promise.reject(new Error('redirected'));
+            }
+
+            return response.json().catch(function () {
+                return {};
+            }).then(function (payload) {
+                return response.ok ? payload : Promise.reject(new Error(firstError(payload)));
+            });
+        });
     }
 
     function optionsHtml(selected) {
@@ -182,14 +194,10 @@
         }).join('');
     }
 
-    function todayFormatted() {
-        var now = new Date();
-        return now.getDate() + '/' + (now.getMonth() + 1) + '/' + now.getFullYear();
-    }
-
-    function createRow(email, unit) {
+    function createRow(account) {
         var row = document.createElement('div');
         row.className = 'akun-row flex flex-wrap items-center justify-between gap-6 py-[18px]';
+        row.dataset.id = account.id;
         row.innerHTML =
             '<div class="flex min-w-[216px] flex-col gap-[7px]">' +
                 '<p class="akun-email text-[15px] font-semibold text-black"></p>' +
@@ -197,11 +205,11 @@
                     '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.77936 2.77942V2.78182C2.73647 3.26497 2.7058 3.74913 2.68736 4.23382C2.64096 5.40182 2.64736 6.78822 2.80096 7.81782C2.8142 7.8821 2.84687 7.94075 2.89456 7.98582L9.09776 14.189C9.17277 14.264 9.2745 14.3061 9.38056 14.3061C9.48663 14.3061 9.58835 14.264 9.66336 14.189L14.189 9.66342C14.2639 9.58841 14.3061 9.48669 14.3061 9.38062C14.3061 9.27456 14.2639 9.17283 14.189 9.09782L7.98576 2.89462C7.94068 2.84694 7.88203 2.81426 7.81776 2.80102C6.78816 2.64742 5.40176 2.64102 4.23376 2.68742C3.74906 2.70586 3.26491 2.73653 2.78176 2.77942H2.77936ZM2.07216 2.07222C1.99456 2.14582 1.68096 5.72582 2.01056 7.93622C2.04576 8.17142 2.16256 8.38422 2.33056 8.55222L8.53296 14.7554C8.75799 14.9804 9.06316 15.1068 9.38136 15.1068C9.69956 15.1068 10.0047 14.9804 10.2298 14.7554L14.7554 10.2298C14.9803 10.0048 15.1067 9.69962 15.1067 9.38142C15.1067 9.06323 14.9803 8.75806 14.7554 8.53302L8.55136 2.32822C8.3851 2.15901 8.1694 2.04696 7.93536 2.00822C5.72496 1.67942 2.14496 1.99222 2.07136 2.07062" fill="#0047AB"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6.06101 6.12927C6.0228 6.16616 5.99233 6.2103 5.97137 6.2591C5.9504 6.30791 5.93937 6.36039 5.93891 6.41351C5.93844 6.46662 5.94856 6.51929 5.96868 6.56845C5.98879 6.61761 6.01849 6.66227 6.05605 6.69982C6.0936 6.73738 6.13827 6.76708 6.18742 6.78719C6.23658 6.80731 6.28925 6.81743 6.34237 6.81697C6.39548 6.8165 6.44797 6.80547 6.49677 6.78451C6.54557 6.76354 6.58971 6.73307 6.62661 6.69487C6.69947 6.61942 6.73979 6.51838 6.73888 6.41351C6.73796 6.30863 6.6959 6.2083 6.62173 6.13414C6.54757 6.05998 6.44725 6.01791 6.34237 6.017C6.23749 6.01608 6.13645 6.0564 6.06101 6.12927ZM5.49621 7.26047C5.37965 7.15027 5.28637 7.01784 5.22188 6.87098C5.15739 6.72412 5.12299 6.56582 5.12073 6.40544C5.11846 6.24507 5.14836 6.08586 5.20868 5.93724C5.26899 5.78861 5.35849 5.65359 5.47188 5.54015C5.58527 5.42671 5.72025 5.33715 5.86884 5.27676C6.01744 5.21638 6.17663 5.1864 6.33701 5.18859C6.49739 5.19078 6.6557 5.2251 6.80259 5.28953C6.94948 5.35395 7.08196 5.44717 7.19221 5.56367C7.40699 5.79063 7.52476 6.09243 7.52049 6.40488C7.51622 6.71733 7.39024 7.01579 7.16933 7.2368C6.94843 7.45781 6.65002 7.58394 6.33757 7.58836C6.02512 7.59278 5.72327 7.47514 5.49621 7.26047Z" fill="#0047AB"/></svg>' +
                     '<span class="akun-unit-label text-[15px] font-medium text-[#0047AB]"></span>' +
                 '</div>' +
-                '<p class="text-[15px] font-semibold text-[#656565]">Dibuat: ' + todayFormatted() + '</p>' +
+                '<p class="text-[15px] font-semibold text-[#656565]">Dibuat: ' + (account.dibuat || '-') + '</p>' +
             '</div>' +
-            '<div class="flex items-center gap-[10px]">' +
+            '<div class="akun-actions flex items-center gap-[10px]">' +
                 '<div class="relative">' +
-                    '<select class="akun-unit-select w-[292px] appearance-none rounded-[10px] border-[0.5px] border-[#A19E9E] bg-[#F9F9F9] px-[22px] py-[8px] text-[14px] font-medium text-[#464646] outline-none">' + optionsHtml(unit) + '</select>' +
+                    '<select class="akun-unit-select w-[292px] appearance-none rounded-[10px] border-[0.5px] border-[#A19E9E] bg-[#F9F9F9] px-[22px] py-[8px] text-[14px] font-medium text-[#464646] outline-none">' + optionsHtml(account.unit) + '</select>' +
                     '<svg class="pointer-events-none absolute right-[22px] top-1/2 -translate-y-1/2" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 10L12 14L16 10" stroke="#464646" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
                 '</div>' +
                 '<button type="button" title="Reset password" aria-label="Reset password" class="reset-akun-btn flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[6px] border-[0.5px] border-[#A19E9E] bg-[#F9F9F9]">' +
@@ -211,9 +219,53 @@
                     '<svg width="18" height="18" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.0469 24.2812C9.48828 24.2812 9.01026 24.0825 8.61282 23.6851C8.21537 23.2876 8.01631 22.8093 8.01563 22.25V9.04687C7.72787 9.04687 7.48683 8.94937 7.2925 8.75437C7.09818 8.55937 7.00068 8.31833 7 8.03125C6.99933 7.74417 7.09683 7.50312 7.2925 7.30812C7.48818 7.11312 7.72922 7.01562 8.01563 7.01562H12.0781C12.0781 6.72786 12.1756 6.48682 12.3706 6.2925C12.5656 6.09818 12.8067 6.00068 13.0938 6H17.1562C17.444 6 17.6854 6.0975 17.8804 6.2925C18.0754 6.4875 18.1726 6.72854 18.1719 7.01562H22.2344C22.5221 7.01562 22.7635 7.11312 22.9585 7.30812C23.1535 7.50312 23.2507 7.74417 23.25 8.03125C23.2493 8.31833 23.1518 8.55971 22.9575 8.75539C22.7632 8.95107 22.5221 9.04823 22.2344 9.04687V22.25C22.2344 22.8086 22.0356 23.2869 21.6382 23.6851C21.2408 24.0832 20.7624 24.2819 20.2031 24.2812H10.0469ZM20.2031 9.04687H10.0469V22.25H20.2031V9.04687ZM13.8179 19.9273C14.0122 19.7323 14.1094 19.4909 14.1094 19.2031V12.0937C14.1094 11.806 14.0119 11.5649 13.8169 11.3706C13.6219 11.1763 13.3808 11.0788 13.0938 11.0781C12.8067 11.0774 12.5656 11.1749 12.3706 11.3706C12.1756 11.5663 12.0781 11.8073 12.0781 12.0937V19.2031C12.0781 19.4909 12.1756 19.7323 12.3706 19.9273C12.5656 20.1223 12.8067 20.2194 13.0938 20.2187C13.3808 20.2181 13.6222 20.1216 13.8179 19.9273ZM17.8804 19.9262C18.0747 19.7326 18.1719 19.4916 18.1719 19.2031V12.0937C18.1719 11.806 18.0744 11.5649 17.8794 11.3706C17.6844 11.1763 17.4433 11.0788 17.1562 11.0781C16.8692 11.0774 16.6281 11.1749 16.4331 11.3706C16.2381 11.5663 16.1406 11.8073 16.1406 12.0937V19.2031C16.1406 19.4909 16.2381 19.7323 16.4331 19.9273C16.6281 20.1223 16.8692 20.2194 17.1562 20.2187C17.4433 20.2181 17.6847 20.1206 17.8804 19.9262Z" fill="white"/></svg>' +
                 '</button>' +
             '</div>';
-        row.querySelector('.akun-email').textContent = email;
-        row.querySelector('.akun-unit-label').textContent = unit;
+
+        row.querySelector('.akun-email').textContent = account.email;
+        row.querySelector('.akun-unit-label').textContent = account.label;
+
+        if (!account.is_unit) {
+            // Baris akun admin hanya untuk dilihat: tidak bisa dipindah unit,
+            // direset, atau dihapus dari halaman ini.
+            row.querySelector('.akun-actions').remove();
+        }
+
         return row;
+    }
+
+    function renderCurrent(current) {
+        if (!current) return;
+        document.getElementById('akun-saya-email').textContent = current.email;
+        document.getElementById('akun-saya-peran').textContent = current.label;
+    }
+
+    function renderList(accounts) {
+        list.innerHTML = '';
+        accounts.forEach(function (account) {
+            list.appendChild(createRow(account));
+        });
+        title.textContent = 'Daftar Akun (' + accounts.length + ')';
+    }
+
+    function showListError(message) {
+        list.innerHTML = '';
+        var info = document.createElement('p');
+        info.className = 'py-[18px] text-[15px] font-medium text-[#D83D3D]';
+        info.textContent = message;
+        list.appendChild(info);
+    }
+
+    function load() {
+        return apiFetch('').then(function (payload) {
+            renderCurrent(payload.current);
+            renderList(payload.data);
+        }).catch(function (error) {
+            if (error.message === 'redirected') return;
+            showListError(error.message);
+        });
+    }
+
+    function rowId(element) {
+        return element.closest('.akun-row').dataset.id;
     }
 
     document.getElementById('toggle-akun-password').addEventListener('click', function () {
@@ -230,31 +282,70 @@
 
         if (!email || password.length < 8 || !unit) return;
 
-        list.appendChild(createRow(email, unit));
-        updateCount();
-        form.reset();
-    });
+        submitBtn.disabled = true;
 
-    list.addEventListener('click', function (event) {
-        var hapusBtn = event.target.closest('.hapus-akun-btn');
-        if (hapusBtn) {
-            hapusBtn.closest('.akun-row').remove();
-            updateCount();
-            return;
-        }
-
-        var resetBtn = event.target.closest('.reset-akun-btn');
-        if (resetBtn) {
-            var email = resetBtn.closest('.akun-row').querySelector('.akun-email').textContent;
-            alert('Password untuk ' + email + ' telah direset.');
-        }
+        apiFetch('', { method: 'POST', body: { email: email, password: password, unit: unit } })
+            .then(function () {
+                form.reset();
+                return load();
+            })
+            .catch(function (error) {
+                if (error.message !== 'redirected') alert(error.message);
+            })
+            .finally(function () {
+                submitBtn.disabled = false;
+            });
     });
 
     list.addEventListener('change', function (event) {
         var select = event.target.closest('.akun-unit-select');
         if (!select) return;
-        select.closest('.akun-row').querySelector('.akun-unit-label').textContent = select.value;
+
+        var previous = select.closest('.akun-row').querySelector('.akun-unit-label').textContent;
+
+        apiFetch('/' + rowId(select), { method: 'PUT', body: { unit: select.value } })
+            .then(function (payload) {
+                select.closest('.akun-row').querySelector('.akun-unit-label').textContent = payload.data.label;
+            })
+            .catch(function (error) {
+                if (error.message === 'redirected') return;
+                select.value = previous;
+                alert(error.message);
+            });
     });
+
+    list.addEventListener('click', function (event) {
+        var resetBtn = event.target.closest('.reset-akun-btn');
+        if (resetBtn) {
+            var email = resetBtn.closest('.akun-row').querySelector('.akun-email').textContent;
+
+            apiFetch('/' + rowId(resetBtn) + '/reset-password', { method: 'POST' })
+                .then(function (payload) {
+                    // Email unit umumnya internal, jadi sandi baru diserahkan
+                    // langsung ke admin, bukan dikirim lewat surat.
+                    alert('Kata sandi baru untuk ' + email + ': ' + payload.password);
+                })
+                .catch(function (error) {
+                    if (error.message !== 'redirected') alert(error.message);
+                });
+
+            return;
+        }
+
+        var hapusBtn = event.target.closest('.hapus-akun-btn');
+        if (!hapusBtn) return;
+
+        var row = hapusBtn.closest('.akun-row');
+        if (!confirm('Hapus akun ' + row.querySelector('.akun-email').textContent + '?')) return;
+
+        apiFetch('/' + rowId(hapusBtn), { method: 'DELETE' })
+            .then(load)
+            .catch(function (error) {
+                if (error.message !== 'redirected') alert(error.message);
+            });
+    });
+
+    load();
 })();
 </script>
 

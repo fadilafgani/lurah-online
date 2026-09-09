@@ -142,6 +142,9 @@
                 }
 
                 localStorage.setItem('admin_token', data.token);
+                // Peran disimpan supaya navbar halaman berikutnya langsung
+                // tahu menu apa yang boleh tampil.
+                localStorage.setItem('admin_identity', JSON.stringify(data.identity));
                 window.location.href = '{{ route('admin.dashboard') }}';
             });
         </script>

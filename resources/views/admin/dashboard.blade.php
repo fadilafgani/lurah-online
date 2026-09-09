@@ -69,7 +69,10 @@
             ];
 
             $status = $status ?? 'verifikasi';
-            $unitOptions = $unitOptions ?? ['Unit Infrastruktur', 'Unit Kebersihan', 'Unit Keamanan'];
+            // Sumber tunggal daftar unit: config/units.php. Daftar yang dulu
+            // ditulis di sini hanya berisi tiga unit, sehingga penugasan ke
+            // unit lain yang akunnya sudah dibuat tidak pernah muncul.
+            $unitOptions = $unitOptions ?? config('units.options');
             $selectedKode = $selectedKode ?? null;
             $statusLabel = collect($statusCards)->firstWhere('key', $status)['label'] ?? 'Verifikasi';
 

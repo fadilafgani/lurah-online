@@ -35,6 +35,8 @@
             'route' => 'admin.akun-unit',
             'label' => 'Akun Unit',
             'active' => Request::routeIs('admin.akun-unit'),
+            // Hanya admin kelurahan; akun unit tidak boleh melihat menu ini.
+            'admin_only' => true,
             'icon' => '<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
         ],
     ];
@@ -43,7 +45,7 @@
         <!-- Menu (desktop) -->
         <ul class="hidden md:flex items-center gap-1 lg:gap-2">
             @foreach ($adminNavs as $nav)
-                <li>
+                <li @if ($nav['admin_only'] ?? false) data-admin-only hidden @endif>
                     <a href="{{ route($nav['route']) }}"
                        class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-base lg:text-[17px] font-bold transition-all duration-200 {{ $nav['active'] ? 'bg-[#0047AB]/10 text-[#0047AB] shadow-xs' : 'text-[#464646] hover:bg-slate-100/80 hover:text-[#0047AB]' }}">
                         {!! $nav['icon'] !!}
@@ -76,6 +78,11 @@
                 </div>
             </div>
 
+            <div id="navbar-identity" class="hidden max-w-[240px] flex-col text-right leading-tight md:flex">
+                <span id="navbar-identity-email" class="truncate text-[13px] font-semibold text-[#153655]"></span>
+                <span id="navbar-identity-label" class="truncate text-[12px] font-medium text-[#0047AB]"></span>
+            </div>
+
             <button type="button" id="admin-logout-btn"
                 class="whitespace-nowrap rounded-[10px] bg-[#D83D3D] px-3 py-1.5 text-sm sm:px-4 sm:text-base lg:px-[23px] lg:py-[8px] lg:text-[20px] font-semibold text-white hover:bg-red-700 transition shrink-0 shadow-sm">
                 Keluar
@@ -100,7 +107,7 @@
     <!-- Mobile Menu -->
     <div id="admin-mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-1">
         @foreach ($adminNavs as $nav)
-            <a href="{{ route($nav['route']) }}"
+            <a href="{{ route($nav['route']) }}" @if ($nav['admin_only'] ?? false) data-admin-only hidden @endif
                class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-base font-bold transition-colors {{ $nav['active'] ? 'bg-[#0047AB]/10 text-[#0047AB]' : 'text-[#464646] hover:bg-slate-50' }}">
                 {!! $nav['icon'] !!}
                 <span>{{ $nav['label'] }}</span>
@@ -113,8 +120,55 @@
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('admin-logout-btn')?.addEventListener('click', function () {
         localStorage.removeItem('admin_token');
+        localStorage.removeItem('admin_identity');
         window.location.href = "{{ route('admin.login') }}";
     });
+
+    // ── Identitas akun ───────────────────────────────────────────────
+    // Halaman admin dirender tanpa sesi (autentikasi memakai token Sanctum
+    // di localStorage), jadi peran ditanyakan ke API. Menu khusus admin
+    // dirender tersembunyi supaya akun unit tidak pernah melihatnya, bahkan
+    // sekejap sebelum jawaban API datang.
+    function applyIdentity(identity) {
+        const isAdmin = identity?.role === 'admin';
+
+        document.querySelectorAll('[data-admin-only]').forEach(function (el) {
+            el.hidden = !isAdmin;
+        });
+
+        // Kosong berarti kotak identitas tidak terlihat, jadi cukup isi teks.
+        document.getElementById("navbar-identity-email").textContent = identity?.email ?? '';
+        document.getElementById("navbar-identity-label").textContent = identity?.label ?? '';
+    }
+
+    const token = localStorage.getItem('admin_token');
+    let cached = null;
+
+    try {
+        cached = JSON.parse(localStorage.getItem('admin_identity') || 'null');
+    } catch (e) {
+        cached = null;
+    }
+
+    // Tampilkan hasil terakhir yang diketahui dulu agar menu tidak berkedip,
+    // lalu perbaiki begitu API menjawab.
+    if (token && cached) applyIdentity(cached);
+
+    if (token) {
+        fetch('/api/me', {
+            headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + token },
+        })
+            .then(res => res.ok ? res.json() : Promise.reject(res.status))
+            .then(payload => {
+                localStorage.setItem('admin_identity', JSON.stringify(payload.data));
+                applyIdentity(payload.data);
+            })
+            .catch(() => {
+                // Token tidak berlaku lagi: jangan sisakan menu admin terbuka.
+                localStorage.removeItem('admin_identity');
+                applyIdentity(null);
+            });
+    }
 
     const menuBtn = document.getElementById("admin-menu-button");
     const menu = document.getElementById("admin-mobile-menu");
