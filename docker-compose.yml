@@ -35,10 +35,6 @@ services:
     depends_on:
       app:
         condition: service_started
-    environment:
-      APP_DOMAIN: ${APP_DOMAIN:?APP_DOMAIN wajib diset di .env}
-      # Rentang IP proxy yang dipercaya untuk header X-Forwarded-*
-      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-private_ranges}
     ports:
       # Hanya HTTP — HTTPS diterminasi oleh proxy di depan (Cloudflare/Nginx)
       - "${WEB_HTTP_PORT:-80}:80"
