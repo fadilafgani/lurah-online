@@ -126,8 +126,6 @@ Route::get('/admin/akun-unit', fn() => view('admin.akun-unit'))->name('admin.aku
 
 Route::get('/admin/lupa-kata-sandi', fn() => view('forgot-password'))->name('admin.forgot-password');
 
-Route::get('/admin/reset-kata-sandi', fn() => view('reset-password'))->name('admin.reset-password');
-
 Route::get('/admin/periksa-email', fn() => view('check-email'))->name('admin.check-email');
 
 Route::get('/forgot-password', [ForgotPasswordController::class, 'create'])

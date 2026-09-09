@@ -46,6 +46,14 @@
                             </div>
                         </div>
 
+                        {{-- Tombol "Kirim Ulang" dibatasi throttle 60 detik; tanpa ini
+                             pengguna yang menekannya terlalu cepat tidak dapat umpan balik. --}}
+                        @if ($errors->any())
+                            <div class="w-full rounded-[20px] border border-red-200 bg-red-50 px-6 py-4">
+                                <p class="text-[17px] font-medium text-center text-red-600">{{ $errors->first() }}</p>
+                            </div>
+                        @endif
+
                         <a href="{{ route('admin.login') }}"
                             class="w-full flex items-center justify-center py-[18px] rounded-[20px] bg-gradient-to-r from-[#0047AB] to-[#153655] text-white text-[23px] font-semibold shadow-[2px_2px_4px_rgba(0,0,0,0.25)] hover:opacity-90 transition">
                             Kembali ke Login
@@ -54,7 +62,7 @@
                         <form method="POST" action="{{ route('password.email') }}">
                             @csrf
 
-                            <input type="hidden" name="email" value="{{ session('email') }}">
+                            <input type="hidden" name="email" value="{{ old('email', session('email')) }}">
 
                             <button
                                 type="submit"
