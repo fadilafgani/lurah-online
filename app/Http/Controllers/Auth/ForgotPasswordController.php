@@ -13,7 +13,7 @@ class ForgotPasswordController extends Controller
      */
     public function create()
     {
-        return view('admin.forgot-password');
+        return view('forgot-password');
     }
 
     /**
