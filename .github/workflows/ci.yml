@@ -26,6 +26,27 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # -----------------------------------------------------------------------
+      # Aset Vite dibangun SEBELUM test, di job yang sama.
+      #
+      # public/build/ ada di .gitignore, jadi checkout runner tidak membawanya.
+      # Blade memakai @vite(...) di hampir semua view, dan Laravel melempar
+      # ViteManifestNotFoundException kalau public/build/manifest.json tidak ada.
+      # Jadi test apa pun yang me-render view akan gagal tanpa langkah ini.
+      # -----------------------------------------------------------------------
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      # Sekaligus menangkap error build frontend di sini, sebelum VPS
+      # menghabiskan beberapa menit untuk build image yang pasti gagal.
+      - name: Build aset Vite
+        run: npm run build
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -54,23 +75,3 @@ jobs:
         # Database memakai sqlite :memory: sesuai phpunit.xml, jadi tidak perlu
         # service MySQL di runner.
         run: php artisan test
-
-  assets:
-    name: Build aset (Vite)
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-
-      - run: npm ci
-
-      # Menangkap error build frontend di sini, sebelum VPS menghabiskan
-      # beberapa menit untuk build image yang pasti gagal.
-      - run: npm run build
