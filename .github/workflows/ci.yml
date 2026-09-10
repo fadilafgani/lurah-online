@@ -1,0 +1,76 @@
+name: CI
+
+# Dipanggil otomatis di branch selain main & di setiap PR, serta dipanggil ulang
+# oleh workflow deploy (workflow_call) supaya deploy tidak pernah jalan tanpa test.
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+# Push beruntun di branch yang sama: batalkan run lama, cukup uji yang terbaru.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test (PHP 8.3)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          # Cocokkan dengan ekstensi di Dockerfile; pdo_sqlite untuk test in-memory.
+          extensions: mbstring, bcmath, intl, exif, pcntl, zip, gd, pdo_sqlite, sqlite3
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache dependency Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ runner.os }}-php8.3-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-php8.3-
+
+      - name: Install dependency PHP
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Siapkan .env untuk testing
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Jalankan test
+        # Database memakai sqlite :memory: sesuai phpunit.xml, jadi tidak perlu
+        # service MySQL di runner.
+        run: php artisan test
+
+  assets:
+    name: Build aset (Vite)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      # Menangkap error build frontend di sini, sebelum VPS menghabiskan
+      # beberapa menit untuk build image yang pasti gagal.
+      - run: npm run build
