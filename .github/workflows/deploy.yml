@@ -1,0 +1,95 @@
+name: Deploy ke VPS
+
+on:
+  push:
+    branches:
+      - main
+  # Tombol "Run workflow" di tab Actions untuk deploy/rollback manual.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Jangan pernah ada dua deploy jalan bersamaan di VPS yang sama.
+# cancel-in-progress: false — deploy yang sedang jalan dibiarkan selesai.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  # Test dijalankan ulang di sini supaya main tidak pernah ter-deploy tanpa lulus test
+  # (misalnya saat merge commit menghasilkan kombinasi kode yang belum pernah diuji).
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Deploy
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_USER: ${{ vars.VPS_USER }}
+      VPS_PORT: ${{ secrets.VPS_PORT || '22' }}
+      VPS_APP_PATH: ${{ vars.VPS_APP_PATH }}
+
+    steps:
+      - name: Siapkan kunci SSH
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          # Host key: pakai nilai tetap dari secret kalau ada (aman dari MITM),
+          # kalau tidak ada jatuh ke ssh-keyscan (trust-on-first-use).
+          if [ -n "${{ secrets.VPS_SSH_HOST_KEY }}" ]; then
+            printf '%s\n' "${{ secrets.VPS_SSH_HOST_KEY }}" > ~/.ssh/known_hosts
+          else
+            echo "::warning::VPS_SSH_HOST_KEY belum diset, memakai ssh-keyscan (rentan MITM)"
+            ssh-keyscan -p "$VPS_PORT" -H "$VPS_HOST" > ~/.ssh/known_hosts 2>/dev/null
+          fi
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy commit ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/deploy_key -p "$VPS_PORT" \
+              -o BatchMode=yes -o ConnectTimeout=15 \
+              "$VPS_USER@$VPS_HOST" \
+              "cd '$VPS_APP_PATH' && ./deploy.sh '${{ github.sha }}'"
+
+      - name: Verifikasi aplikasi hidup
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/deploy_key -p "$VPS_PORT" \
+              -o BatchMode=yes -o ConnectTimeout=15 \
+              "$VPS_USER@$VPS_HOST" bash -se <<REMOTE
+          set -euo pipefail
+          cd '$VPS_APP_PATH'
+
+          docker compose ps
+
+          # Domain diambil dari .env di VPS karena Caddy merutekan per-host.
+          # \042 = tanda kutip ganda, \047 = kutip tunggal (dihapus kalau ada).
+          domain=\$(grep -E '^APP_DOMAIN=' .env | head -n1 | cut -d= -f2- | tr -d '\\042\\047 ')
+
+          # Container app perlu beberapa detik untuk cache config + migrasi.
+          for i in \$(seq 1 20); do
+              if docker compose exec -T web \
+                   wget -q -O /dev/null --header "Host: \$domain" http://127.0.0.1/up; then
+                  echo "OK: /up merespons 200 (percobaan \$i)"
+                  exit 0
+              fi
+              sleep 3
+          done
+
+          echo "GAGAL: /up tidak merespons 200 setelah 60 detik" >&2
+          docker compose logs --tail=80 app >&2
+          exit 1
+          REMOTE
+
+      - name: Bersihkan kunci SSH
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

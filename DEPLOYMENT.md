@@ -15,7 +15,9 @@ tidak perlu PHP, Node, atau Composer terpasang — hanya Docker.
 | `docker/php/php.ini` | Setting PHP produksi (OPcache, limit upload, error ke log) |
 | `docker/php/www.conf` | Pool PHP-FPM (jumlah worker, log ke stdout) |
 | `.env.production.example` | Template `.env` produksi |
-| `deploy.sh` | Skrip deploy/update di VPS |
+| `deploy.sh` | Skrip deploy/update di VPS (juga dipanggil oleh CI) |
+| `.github/workflows/ci.yml` | Test PHP + build aset, jalan di tiap PR & branch |
+| `.github/workflows/deploy.yml` | Deploy otomatis ke VPS saat push ke `main` |
 
 ---
 
@@ -124,6 +126,86 @@ curl -I https://domain-anda/up    # harus 200
 # Langsung ke Caddy, melewati proxy
 curl -I -H "Host: domain-anda" http://<IP_VPS>/up   # harus 200
 ```
+
+---
+
+## 7. Deploy otomatis lewat GitHub Actions
+
+Setelah langkah 1–6 berhasil sekali secara manual, deploy bisa diotomatiskan.
+Alurnya:
+
+```
+push / PR ke branch mana pun  ->  ci.yml: test PHP + build aset Vite
+push (atau merge) ke main     ->  deploy.yml: test -> SSH ke VPS -> ./deploy.sh <sha> -> cek /up
+```
+
+Build image tetap terjadi **di VPS** (lihat kebutuhan RAM ± 2 GB di catatan bawah);
+GitHub Actions hanya memicu dan memverifikasinya.
+
+### 7.1 Buat kunci SSH khusus deploy
+
+Kunci ini terpisah dari kunci pribadi Anda supaya bisa dicabut sendiri kalau bocor.
+Jalankan **di laptop**, bukan di VPS:
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/lurah-deploy -C "github-actions" -N ""
+
+# Pasang kunci publiknya ke user deploy di VPS
+ssh-copy-id -i ~/.ssh/lurah-deploy.pub deploy@<IP_VPS>
+
+# Uji: harus bisa masuk tanpa passphrase
+ssh -i ~/.ssh/lurah-deploy deploy@<IP_VPS> "docker compose version"
+```
+
+### 7.2 Isi secrets di GitHub
+
+Buka **Settings → Secrets and variables → Actions → New repository secret**:
+
+| Secret | Wajib | Nilai | Cara mendapatkan |
+|---|---|---|---|
+| `VPS_HOST` | ya | IP atau hostname VPS | — |
+| `VPS_USER` | ya | `deploy` | user non-root dari langkah 1 |
+| `VPS_APP_PATH` | ya | `/home/deploy/lurah-online` | hasil `pwd` di direktori proyek di VPS |
+| `VPS_SSH_KEY` | ya | isi **kunci privat** | `cat ~/.ssh/lurah-deploy` — salin utuh termasuk baris `BEGIN`/`END` |
+| `VPS_SSH_HOST_KEY` | sangat disarankan | host key VPS | `ssh-keyscan -H <IP_VPS>` |
+| `VPS_PORT` | tidak | port SSH kalau bukan `22` | — |
+
+> `VPS_SSH_HOST_KEY` mengunci identitas server. Tanpa itu workflow jatuh ke
+> `ssh-keyscan` (trust-on-first-use) dan menampilkan peringatan — artinya runner
+> mempercayai server apa pun yang menjawab di alamat itu.
+
+### 7.3 Jalankan
+
+Merge ke `main`, atau **Actions → Deploy ke VPS → Run workflow** untuk memicu manual.
+
+Workflow akan gagal (dan menampilkan 80 baris terakhir log container `app`) kalau
+`https://domain/up` tidak membalas 200 dalam 60 detik setelah container naik.
+
+### 7.4 Rollback
+
+`deploy.sh` menerima commit/tag sebagai argumen, jadi rollback = deploy ulang commit lama:
+
+```bash
+ssh deploy@<IP_VPS>
+cd lurah-online
+git log --oneline -10          # cari commit yang masih sehat
+./deploy.sh <sha-commit-lama>
+```
+
+Perlu diingat: rollback kode **tidak** membatalkan migrasi database yang sudah jalan.
+Kalau rilis terakhir mengandung migrasi yang merusak, turunkan dulu dengan
+`docker compose exec app php artisan migrate:rollback --step=1`.
+
+### 7.5 Kalau deploy gagal
+
+| Gejala di Actions | Penyebab & solusi |
+|---|---|
+| `Permission denied (publickey)` | `VPS_SSH_KEY` tidak lengkap (baris `BEGIN`/`END` terpotong), atau kunci publik belum ada di `~/.ssh/authorized_keys` user `deploy` |
+| `Host key verification failed` | `VPS_SSH_HOST_KEY` salah atau host key VPS berubah (VPS di-rebuild). Ambil ulang dengan `ssh-keyscan -H <IP_VPS>` |
+| `ERROR: .env tidak ditemukan` | Langkah 3 belum dikerjakan di VPS — CI tidak pernah membuat `.env`, file itu hanya ada di server |
+| `permission denied while trying to connect to the Docker daemon` | User `deploy` belum masuk grup docker: `usermod -aG docker deploy`, lalu login ulang |
+| `GAGAL: /up tidak merespons 200` | Baca log container yang ikut tercetak. Penyebab umum sama dengan tabel Troubleshooting di bawah |
+| Build kehabisan memori (`Killed`) | RAM VPS kurang saat `npm ci`. Aktifkan swap (lihat catatan **Kebutuhan RAM**) |
 
 ---
 
