@@ -22,5 +22,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/admin/unit-accounts/{user}', [UnitAccountController::class, 'update']);
         Route::post('/admin/unit-accounts/{user}/reset-password', [UnitAccountController::class, 'resetPassword']);
         Route::delete('/admin/unit-accounts/{user}', [UnitAccountController::class, 'destroy']);
+
+        // Manajemen Data Warga
+        Route::get('/admin/residents', [\App\Http\Controllers\Admin\ResidentController::class, 'index']);
+        Route::post('/admin/residents', [\App\Http\Controllers\Admin\ResidentController::class, 'store']);
+        Route::get('/admin/residents/{resident}', [\App\Http\Controllers\Admin\ResidentController::class, 'show']);
+        Route::put('/admin/residents/{resident}', [\App\Http\Controllers\Admin\ResidentController::class, 'update']);
+        Route::put('/admin/residents/{resident}/status', [\App\Http\Controllers\Admin\ResidentController::class, 'toggleStatus']);
+        Route::post('/admin/residents/{resident}/reset-password', [\App\Http\Controllers\Admin\ResidentController::class, 'resetPassword']);
+        Route::post('/admin/residents/preview-import', [\App\Http\Controllers\Admin\ResidentController::class, 'previewImport']);
+        Route::post('/admin/residents/confirm-import', [\App\Http\Controllers\Admin\ResidentController::class, 'confirmImport']);
     });
 });

@@ -118,7 +118,7 @@
                                 </svg>
                                 <div class="flex flex-col gap-1">
                                     <p class="text-[#656565] text-[20px] font-medium">Pelapor</p>
-                                    <p class="text-[#464646] text-[20px] font-bold">{{ $tiket->name ?: 'Anonim' }}</p>
+                                    <p class="text-[#464646] text-[20px] font-bold">{{ $tiket->public_reporter_name }}</p>
                                 </div>
                             </div>
 

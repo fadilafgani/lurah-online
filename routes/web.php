@@ -6,26 +6,44 @@ use Illuminate\Support\Str;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\Admin\ComplaintController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ResidentController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\LacakController;
+use App\Http\Controllers\ResidentAuthController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+// Autentikasi Warga Berbasis NIK
+Route::get('/warga/login', [ResidentAuthController::class, 'showLogin'])->name('warga.login');
+Route::post('/warga/login', [ResidentAuthController::class, 'login'])
+    ->middleware('throttle:10,1')
+    ->name('warga.login.submit');
+Route::post('/warga/logout', [ResidentAuthController::class, 'logout'])->name('warga.logout');
+
+Route::get('/warga/ganti-password', [ResidentAuthController::class, 'showChangePassword'])
+    ->middleware('auth:resident')
+    ->name('warga.ganti-password');
+Route::post('/warga/ganti-password', [ResidentAuthController::class, 'updatePassword'])
+    ->middleware('auth:resident')
+    ->name('warga.ganti-password.submit');
+
 Route::get('/pengaduan', function () {
-    return view('pengaduan');
-})->name('pengaduan.buat');
+    $resident = auth('resident')->user();
+    return view('pengaduan', compact('resident'));
+})->middleware('resident')->name('pengaduan.buat');
 
 Route::post('/pengaduan/simpan', function (Request $request) {
+    $resident = auth('resident')->user();
+
     $data = $request->validate([
         'judul' => 'required|string|max:255',
         'kategori' => 'required|string|max:255',
         'deskripsi' => 'required|string',
         'lokasi' => 'required|string',
         'foto' => 'required|image|mimes:jpg,jpeg,png|max:5120',
-        'nama' => 'nullable|string|max:255',
         'anonim' => 'nullable|boolean',
     ]);
 
@@ -33,9 +51,12 @@ Route::post('/pengaduan/simpan', function (Request $request) {
         $kode = 'LO-' . now()->format('ymd') . '-' . strtoupper(Str::random(4));
     } while (\App\Models\Complaint::where('ticket_code', $kode)->exists());
 
+    // ponytail: Identitas pelapor mutlak diambil dari session resident terautentikasi
     \App\Models\Complaint::create([
         'ticket_code' => $kode,
-        'name' => $request->boolean('anonim') ? null : $data['nama'] ?? null,
+        'resident_id' => $resident->id,
+        'name' => $resident->name,
+        'is_anonymous' => $request->boolean('anonim'),
         'title' => $data['judul'],
         'description' => $data['deskripsi'],
         'location' => $data['lokasi'],
@@ -45,7 +66,7 @@ Route::post('/pengaduan/simpan', function (Request $request) {
     ]);
 
     return redirect()->route('pengaduan.sukses', ['kode' => $kode]);
-})->name('pengaduan.simpan');
+})->middleware('resident')->name('pengaduan.simpan');
 
 Route::get('/pengaduan/sukses/{kode}', function (string $kode) {
     return view('pengaduan-sukses', compact('kode'));
@@ -123,6 +144,9 @@ Route::delete('/admin/laporan/{ticketCode}',
 Route::get('/admin/kata-terlarang', fn() => view('admin.kata-terlarang'))->name('admin.kata-terlarang');
 
 Route::get('/admin/akun-unit', fn() => view('admin.akun-unit'))->name('admin.akun-unit');
+
+Route::get('/admin/warga', [ResidentController::class, 'page'])->name('admin.warga');
+Route::get('/admin/warga/template', [ResidentController::class, 'downloadTemplate'])->name('admin.warga.template');
 
 Route::get('/admin/lupa-kata-sandi', fn() => view('forgot-password'))->name('admin.forgot-password');
 

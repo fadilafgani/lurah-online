@@ -54,7 +54,25 @@ $menus = [
             </ul>
         </div>
 
-        <div class="hidden md:block shrink-0 flex items-center gap-2">
+        <div class="hidden md:flex shrink-0 items-center gap-3">
+            @if(Auth::guard('resident')->check())
+                @php $residentUser = Auth::guard('resident')->user(); @endphp
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200/60">
+                    <div class="w-8 h-8 rounded-full bg-[#0047AB] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                        {{ strtoupper(substr($residentUser->name, 0, 1)) }}
+                    </div>
+                    <div class="flex flex-col text-left leading-tight">
+                        <span class="text-xs font-bold text-[#153655] max-w-[120px] truncate">{{ $residentUser->name }}</span>
+                        <span class="text-[10px] text-gray-500 font-mono">{{ $residentUser->nik }}</span>
+                    </div>
+                    <form action="{{ route('warga.logout') }}" method="POST" class="inline m-0">
+                        @csrf
+                        <button type="submit" title="Keluar" class="ml-1 text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded-lg transition">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        </button>
+                    </form>
+                </div>
+            @endif
             <button id="pwa-install-btn" class="hidden rounded-lg bg-[#0047AB] px-6 py-2 text-sm font-semibold text-white hover:bg-[#003780] transition-all shadow-sm">
                 Pasang Aplikasi
             </button>
@@ -87,6 +105,23 @@ $menus = [
                 <span>{{ $menu['title'] }}</span>
             </a>
         @endforeach
+
+        @if(Auth::guard('resident')->check())
+            @php $residentUser = Auth::guard('resident')->user(); @endphp
+            <div class="p-3 my-2 rounded-xl bg-blue-50 border border-blue-200/60 flex items-center justify-between">
+                <div>
+                    <p class="text-[11px] text-gray-500 font-medium">Masuk Sebagai:</p>
+                    <p class="text-sm font-bold text-[#153655]">{{ $residentUser->name }}</p>
+                    <p class="text-xs text-[#0047AB] font-mono">NIK: {{ $residentUser->nik }}</p>
+                </div>
+                <form action="{{ route('warga.logout') }}" method="POST" class="m-0">
+                    @csrf
+                    <button type="submit" class="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-semibold hover:bg-red-700 transition">
+                        Keluar
+                    </button>
+                </form>
+            </div>
+        @endif
 
         <button id="pwa-install-btn-mobile" class="hidden w-full mt-3 px-5 py-2 text-center rounded-[10px] bg-[#0047AB] text-white text-[18px] font-semibold">
             Pasang Aplikasi

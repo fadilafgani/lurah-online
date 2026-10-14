@@ -37,6 +37,27 @@
             <?php endif; ?>
 
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 md:p-12">
+                {{-- Identitas Warga Terautentikasi --}}
+                <div class="mb-8 p-4 rounded-2xl bg-gradient-to-r from-blue-50/80 to-indigo-50/60 border border-blue-200/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0047AB] to-[#153655] text-white flex items-center justify-center font-extrabold text-base shadow-sm">
+                            {{ strtoupper(substr($resident->name ?? 'W', 0, 1)) }}
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-[#0047AB]">Pelapor Terverifikasi</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Aktif</span>
+                            </div>
+                            <p class="text-base font-extrabold text-[#153655] leading-tight">{{ $resident->name ?? '-' }}</p>
+                            <p class="text-xs text-gray-500 font-mono">NIK: {{ $resident->nik ?? '-' }}</p>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-500 flex sm:flex-col sm:items-end justify-between w-full sm:w-auto">
+                        <span class="text-gray-400">Desa Banjarsari</span>
+                        <span class="text-emerald-700 font-medium">Data diverifikasi dari database</span>
+                    </div>
+                </div>
+
                 <form action="<?php echo route('pengaduan.simpan'); ?>" method="POST" enctype="multipart/form-data" x-data="{ isAnonim: false }">
                     <?php echo csrf_field(); ?>
                     
@@ -92,7 +113,7 @@
                     </div>
 
                     <div class="bg-blue-50/40 border border-blue-100/60 rounded-xl p-5 mb-8">
-                        <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
                                 <span class="p-2 bg-white border border-gray-100 shadow-xs rounded-lg text-blue-900">
                                     <svg width="24" height="24" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
@@ -106,7 +127,8 @@
                                 </span>
                                 <div>
                                     <h4 class="text-sm font-semibold text-blue-950">Kirim sebagai Anonim?</h4>
-                                    <p class="text-xs text-gray-500">Identitas Anda tidak akan ditampilkan.</p>
+                                    <p class="text-xs text-gray-500" x-show="!isAnonim">Nama Anda ({{ $resident->name ?? 'Warga' }}) akan ditampilkan.</p>
+                                    <p class="text-xs text-blue-800 font-medium" x-show="isAnonim">Identitas disembunyikan di tampilan publik, namun tetap tercatat bagi petugas kelurahan.</p>
                                 </div>
                             </div>
                             <button type="button" @click="isAnonim = !isAnonim"
@@ -117,10 +139,6 @@
                                 </span>
                             </button>
                             <input type="hidden" name="anonim" :value="isAnonim ? 1 : 0">
-                        </div>
-                        <div x-show="!isAnonim" x-transition>
-                            <input type="text" name="nama" placeholder="Nama Anda (Opsional)" 
-                                class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 text-sm">
                         </div>
                     </div>
 

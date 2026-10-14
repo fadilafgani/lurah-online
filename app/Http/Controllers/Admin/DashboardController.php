@@ -29,7 +29,7 @@ class DashboardController extends Controller
         $status = $request->get('status', 'verifikasi');
         $selectedKode = $request->get('kode');
 
-        $laporan = Complaint::all();
+        $laporan = Complaint::with('resident')->latest()->get();
 
         $statusCards = [
             [
@@ -74,7 +74,8 @@ class DashboardController extends Controller
                 'status' => self::STATUS_LABELS[$item->status] ?? $item->status,
                 'foto' => $item->photo ? asset('storage/' . $item->photo) : null,
                 'lokasi' => $item->location,
-                'pelapor' => $item->name ?: 'Anonim',
+                'pelapor' => $item->admin_reporter_name,
+                'nik' => $item->resident?->nik ?? '-',
                 'diajukan' => optional($item->created_at)->translatedFormat('d M Y, H.i') ?? '-',
                 'deskripsi' => $item->description,
                 'unit' => $item->unit,

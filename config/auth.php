@@ -42,6 +42,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'resident' => [
+            'driver' => 'session',
+            'provider' => 'residents',
+        ],
     ],
 
     /*
@@ -67,10 +71,10 @@ return [
             'model' => env('AUTH_MODEL', User::class),
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'residents' => [
+            'driver' => 'eloquent',
+            'model' => \App\Models\Resident::class,
+        ],
     ],
 
     /*
