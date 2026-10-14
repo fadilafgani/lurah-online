@@ -14,6 +14,16 @@ class ResidentAuthController extends Controller
      */
     public function showLogin()
     {
+        // 1. Kebijakan Satu Role Aktif: jika sesi admin aktif, tolak dengan 403
+        if (Auth::guard('web')->check()) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'message' => 'Anda sedang masuk sebagai admin. Silakan logout terlebih dahulu untuk masuk sebagai warga.'
+                ], 403);
+            }
+            abort(403, 'Akses ditolak. Anda sedang masuk sebagai admin. Silakan logout terlebih dahulu untuk masuk sebagai warga.');
+        }
+
         if (Auth::guard('resident')->check()) {
             $resident = Auth::guard('resident')->user();
             if ($resident->must_change_password) {
@@ -34,6 +44,16 @@ class ResidentAuthController extends Controller
      */
     public function login(Request $request)
     {
+        // 1. Kebijakan Satu Role Aktif: tolak jika admin sedang login
+        if (Auth::guard('web')->check()) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Anda sedang masuk sebagai admin. Silakan logout terlebih dahulu.'
+                ], 403);
+            }
+            abort(403, 'Akses ditolak. Anda sedang masuk sebagai admin. Silakan logout terlebih dahulu.');
+        }
+
         $credentials = $request->validate([
             'nik' => ['required', 'string'],
             'password' => ['required', 'string'],
@@ -82,6 +102,10 @@ class ResidentAuthController extends Controller
         Auth::guard('resident')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Logout berhasil']);
+        }
 
         return redirect('/')->with('success', 'Anda telah berhasil keluar.');
     }

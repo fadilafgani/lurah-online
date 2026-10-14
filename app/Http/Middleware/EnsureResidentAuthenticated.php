@@ -14,6 +14,17 @@ class EnsureResidentAuthenticated
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // 1. Kebijakan Satu Role Aktif: Sesi admin dilarang mengakses form pengaduan warga
+        if (Auth::guard('web')->check() && !Auth::guard('resident')->check()) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Akses ditolak. Sesi admin tidak dapat mengakses layanan warga. Silakan logout terlebih dahulu.'
+                ], 403);
+            }
+
+            abort(403, 'Akses ditolak. Anda sedang masuk sebagai admin/petugas. Silakan logout terlebih dahulu untuk mengakses layanan warga.');
+        }
+
         if (!Auth::guard('resident')->check()) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Unauthenticated.'], 401);
@@ -46,6 +57,11 @@ class EnsureResidentAuthenticated
                 ->with('warning', 'Demi keamanan akun Anda, silakan ubah kata sandi awal terlebih dahulu sebelum membuat pengaduan.');
         }
 
-        return $next($request);
+        $response = $next($request);
+
+        // Cegah cache browser agar tombol Back tidak menampilkan data formulir setelah logout
+        return $response->header('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 }

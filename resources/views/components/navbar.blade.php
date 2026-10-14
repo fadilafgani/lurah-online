@@ -72,13 +72,38 @@ $menus = [
                         </button>
                     </form>
                 </div>
+            @elseif(Auth::guard('web')->check())
+                @php $adminUser = Auth::guard('web')->user(); @endphp
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200">
+                    <div class="w-8 h-8 rounded-full bg-[#153655] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                        {{ strtoupper(substr($adminUser->email, 0, 1)) }}
+                    </div>
+                    <div class="flex flex-col text-left leading-tight">
+                        <span class="text-xs font-bold text-[#153655] max-w-[130px] truncate">{{ $adminUser->name ?: $adminUser->email }}</span>
+                        <span class="text-[10px] text-blue-700 font-semibold">{{ $adminUser->isAdmin() ? 'Admin Kelurahan' : ($adminUser->unit ?: 'Petugas') }}</span>
+                    </div>
+                    <a href="{{ route('admin.dashboard') }}" class="ml-1 px-2.5 py-1 text-xs font-bold bg-[#0047AB] text-white rounded-lg hover:bg-[#003780] transition">
+                        Dashboard
+                    </a>
+                    <form action="{{ route('admin.logout') }}" method="POST" class="inline m-0">
+                        @csrf
+                        <button type="submit" title="Keluar" class="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded-lg transition">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        </button>
+                    </form>
+                </div>
+            @else
+                <a href="{{ route('warga.login') }}" class="rounded-lg border border-[#0047AB] text-[#0047AB] px-5 py-2 text-sm font-semibold hover:bg-blue-50 transition-all">
+                    Masuk Warga
+                </a>
+                <a href="{{ url('/admin')}}" class="rounded-lg bg-[#098A00] px-6 py-2 text-sm font-semibold text-white hover:bg-[#076c00] transition-all shadow-sm">
+                    Admin
+                </a>
             @endif
+
             <button id="pwa-install-btn" class="hidden rounded-lg bg-[#0047AB] px-6 py-2 text-sm font-semibold text-white hover:bg-[#003780] transition-all shadow-sm">
                 Pasang Aplikasi
             </button>
-            <a href="{{ url('/admin')}}" class="rounded-lg bg-[#098A00] px-6 py-2 text-sm font-semibold text-white hover:bg-[#076c00] transition-all shadow-sm">
-                Admin
-            </a>
         </div>
 
         <!-- Mobile Hamburger Button -->
@@ -110,7 +135,7 @@ $menus = [
             @php $residentUser = Auth::guard('resident')->user(); @endphp
             <div class="p-3 my-2 rounded-xl bg-blue-50 border border-blue-200/60 flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] text-gray-500 font-medium">Masuk Sebagai:</p>
+                    <p class="text-[11px] text-gray-500 font-medium">Masuk Sebagai Warga:</p>
                     <p class="text-sm font-bold text-[#153655]">{{ $residentUser->name }}</p>
                     <p class="text-xs text-[#0047AB] font-mono">NIK: {{ $residentUser->nik }}</p>
                 </div>
@@ -121,15 +146,40 @@ $menus = [
                     </button>
                 </form>
             </div>
+        @elseif(Auth::guard('web')->check())
+            @php $adminUser = Auth::guard('web')->user(); @endphp
+            <div class="p-3 my-2 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-[11px] text-gray-500 font-medium">Masuk Sebagai Staf/Admin:</p>
+                    <p class="text-sm font-bold text-[#153655] truncate max-w-[170px]">{{ $adminUser->email }}</p>
+                    <p class="text-xs text-[#0047AB] font-semibold">{{ $adminUser->isAdmin() ? 'Admin Kelurahan' : ($adminUser->unit ?: 'Petugas') }}</p>
+                </div>
+                <div class="flex items-center gap-1">
+                    <a href="{{ route('admin.dashboard') }}" class="px-3 py-1.5 bg-[#0047AB] text-white rounded-lg text-xs font-semibold hover:bg-blue-800 transition">
+                        Dashboard
+                    </a>
+                    <form action="{{ route('admin.logout') }}" method="POST" class="m-0">
+                        @csrf
+                        <button type="submit" class="px-3 py-1.5 bg-red-600 text-white rounded-lg text-xs font-semibold hover:bg-red-700 transition">
+                            Keluar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @else
+            <a href="{{ route('warga.login') }}"
+                class="block mt-3 px-5 py-2.5 text-center rounded-[10px] border border-[#0047AB] text-[#0047AB] text-base font-semibold hover:bg-blue-50 transition-all">
+                Masuk Warga
+            </a>
+            <a href="{{ url('/admin') }}"
+                class="block mt-2 px-5 py-2.5 text-center rounded-[10px] bg-[#098A00] text-white text-base font-semibold hover:bg-[#076c00] transition-all shadow-sm">
+                Admin
+            </a>
         @endif
 
         <button id="pwa-install-btn-mobile" class="hidden w-full mt-3 px-5 py-2 text-center rounded-[10px] bg-[#0047AB] text-white text-[18px] font-semibold">
             Pasang Aplikasi
         </button>
-        <a href="{{ url('/admin') }}"
-            class="block mt-3 px-5 py-2 text-center rounded-[10px] bg-[#098A00] text-white text-[18px] font-semibold hover:bg-[#076c00] transition-all shadow-sm">
-            Admin
-        </a>
 
     </div>
 </nav>

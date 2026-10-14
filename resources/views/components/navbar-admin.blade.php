@@ -91,10 +91,14 @@
                 <span id="navbar-identity-label" class="truncate text-[12px] font-medium text-[#0047AB]"></span>
             </div>
 
+            <form id="admin-logout-form" action="{{ route('admin.logout') }}" method="POST" class="hidden">
+                @csrf
+            </form>
             <button type="button" id="admin-logout-btn"
                 class="whitespace-nowrap rounded-[10px] bg-[#D83D3D] px-3 py-1.5 text-sm sm:px-4 sm:text-base lg:px-[23px] lg:py-[8px] lg:text-[20px] font-semibold text-white hover:bg-red-700 transition shrink-0 shadow-sm">
                 Keluar
             </button>
+
 
             <!-- Mobile Hamburger Button -->
             <button id="admin-menu-button" type="button" aria-label="Buka menu"
@@ -127,9 +131,23 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('admin-logout-btn')?.addEventListener('click', function () {
+        const token = localStorage.getItem('admin_token');
         localStorage.removeItem('admin_token');
         localStorage.removeItem('admin_identity');
-        window.location.href = "{{ route('admin.login') }}";
+
+        if (token) {
+            fetch('/api/admin/logout', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            }).finally(function () {
+                document.getElementById('admin-logout-form')?.submit();
+            });
+        } else {
+            document.getElementById('admin-logout-form')?.submit();
+        }
     });
 
     // ── Identitas akun ───────────────────────────────────────────────

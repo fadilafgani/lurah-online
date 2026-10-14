@@ -14,6 +14,10 @@ class EnsureUserIsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (\Illuminate\Support\Facades\Auth::guard('resident')->check()) {
+            abort(403, 'Akses ditolak. Sesi warga tidak memiliki izin admin.');
+        }
+
         abort_unless($request->user()?->isAdmin(), 403, 'Hanya admin yang boleh mengelola akun unit.');
 
         return $next($request);

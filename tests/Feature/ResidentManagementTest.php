@@ -171,6 +171,8 @@ class ResidentManagementTest extends TestCase
      */
     public function test_template_dapat_diunduh_dan_digunakan(): void
     {
+        $this->actingAs($this->admin(), 'web');
+
         // Template XLSX
         $responseXlsx = $this->get(route('admin.warga.template'));
         $responseXlsx->assertOk();
@@ -374,6 +376,7 @@ class ResidentManagementTest extends TestCase
         ]);
 
         // Verifikasi & disposisi ke unit
+        $this->actingAs($this->admin(), 'web');
         $resVerif = $this->put(route('admin.laporan.status', ['complaint' => $complaint->ticket_code]), [
             'status' => 'verified',
             'unit' => 'Unit Infrastruktur',
@@ -398,6 +401,7 @@ class ResidentManagementTest extends TestCase
      */
     public function test_dashboard_admin_tetap_berfungsi(): void
     {
+        $this->actingAs($this->admin(), 'web');
         $response = $this->get(route('admin.dashboard'));
         $response->assertOk();
         $response->assertSee('Verifikasi');

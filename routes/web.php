@@ -24,10 +24,10 @@ Route::post('/warga/login', [ResidentAuthController::class, 'login'])
 Route::post('/warga/logout', [ResidentAuthController::class, 'logout'])->name('warga.logout');
 
 Route::get('/warga/ganti-password', [ResidentAuthController::class, 'showChangePassword'])
-    ->middleware('auth:resident')
+    ->middleware('resident')
     ->name('warga.ganti-password');
 Route::post('/warga/ganti-password', [ResidentAuthController::class, 'updatePassword'])
-    ->middleware('auth:resident')
+    ->middleware('resident')
     ->name('warga.ganti-password.submit');
 
 Route::get('/pengaduan', function () {
@@ -94,59 +94,81 @@ Route::post('/lacak/{ticket_code}/buka-kembali', [LacakController::class, 'bukaK
 
 Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
 
-Route::get('/admin', fn() => view('login'))->name('admin.login');
-
-Route::get('/admin/dashboard', [DashboardController::class, 'index'])
-    ->name('admin.dashboard');
-
-Route::get('/admin/api/notifications', function () {
-    $items = \App\Models\Complaint::where('status', 'submitted')->latest()->take(5)->get();
-    return response()->json([
-        'count' => $items->count(),
-        'items' => $items->map(fn($i) => [
-            'ticket_code' => $i->ticket_code,
-            'title' => $i->title,
-            'time' => optional($i->created_at)->diffForHumans() ?? '-'
-        ])
-    ]);
-})->name('admin.api.notifications');
-
-Route::get('/admin/notifikasi', function (\Illuminate\Http\Request $request) {
-    $statusFilter = $request->get('filter', 'all');
-    $query = \App\Models\Complaint::latest();
-    if ($statusFilter !== 'all') {
-        $query->where('status', $statusFilter);
+Route::get('/admin', function () {
+    // 1. Kebijakan Satu Role Aktif: jika sesi warga sedang aktif, tolak dengan 403
+    if (Auth::guard('resident')->check()) {
+        if (request()->expectsJson()) {
+            return response()->json([
+                'message' => 'Anda sedang masuk sebagai warga. Silakan logout terlebih dahulu untuk masuk ke area admin.'
+            ], 403);
+        }
+        abort(403, 'Akses ditolak. Anda sedang masuk sebagai warga. Silakan logout terlebih dahulu untuk mengakses area admin.');
     }
-    $notifikasiList = $query->paginate(10)->withQueryString();
-    return view('admin.notifikasi', compact('notifikasiList', 'statusFilter'));
-})->name('admin.notifikasi');
 
-Route::get('/admin/laporan',
-    [ComplaintController::class,'index'])
-    ->name('admin.laporan');
+    // 2. Jika admin sudah login, langsung ke dashboard
+    if (Auth::guard('web')->check()) {
+        return redirect()->route('admin.dashboard');
+    }
 
-Route::put('/admin/laporan/{complaint:ticket_code}/status',
-    [ComplaintController::class,'updateStatus'])
-    ->name('admin.laporan.status');
+    return view('login');
+})->name('admin.login');
 
-Route::put('/admin/laporan/{complaint:ticket_code}/catatan',
-    [ComplaintController::class,'saveHandling'])
-    ->name('admin.laporan.catatan');
+Route::post('/admin/login', [App\Http\Controllers\Api\AuthController::class, 'login'])->name('admin.login.submit');
+Route::post('/admin/logout', [App\Http\Controllers\Api\AuthController::class, 'logout'])->name('admin.logout');
 
-Route::put('/admin/laporan/{complaint:ticket_code}/selesaikan',
-    [ComplaintController::class,'complete'])
-    ->name('admin.laporan.selesaikan');
+Route::middleware('admin.auth')->group(function () {
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])
+        ->name('admin.dashboard');
 
-Route::delete('/admin/laporan/{ticketCode}',
-    [ComplaintController::class,'destroy'])
-    ->name('admin.laporan.destroy');
+    Route::get('/admin/api/notifications', function () {
+        $items = \App\Models\Complaint::where('status', 'submitted')->latest()->take(5)->get();
+        return response()->json([
+            'count' => $items->count(),
+            'items' => $items->map(fn($i) => [
+                'ticket_code' => $i->ticket_code,
+                'title' => $i->title,
+                'time' => optional($i->created_at)->diffForHumans() ?? '-'
+            ])
+        ]);
+    })->name('admin.api.notifications');
 
-Route::get('/admin/kata-terlarang', fn() => view('admin.kata-terlarang'))->name('admin.kata-terlarang');
+    Route::get('/admin/notifikasi', function (\Illuminate\Http\Request $request) {
+        $statusFilter = $request->get('filter', 'all');
+        $query = \App\Models\Complaint::latest();
+        if ($statusFilter !== 'all') {
+            $query->where('status', $statusFilter);
+        }
+        $notifikasiList = $query->paginate(10)->withQueryString();
+        return view('admin.notifikasi', compact('notifikasiList', 'statusFilter'));
+    })->name('admin.notifikasi');
 
-Route::get('/admin/akun-unit', fn() => view('admin.akun-unit'))->name('admin.akun-unit');
+    Route::get('/admin/laporan',
+        [ComplaintController::class,'index'])
+        ->name('admin.laporan');
 
-Route::get('/admin/warga', [ResidentController::class, 'page'])->name('admin.warga');
-Route::get('/admin/warga/template', [ResidentController::class, 'downloadTemplate'])->name('admin.warga.template');
+    Route::put('/admin/laporan/{complaint:ticket_code}/status',
+        [ComplaintController::class,'updateStatus'])
+        ->name('admin.laporan.status');
+
+    Route::put('/admin/laporan/{complaint:ticket_code}/catatan',
+        [ComplaintController::class,'saveHandling'])
+        ->name('admin.laporan.catatan');
+
+    Route::put('/admin/laporan/{complaint:ticket_code}/selesaikan',
+        [ComplaintController::class,'complete'])
+        ->name('admin.laporan.selesaikan');
+
+    Route::delete('/admin/laporan/{ticketCode}',
+        [ComplaintController::class,'destroy'])
+        ->name('admin.laporan.destroy');
+
+    Route::get('/admin/kata-terlarang', fn() => view('admin.kata-terlarang'))->name('admin.kata-terlarang');
+
+    Route::get('/admin/akun-unit', fn() => view('admin.akun-unit'))->name('admin.akun-unit');
+
+    Route::get('/admin/warga', [ResidentController::class, 'page'])->name('admin.warga');
+    Route::get('/admin/warga/template', [ResidentController::class, 'downloadTemplate'])->name('admin.warga.template');
+});
 
 Route::get('/admin/lupa-kata-sandi', fn() => view('forgot-password'))->name('admin.forgot-password');
 

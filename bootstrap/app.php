@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'admin.auth' => \App\Http\Middleware\EnsureAdminAuthenticated::class,
             'resident' => \App\Http\Middleware\EnsureResidentAuthenticated::class,
         ]);
     })

@@ -25,6 +25,7 @@ class UnitAccountTest extends TestCase
      */
     protected function asUser(User $user): static
     {
+        $this->actingAs($user, 'web');
         return $this->withToken($user->createToken('test')->plainTextToken);
     }
 
@@ -35,6 +36,7 @@ class UnitAccountTest extends TestCase
 
     public function test_halaman_akun_unit_tidak_lagi_menampilkan_data_dummy(): void
     {
+        $this->asUser($this->admin());
         $this->unitAccount('Unit Kebersihan');
 
         $response = $this->get(route('admin.akun-unit'))->assertOk();
@@ -167,6 +169,7 @@ class UnitAccountTest extends TestCase
 
     public function test_halaman_memuat_kartu_akun_yang_sedang_masuk(): void
     {
+        $this->asUser($this->admin());
         $this->get(route('admin.akun-unit'))
             ->assertOk()
             ->assertSee('Sedang masuk sebagai', false)
@@ -181,6 +184,7 @@ class UnitAccountTest extends TestCase
         // Markup baris pernah memanggil helper todayFormatted() yang sudah
         // dihapus, sehingga daftar gagal dirender dengan
         // "todayFormatted is not defined". Setiap nilai harus datang dari API.
+        $this->asUser($this->admin());
         $response = $this->get(route('admin.akun-unit'))->assertOk();
 
         $response->assertDontSee('todayFormatted', false)
@@ -281,6 +285,7 @@ class UnitAccountTest extends TestCase
         // keluar dalam keadaan tersembunyi dan baru dibuka oleh skrip navbar
         // setelah /api/me memastikan pemakai token adalah admin. Kalau tidak,
         // akun unit sempat melihat menu ini di setiap muat halaman.
+        $this->asUser($this->admin());
         $response = $this->get(route('admin.dashboard'))->assertOk();
 
         $response->assertSee('data-admin-only hidden', false)
@@ -353,6 +358,7 @@ class UnitAccountTest extends TestCase
             'status' => 'verified',
         ]);
 
+        $this->asUser($this->admin());
         $response = $this->get(route('admin.dashboard', ['status' => 'disposisi']))->assertOk();
 
         foreach (config('units.options') as $unit) {

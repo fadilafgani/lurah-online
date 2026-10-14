@@ -10,7 +10,14 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        // validasi
+        // 1. Kebijakan Satu Role Aktif: jika sesi warga sedang aktif, tolak dengan 403
+        if (Auth::guard('resident')->check()) {
+            return response()->json([
+                'message' => 'Anda sedang masuk sebagai warga. Silakan logout terlebih dahulu untuk masuk sebagai admin.'
+            ], 403);
+        }
+
+        // 2. Validasi input
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -21,17 +28,28 @@ class AuthController extends Controller
         // RequestGuard tidak punya attempt() sehingga login ikut rusak.
         $guard = Auth::guard('web');
 
-        // ngecek login
-        if (!$guard->attempt($request->only('email', 'password'))) {
+        // 3. Cek login
+        if (!$guard->attempt($request->only('email', 'password'), $request->boolean('remember'))) {
             return response()->json([
                 'message' => 'Email atau password salah'
             ], 401);
         }
 
-        // ambil user
+        // 4. Ambil user dan pastikan role berwenang (admin atau unit)
         $user = $guard->user();
+        if (!$user->isAdmin() && !$user->isUnit()) {
+            $guard->logout();
+            return response()->json([
+                'message' => 'Akun tidak memiliki hak akses admin.'
+            ], 403);
+        }
 
-        // buat token
+        // Regenerate session jika request memiliki session web
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+        }
+
+        // 5. Buat token Sanctum
         $token = $user->createToken('admin-token')->plainTextToken;
 
         return response()->json([
@@ -42,6 +60,36 @@ class AuthController extends Controller
             'identity' => $user->toDisplayArray(),
             'token' => $token,
         ]);
+    }
+
+    /**
+     * Logout admin: cabut token Sanctum dan akhiri sesi web.
+     */
+    public function logout(Request $request)
+    {
+        $user = Auth::guard('web')->user() ?? $request->user('sanctum');
+
+        if ($user) {
+            $token = $request->user('sanctum')?->currentAccessToken();
+            if ($token && method_exists($token, 'delete')) {
+                $token->delete();
+            } elseif (method_exists($user, 'tokens')) {
+                $user->tokens()->delete();
+            }
+
+            Auth::guard('web')->logout();
+        }
+
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Logout berhasil']);
+        }
+
+        return redirect()->route('admin.login')->with('success', 'Anda telah berhasil keluar.');
     }
 
     /**
