@@ -36,6 +36,17 @@
                 </div>
             <?php endif; ?>
 
+            @if (!empty($errors) && ((is_object($errors) && method_exists($errors, 'any') && $errors->any()) || (is_array($errors) && count($errors) > 0)))
+                <div class="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-sm">
+                    <p class="font-bold mb-1">Terdapat kesalahan pada formulir pengaduan:</p>
+                    <ul class="list-disc list-inside space-y-0.5 text-xs">
+                        @foreach ((is_object($errors) && method_exists($errors, 'all')) ? $errors->all() : (array) $errors as $error)
+                            <li>{{ is_array($error) ? implode(', ', $error) : $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 md:p-12">
                 {{-- Identitas Warga Terautentikasi --}}
                 <div class="mb-8 p-4 rounded-2xl bg-gradient-to-r from-blue-50/80 to-indigo-50/60 border border-blue-200/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -58,7 +69,7 @@
                     </div>
                 </div>
 
-                <form action="<?php echo route('pengaduan.simpan'); ?>" method="POST" enctype="multipart/form-data" x-data="{ isAnonim: false }">
+                <form action="<?php echo route('pengaduan.simpan'); ?>" method="POST" enctype="multipart/form-data" x-data="complaintForm()" @submit="validateForm($event)">
                     <?php echo csrf_field(); ?>
                     
                     <div class="z-10 grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -95,19 +106,117 @@
                             class="w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white transition text-sm resize-none"></textarea>
                     </div>
 
-                    <div class="mb-6" x-data="{ fileName: null }">
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Foto Bukti <span class="text-rose-500">*</span></label>
-                        <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 bg-gray-50/30 transition relative">
-                            <input type="file" name="foto" required id="foto" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                @change="fileName = $event.target.files[0] ? $event.target.files[0].name : null">
-                            
-                            <div class="flex flex-col items-center justify-center space-y-2">
-                                <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    {{-- Komponen Unggah Foto: Kamera dan Galeri --}}
+                    <div class="mb-6" id="foto-section">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-sm font-semibold text-slate-700">
+                                Foto Bukti Pengaduan <span class="text-rose-500">*</span>
+                            </label>
+                            <span class="text-xs text-slate-600 font-medium">JPG, PNG, WEBP • Maks 5MB</span>
+                        </div>
+
+                        {{-- Pesan Validasi Frontend --}}
+                        <div x-show="errorMessage" x-cloak class="mb-3.5 p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-start gap-2.5">
+                            <svg class="w-4 h-4 shrink-0 text-rose-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <div class="flex-1 font-medium">
+                                <span class="font-bold">Perhatian:</span> <span x-text="errorMessage"></span>
+                            </div>
+                            <button type="button" @click="errorMessage = null" class="text-rose-400 hover:text-rose-700 text-base font-bold leading-none">&times;</button>
+                        </div>
+
+                        {{-- Input Form Asli (name="foto" untuk backend) --}}
+                        <input type="file" name="foto" id="foto-input" class="hidden" accept="image/jpeg,image/png,image/jpg,image/webp">
+
+                        {{-- Input Khusus Kamera (capture="environment" memprioritaskan kamera belakang mobile) --}}
+                        <input type="file" x-ref="cameraInput" id="camera-input" accept="image/*" capture="environment" class="hidden" @change="handleFile($event, 'kamera')">
+
+                        {{-- Input Khusus Galeri (File picker standar tanpa capture) --}}
+                        <input type="file" x-ref="galleryInput" id="gallery-input" accept="image/*" class="hidden" @change="handleFile($event, 'galeri')">
+
+                        {{-- Keadaan 1: Belum Ada Foto yang Dipilih --}}
+                        <div x-show="!previewUrl" class="space-y-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                {{-- Tombol 1: Ambil Foto dari Kamera --}}
+                                <button type="button" @click="triggerCamera()"
+                                    class="group relative flex items-center p-4 bg-gradient-to-br from-blue-50/70 to-indigo-50/40 hover:from-blue-100/70 hover:to-indigo-100/50 border-2 border-dashed border-blue-200 hover:border-[#0047AB] rounded-2xl text-left transition-all duration-200 shadow-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 active:scale-[0.99] cursor-pointer">
+                                    <div class="w-12 h-12 rounded-xl bg-white shadow-xs border border-blue-100 flex items-center justify-center text-2xl group-hover:scale-110 transition shrink-0 mr-3.5 text-[#0047AB]">
+                                        📷
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-1.5">
+                                            <h4 class="text-sm font-bold text-slate-800 group-hover:text-[#0047AB] transition">Ambil Foto dari Kamera</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-500 leading-snug mt-0.5">Buka kamera perangkat untuk memotret langsung bukti di lokasi</p>
+                                    </div>
+                                </button>
+
+                                {{-- Tombol 2: Pilih dari Galeri --}}
+                                <button type="button" @click="triggerGallery()"
+                                    class="group relative flex items-center p-4 bg-gradient-to-br from-slate-50/80 to-gray-50/50 hover:from-slate-100 hover:to-gray-100 border-2 border-dashed border-gray-300 hover:border-slate-400 rounded-2xl text-left transition-all duration-200 shadow-xs focus:outline-none focus:ring-2 focus:ring-slate-500/20 active:scale-[0.99] cursor-pointer">
+                                    <div class="w-12 h-12 rounded-xl bg-white shadow-xs border border-gray-200 flex items-center justify-center text-2xl group-hover:scale-110 transition shrink-0 mr-3.5 text-slate-700">
+                                        🖼️
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-1.5">
+                                            <h4 class="text-sm font-bold text-slate-800 group-hover:text-slate-900 transition">Pilih dari Galeri</h4>
+                                        </div>
+                                        <p class="text-xs text-slate-500 leading-snug mt-0.5">Pilih foto dari album galeri perangkat atau file manager</p>
+                                    </div>
+                                </button>
+                            </div>
+
+                            <p class="text-[11px] text-gray-500 flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
-                                <p class="text-sm text-slate-700 font-medium" x-text="fileName ? fileName : 'Klik untuk unggah foto'"></p>
-                                <p class="text-xs text-gray-600">Klik untuk unggah foto</p>
-                                <p class="text-xs text-gray-600">JPG, PNG • Maks 5MB</p>
+                                Kamera diaktifkan setelah tombol dipilih. Jika kamera tidak tersedia atau izin ditolak, Anda dapat menggunakan opsi Galeri.
+                            </p>
+                        </div>
+
+                        {{-- Keadaan 2: Foto Sudah Terpilih (Preview & Kontrol) --}}
+                        <div x-show="previewUrl" x-cloak class="border border-slate-200 rounded-2xl p-4 bg-slate-50/50 transition">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                                        ✓ Foto Bukti Terlampir
+                                    </span>
+                                    <span class="text-[11px] text-slate-500 font-medium" x-show="sourceType" x-text="'Sumber: ' + sourceType"></span>
+                                </div>
+                                <button type="button" @click="removePhoto()" class="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline flex items-center gap-1 transition cursor-pointer">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    Hapus Foto
+                                </button>
+                            </div>
+
+                            {{-- Preview Gambar --}}
+                            <div class="relative rounded-xl overflow-hidden bg-slate-900 border border-slate-200 max-h-72 flex items-center justify-center">
+                                <img :src="previewUrl" alt="Preview Foto Bukti" class="max-h-72 w-full object-contain">
+                            </div>
+
+                            {{-- Informasi File & Opsi Penggantian Foto --}}
+                            <div class="mt-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-200/80">
+                                <div class="min-w-0">
+                                    <p class="text-xs font-bold text-slate-800 truncate" x-text="fileName"></p>
+                                    <p class="text-[11px] text-slate-500 font-medium" x-text="'Ukuran: ' + fileSize"></p>
+                                </div>
+
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <span class="text-xs text-slate-500 font-medium">Ganti foto:</span>
+                                    <button type="button" @click="triggerCamera()"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-300 rounded-lg text-xs font-bold text-slate-700 shadow-2xs transition active:scale-95 cursor-pointer"
+                                        title="Ganti menggunakan kamera">
+                                        📷 Kamera
+                                    </button>
+                                    <button type="button" @click="triggerGallery()"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-300 rounded-lg text-xs font-bold text-slate-700 shadow-2xs transition active:scale-95 cursor-pointer"
+                                        title="Ganti dari galeri perangkat">
+                                        🖼️ Galeri
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -142,7 +251,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full py-3.5 bg-blue-950 text-white font-semibold rounded-xl bg-gradient-to-br from-[#0047AB] to-[#001D45] shadow-sm">
+                    <button type="submit" class="w-full py-3.5 bg-blue-950 text-white font-semibold rounded-xl bg-gradient-to-br from-[#0047AB] to-[#001D45] shadow-sm cursor-pointer hover:opacity-95 transition">
                         Kirim
                     </button>
                 </form>
@@ -150,5 +259,123 @@
         </main>
         </div>
         @include('components.footer')
+
+        <script>
+            function complaintForm() {
+                return {
+                    isAnonim: false,
+                    previewUrl: null,
+                    fileName: '',
+                    fileSize: '',
+                    sourceType: '',
+                    errorMessage: null,
+
+                    triggerCamera() {
+                        this.errorMessage = null;
+                        if (this.$refs.cameraInput) {
+                            this.$refs.cameraInput.click();
+                        }
+                    },
+
+                    triggerGallery() {
+                        this.errorMessage = null;
+                        if (this.$refs.galleryInput) {
+                            this.$refs.galleryInput.click();
+                        }
+                    },
+
+                    handleFile(event, source) {
+                        const input = event.target;
+                        if (!input.files || input.files.length === 0) {
+                            return;
+                        }
+
+                        const file = input.files[0];
+
+                        // 1. Validasi tipe file (hanya gambar)
+                        const validExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+                        const fileExt = file.name.split('.').pop().toLowerCase();
+                        const isImageMime = file.type.startsWith('image/');
+                        const isValidExt = validExtensions.includes(fileExt);
+
+                        if (!isImageMime && !isValidExt) {
+                            this.errorMessage = 'Format file tidak didukung. Harap pilih foto bertipe JPG, JPEG, PNG, atau WEBP.';
+                            input.value = '';
+                            return;
+                        }
+
+                        // 2. Validasi batas ukuran file (maksimal 5MB)
+                        const maxSize = 5 * 1024 * 1024;
+                        if (file.size > maxSize) {
+                            this.errorMessage = 'Ukuran foto melebihi batas maksimal 5MB (Ukuran file: ' + this.formatSize(file.size) + ').';
+                            input.value = '';
+                            return;
+                        }
+
+                        // 3. Update data & bersihkan resource URL lama
+                        this.errorMessage = null;
+                        this.sourceType = source === 'kamera' ? 'Kamera' : 'Galeri';
+                        this.fileName = file.name;
+                        this.fileSize = this.formatSize(file.size);
+
+                        if (this.previewUrl) {
+                            URL.revokeObjectURL(this.previewUrl);
+                        }
+                        this.previewUrl = URL.createObjectURL(file);
+
+                        // 4. Sinkronkan ke input form utama (name="foto")
+                        try {
+                            const dt = new DataTransfer();
+                            dt.items.add(file);
+                            const mainInput = document.getElementById('foto-input');
+                            if (mainInput) {
+                                mainInput.files = dt.files;
+                            }
+                        } catch (e) {
+                            console.error('DataTransfer tidak didukung oleh browser:', e);
+                        }
+                    },
+
+                    removePhoto() {
+                        if (this.previewUrl) {
+                            URL.revokeObjectURL(this.previewUrl);
+                            this.previewUrl = null;
+                        }
+                        this.fileName = '';
+                        this.fileSize = '';
+                        this.sourceType = '';
+                        this.errorMessage = null;
+
+                        const mainInput = document.getElementById('foto-input');
+                        if (mainInput) mainInput.value = '';
+                        if (this.$refs.cameraInput) this.$refs.cameraInput.value = '';
+                        if (this.$refs.galleryInput) this.$refs.galleryInput.value = '';
+                    },
+
+                    formatSize(bytes) {
+                        if (bytes === 0) return '0 B';
+                        const k = 1024;
+                        const sizes = ['B', 'KB', 'MB', 'GB'];
+                        const i = Math.floor(Math.log(bytes) / Math.log(k));
+                        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+                    },
+
+                    validateForm(e) {
+                        const mainInput = document.getElementById('foto-input');
+                        if (!mainInput || !mainInput.files || mainInput.files.length === 0) {
+                            e.preventDefault();
+                            this.errorMessage = 'Foto bukti pengaduan wajib diunggah. Silakan pilih dari Kamera atau Galeri.';
+                            const section = document.getElementById('foto-section');
+                            if (section) {
+                                section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                            return false;
+                        }
+                        this.errorMessage = null;
+                        return true;
+                    }
+                };
+            }
+        </script>
     </body>
 </html>

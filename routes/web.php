@@ -43,8 +43,13 @@ Route::post('/pengaduan/simpan', function (Request $request) {
         'kategori' => 'required|string|max:255',
         'deskripsi' => 'required|string',
         'lokasi' => 'required|string',
-        'foto' => 'required|image|mimes:jpg,jpeg,png|max:5120',
+        'foto' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
         'anonim' => 'nullable|boolean',
+    ], [
+        'foto.required' => 'Foto bukti pengaduan wajib diunggah.',
+        'foto.image' => 'File bukti harus berupa gambar.',
+        'foto.mimes' => 'Format foto harus berupa JPG, JPEG, PNG, atau WEBP.',
+        'foto.max' => 'Ukuran foto maksimal adalah 5MB.',
     ]);
 
     do {
