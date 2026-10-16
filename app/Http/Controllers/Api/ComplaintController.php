@@ -23,6 +23,21 @@ class ComplaintController extends Controller
 
         $photoPath = null;
 
+        $resident = auth('resident')->user() ?: (
+            $request->filled('nik') ? \App\Models\Resident::where('nik', $request->nik)->first() : null
+        );
+
+        if ($resident) {
+            $quota = \App\Models\ComplaintSetting::checkQuota($resident->id);
+            if ($quota['is_exceeded']) {
+                return response()->json([
+                    'message' => "Anda telah mencapai batas maksimal {$quota['max_limit']} pengaduan untuk hari ini. Silakan mencoba kembali besok.",
+                    'max_limit' => $quota['max_limit'],
+                    'used_today' => $quota['used_today'],
+                ], 422);
+            }
+        }
+
         if ($request->hasFile('photo')) {
             $photoPath = $request->file('photo')
                 ->store('complaints', 'public');
@@ -30,6 +45,7 @@ class ComplaintController extends Controller
 
         $complaint = Complaint::create([
             'ticket_code' => 'TKT-' . strtoupper(Str::random(8)),
+            'resident_id' => $resident?->id,
             'name' => $request->name,
             'phone' => $request->phone,
             'email' => $request->email,

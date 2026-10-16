@@ -69,6 +69,52 @@
                     </div>
                 </div>
 
+                @php
+                    $quota = $quota ?? (\App\Models\ComplaintSetting::checkQuota($resident->id ?? 0));
+                @endphp
+
+                {{-- Status Kuota Pengaduan Harian --}}
+                @if($quota['is_active'])
+                    <div class="mb-6 p-4 rounded-xl border {{ $quota['is_exceeded'] ? 'bg-amber-50/90 border-amber-300' : 'bg-blue-50/50 border-blue-200/60' }} flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <span class="p-2 rounded-lg {{ $quota['is_exceeded'] ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-[#0047AB]' }}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </span>
+                            <div>
+                                <p class="text-xs text-slate-500 font-semibold">Batas pengaduan harian: <span class="text-slate-800 font-bold">{{ $quota['max_limit'] }} pengaduan</span></p>
+                                <p class="text-sm font-extrabold text-slate-800">
+                                    Pengaduan hari ini: {{ $quota['used_today'] }} dari {{ $quota['max_limit'] }}
+                                </p>
+                            </div>
+                        </div>
+                        <div>
+                            @if($quota['is_exceeded'])
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-200 text-amber-900">
+                                    Batas Kuota Tercapai
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                                    Sisa kuota: {{ $quota['remaining'] }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                    @if($quota['is_exceeded'])
+                        <div class="mb-6 p-4 bg-amber-50 border border-amber-300 rounded-2xl text-amber-950 flex items-start gap-3">
+                            <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <div class="text-xs leading-relaxed">
+                                <strong class="font-bold text-sm block mb-0.5">Anda telah mencapai batas pengaduan harian.</strong>
+                                Setiap akun warga dibatasi maksimal {{ $quota['max_limit'] }} pengaduan per hari. Silakan mencoba kembali besok.
+                            </div>
+                        </div>
+                    @endif
+                @endif
+
                 <form action="<?php echo route('pengaduan.simpan'); ?>" method="POST" enctype="multipart/form-data" x-data="complaintForm()" @submit="validateForm($event)">
                     <?php echo csrf_field(); ?>
                     
@@ -251,9 +297,22 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full py-3.5 bg-blue-950 text-white font-semibold rounded-xl bg-gradient-to-br from-[#0047AB] to-[#001D45] shadow-sm cursor-pointer hover:opacity-95 transition">
-                        Kirim
-                    </button>
+                    @if($quota['is_active'] && $quota['is_exceeded'])
+                        <div class="space-y-2">
+                            <button type="button" disabled
+                                class="w-full py-3.5 bg-gray-200 text-gray-500 font-bold rounded-xl shadow-none cursor-not-allowed flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                Anda Telah Mencapai Batas Pengaduan Harian (Coba Lagi Besok)
+                            </button>
+                            <p class="text-center text-xs text-gray-400">Pengiriman pengaduan ditutup sementara hingga pergantian hari (00.00 WIB).</p>
+                        </div>
+                    @else
+                        <button type="submit" class="w-full py-3.5 bg-blue-950 text-white font-semibold rounded-xl bg-gradient-to-br from-[#0047AB] to-[#001D45] shadow-sm cursor-pointer hover:opacity-95 transition">
+                            Kirim
+                        </button>
+                    @endif
                 </form>
             </div>
         </main>
@@ -361,6 +420,12 @@
                     },
 
                     validateForm(e) {
+                        @if($quota['is_active'] && $quota['is_exceeded'])
+                            e.preventDefault();
+                            this.errorMessage = 'Anda telah mencapai batas pengaduan harian ({{ $quota['max_limit'] }} pengaduan). Silakan mencoba kembali besok.';
+                            return false;
+                        @endif
+
                         const mainInput = document.getElementById('foto-input');
                         if (!mainInput || !mainInput.files || mainInput.files.length === 0) {
                             e.preventDefault();

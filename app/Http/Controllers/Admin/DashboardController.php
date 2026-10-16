@@ -89,6 +89,7 @@ class DashboardController extends Controller
         // Sumber tunggal daftar unit ada di config/units.php, dipakai bersama
         // validasi akun unit dan opsi di form akun.
         $unitOptions = config('units.options');
+        $complaintSetting = \App\Models\ComplaintSetting::getSettings()->load('lastUpdatedByUser');
 
         return view('admin.dashboard', compact(
             'statusCards',
@@ -96,7 +97,8 @@ class DashboardController extends Controller
             'status',
             'selectedKode',
             'selectedComplaint',
-            'unitOptions'
+            'unitOptions',
+            'complaintSetting'
         ));
     }
 }

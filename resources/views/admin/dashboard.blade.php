@@ -143,6 +143,72 @@
             @endforeach
         </div>
 
+        {{-- ── Pengaturan Batas Pengaduan Harian ── --}}
+        @php
+            $setting = $complaintSetting ?? \App\Models\ComplaintSetting::getSettings()->load('lastUpdatedByUser');
+        @endphp
+        <div class="w-full rounded-2xl border border-slate-200/90 bg-gradient-to-r from-blue-50/40 via-white to-indigo-50/30 p-6 shadow-xs">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                {{-- Info Pengaturan --}}
+                <div class="flex items-start gap-4">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-[#0047AB] shadow-xs">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2.5">
+                            <h3 class="text-lg font-extrabold text-slate-900">Pengaturan Batas Pengaduan</h3>
+                            @if($setting->is_daily_limit_active)
+                                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-600"></span> Aktif
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 rounded-full bg-slate-200 px-2.5 py-0.5 text-xs font-bold text-slate-700">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-slate-500"></span> Nonaktif
+                                </span>
+                            @endif
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">
+                            Kendalikan kuota pengaduan harian yang dapat dikirim oleh setiap akun warga terdaftar (zona waktu Asia/Jakarta).
+                        </p>
+                        <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400">
+                            <span>Perubahan terakhir: <strong class="text-slate-600">{{ optional($setting->updated_at)->timezone('Asia/Jakarta')->translatedFormat('d M Y, H.i') ?? '-' }} WIB</strong></span>
+                            <span>Oleh: <strong class="text-slate-600">{{ $setting->lastUpdatedByUser?->name ?? 'Sistem' }}</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Form Konfigurasi --}}
+                <form action="{{ route('admin.pengaturan.batas-harian') }}" method="POST" class="flex flex-col sm:flex-row items-stretch sm:items-end gap-3 shrink-0">
+                    @csrf
+                    <div>
+                        <label for="is_daily_limit_active" class="block text-xs font-bold text-slate-700 mb-1">Status Pembatasan</label>
+                        <select name="is_daily_limit_active" id="is_daily_limit_active" required
+                            class="w-full sm:w-36 px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-2xs">
+                            <option value="1" {{ $setting->is_daily_limit_active ? 'selected' : '' }}>Aktif</option>
+                            <option value="0" {{ !$setting->is_daily_limit_active ? 'selected' : '' }}>Nonaktif</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="max_daily_complaints" class="block text-xs font-bold text-slate-700 mb-1">Maks. Pengaduan / Hari</label>
+                        <input type="number" name="max_daily_complaints" id="max_daily_complaints" min="1" step="1" required
+                            value="{{ old('max_daily_complaints', $setting->max_daily_complaints) }}"
+                            class="w-full sm:w-32 px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-2xs">
+                    </div>
+
+                    <button type="submit"
+                        class="px-5 py-2.5 bg-gradient-to-r from-[#0047AB] to-[#153655] hover:opacity-95 text-white text-xs font-bold rounded-xl shadow-xs transition cursor-pointer flex items-center justify-center gap-1.5 h-[38px]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Simpan Pengaturan
+                    </button>
+                </form>
+            </div>
+        </div>
+
         {{-- ── Verifikasi List + Detail Panel ── --}}
         <div class="grid w-full grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
 

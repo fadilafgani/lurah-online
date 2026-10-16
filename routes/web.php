@@ -32,43 +32,77 @@ Route::post('/warga/ganti-password', [ResidentAuthController::class, 'updatePass
 
 Route::get('/pengaduan', function () {
     $resident = auth('resident')->user();
-    return view('pengaduan', compact('resident'));
+    $quota = \App\Models\ComplaintSetting::checkQuota($resident->id);
+    return view('pengaduan', compact('resident', 'quota'));
 })->middleware('resident')->name('pengaduan.buat');
 
 Route::post('/pengaduan/simpan', function (Request $request) {
     $resident = auth('resident')->user();
 
-    $data = $request->validate([
-        'judul' => 'required|string|max:255',
-        'kategori' => 'required|string|max:255',
-        'deskripsi' => 'required|string',
-        'lokasi' => 'required|string',
-        'foto' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
-        'anonim' => 'nullable|boolean',
-    ], [
-        'foto.required' => 'Foto bukti pengaduan wajib diunggah.',
-        'foto.image' => 'File bukti harus berupa gambar.',
-        'foto.mimes' => 'Format foto harus berupa JPG, JPEG, PNG, atau WEBP.',
-        'foto.max' => 'Ukuran foto maksimal adalah 5MB.',
-    ]);
+    // 1. Validasi status warga aktif
+    if (!$resident->isActive()) {
+        return redirect()->route('warga.login')
+            ->withErrors(['nik' => 'Akun warga berstatus nonaktif. Silakan hubungi kantor desa/kelurahan.']);
+    }
 
-    do {
-        $kode = 'LO-' . now()->format('ymd') . '-' . strtoupper(Str::random(4));
-    } while (\App\Models\Complaint::where('ticket_code', $kode)->exists());
+    // 2. Transaksi atomik dan locking baris resident untuk mencegah race condition
+    try {
+        $kode = \Illuminate\Support\Facades\DB::transaction(function () use ($resident, $request) {
+            // Lock baris akun warga untuk serialize request bersamaan dari akun yang sama
+            \App\Models\Resident::where('id', $resident->id)->lockForUpdate()->first();
 
-    // ponytail: Identitas pelapor mutlak diambil dari session resident terautentikasi
-    \App\Models\Complaint::create([
-        'ticket_code' => $kode,
-        'resident_id' => $resident->id,
-        'name' => $resident->name,
-        'is_anonymous' => $request->boolean('anonim'),
-        'title' => $data['judul'],
-        'description' => $data['deskripsi'],
-        'location' => $data['lokasi'],
-        'category' => $data['kategori'],
-        'photo' => $request->file('foto')->store('complaints', 'public'),
-        'status' => 'submitted',
-    ]);
+            $quota = \App\Models\ComplaintSetting::checkQuota($resident->id);
+            if ($quota['is_exceeded']) {
+                throw new \App\Exceptions\DailyComplaintLimitException($quota['max_limit'], $quota['used_today']);
+            }
+
+            $data = $request->validate([
+                'judul' => 'required|string|max:255',
+                'kategori' => 'required|string|max:255',
+                'deskripsi' => 'required|string',
+                'lokasi' => 'required|string',
+                'foto' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+                'anonim' => 'nullable|boolean',
+            ], [
+                'foto.required' => 'Foto bukti pengaduan wajib diunggah.',
+                'foto.image' => 'File bukti harus berupa gambar.',
+                'foto.mimes' => 'Format foto harus berupa JPG, JPEG, PNG, atau WEBP.',
+                'foto.max' => 'Ukuran foto maksimal adalah 5MB.',
+            ]);
+
+            do {
+                $kodeTiket = 'LO-' . now('Asia/Jakarta')->format('ymd') . '-' . strtoupper(Str::random(4));
+            } while (\App\Models\Complaint::where('ticket_code', $kodeTiket)->exists());
+
+            // ponytail: Identitas pelapor mutlak diambil dari session resident terautentikasi
+            \App\Models\Complaint::create([
+                'ticket_code' => $kodeTiket,
+                'resident_id' => $resident->id,
+                'name' => $resident->name,
+                'is_anonymous' => $request->boolean('anonim'),
+                'title' => $data['judul'],
+                'description' => $data['deskripsi'],
+                'location' => $data['lokasi'],
+                'category' => $data['kategori'],
+                'photo' => $request->file('foto')->store('complaints', 'public'),
+                'status' => 'submitted',
+            ]);
+
+            return $kodeTiket;
+        });
+    } catch (\App\Exceptions\DailyComplaintLimitException $e) {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => "Anda telah mencapai batas maksimal {$e->maxLimit} pengaduan untuk hari ini. Silakan mencoba kembali besok.",
+                'max_limit' => $e->maxLimit,
+                'used_today' => $e->usedToday,
+            ], 422);
+        }
+
+        return redirect()->back()->withInput()->withErrors([
+            'kuota' => "Anda telah mencapai batas maksimal {$e->maxLimit} pengaduan untuk hari ini. Silakan mencoba kembali besok."
+        ]);
+    }
 
     return redirect()->route('pengaduan.sukses', ['kode' => $kode]);
 })->middleware('resident')->name('pengaduan.simpan');
@@ -173,6 +207,10 @@ Route::middleware('admin.auth')->group(function () {
 
     Route::get('/admin/warga', [ResidentController::class, 'page'])->name('admin.warga');
     Route::get('/admin/warga/template', [ResidentController::class, 'downloadTemplate'])->name('admin.warga.template');
+
+    // Pengaturan Batas Pengaduan Harian Warga
+    Route::post('/admin/pengaturan/batas-harian', [\App\Http\Controllers\Admin\ComplaintSettingController::class, 'update'])
+        ->name('admin.pengaturan.batas-harian');
 });
 
 Route::get('/admin/lupa-kata-sandi', fn() => view('forgot-password'))->name('admin.forgot-password');

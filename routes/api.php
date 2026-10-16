@@ -48,6 +48,10 @@ Route::middleware([
         Route::post('/admin/residents/{resident}/reset-password', [\App\Http\Controllers\Admin\ResidentController::class, 'resetPassword']);
         Route::post('/admin/residents/preview-import', [\App\Http\Controllers\Admin\ResidentController::class, 'previewImport']);
         Route::post('/admin/residents/confirm-import', [\App\Http\Controllers\Admin\ResidentController::class, 'confirmImport']);
+
+        // Pengaturan Batas Pengaduan Harian
+        Route::get('/admin/complaint-settings', [\App\Http\Controllers\Admin\ComplaintSettingController::class, 'show']);
+        Route::put('/admin/complaint-settings', [\App\Http\Controllers\Admin\ComplaintSettingController::class, 'updateApi']);
     });
 });
 });
