@@ -1,16 +1,27 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use App\Http\Controllers\LaporanController;
+use App\Exceptions\DailyComplaintLimitException;
 use App\Http\Controllers\Admin\ComplaintController;
+use App\Http\Controllers\Admin\ComplaintSettingController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProhibitedWordController;
 use App\Http\Controllers\Admin\ResidentController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\LacakController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ResidentAuthController;
+use App\Models\Complaint;
+use App\Models\ComplaintSetting;
+use App\Models\ProhibitedWord;
+use App\Models\Resident;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 Route::get('/', function () {
     return view('welcome');
@@ -31,29 +42,33 @@ Route::post('/warga/ganti-password', [ResidentAuthController::class, 'updatePass
     ->name('warga.ganti-password.submit');
 
 Route::get('/pengaduan', function () {
-    $resident = auth('resident')->user();
-    $quota = \App\Models\ComplaintSetting::checkQuota($resident->id);
+    $resident = Auth::guard('resident')->user();
+    abort_unless($resident instanceof Resident, 401);
+
+    $quota = ComplaintSetting::checkQuota($resident->id);
+
     return view('pengaduan', compact('resident', 'quota'));
 })->middleware('resident')->name('pengaduan.buat');
 
 Route::post('/pengaduan/simpan', function (Request $request) {
-    $resident = auth('resident')->user();
+    $resident = Auth::guard('resident')->user();
+    abort_unless($resident instanceof Resident, 401);
 
     // 1. Validasi status warga aktif
-    if (!$resident->isActive()) {
+    if (! $resident->isActive()) {
         return redirect()->route('warga.login')
             ->withErrors(['nik' => 'Akun warga berstatus nonaktif. Silakan hubungi kantor desa/kelurahan.']);
     }
 
     // 2. Transaksi atomik dan locking baris resident untuk mencegah race condition
     try {
-        $kode = \Illuminate\Support\Facades\DB::transaction(function () use ($resident, $request) {
+        $kode = DB::transaction(function () use ($resident, $request) {
             // Lock baris akun warga untuk serialize request bersamaan dari akun yang sama
-            \App\Models\Resident::where('id', $resident->id)->lockForUpdate()->first();
+            Resident::where('id', $resident->id)->lockForUpdate()->first();
 
-            $quota = \App\Models\ComplaintSetting::checkQuota($resident->id);
+            $quota = ComplaintSetting::checkQuota($resident->id);
             if ($quota['is_exceeded']) {
-                throw new \App\Exceptions\DailyComplaintLimitException($quota['max_limit'], $quota['used_today']);
+                throw new DailyComplaintLimitException($quota['max_limit'], $quota['used_today']);
             }
 
             $data = $request->validate([
@@ -70,12 +85,25 @@ Route::post('/pengaduan/simpan', function (Request $request) {
                 'foto.max' => 'Ukuran foto maksimal adalah 5MB.',
             ]);
 
+            $kataTerlarang = ProhibitedWord::matchingWord([
+                $data['judul'],
+                $data['deskripsi'],
+                $data['lokasi'],
+                $data['kategori'],
+            ]);
+
+            if ($kataTerlarang !== null) {
+                throw ValidationException::withMessages([
+                    'judul' => 'Laporan belum dapat dikirim. Silakan perbaiki kata-kata dalam laporan agar lebih sopan, lalu coba kirim kembali.',
+                ]);
+            }
+
             do {
-                $kodeTiket = 'LO-' . now('Asia/Jakarta')->format('ymd') . '-' . strtoupper(Str::random(4));
-            } while (\App\Models\Complaint::where('ticket_code', $kodeTiket)->exists());
+                $kodeTiket = 'LO-'.now('Asia/Jakarta')->format('ymd').'-'.strtoupper(Str::random(4));
+            } while (Complaint::where('ticket_code', $kodeTiket)->exists());
 
             // ponytail: Identitas pelapor mutlak diambil dari session resident terautentikasi
-            \App\Models\Complaint::create([
+            Complaint::create([
                 'ticket_code' => $kodeTiket,
                 'resident_id' => $resident->id,
                 'name' => $resident->name,
@@ -90,7 +118,7 @@ Route::post('/pengaduan/simpan', function (Request $request) {
 
             return $kodeTiket;
         });
-    } catch (\App\Exceptions\DailyComplaintLimitException $e) {
+    } catch (DailyComplaintLimitException $e) {
         if ($request->expectsJson()) {
             return response()->json([
                 'message' => "Anda telah mencapai batas maksimal {$e->maxLimit} pengaduan untuk hari ini. Silakan mencoba kembali besok.",
@@ -100,7 +128,7 @@ Route::post('/pengaduan/simpan', function (Request $request) {
         }
 
         return redirect()->back()->withInput()->withErrors([
-            'kuota' => "Anda telah mencapai batas maksimal {$e->maxLimit} pengaduan untuk hari ini. Silakan mencoba kembali besok."
+            'kuota' => "Anda telah mencapai batas maksimal {$e->maxLimit} pengaduan untuk hari ini. Silakan mencoba kembali besok.",
         ]);
     }
 
@@ -111,14 +139,14 @@ Route::get('/pengaduan/sukses/{kode}', function (string $kode) {
     return view('pengaduan-sukses', compact('kode'));
 })->name('pengaduan.sukses');
 
-Route::get('/lacak', fn() => view('lacak'))->name('lacak');
+Route::get('/lacak', fn () => view('lacak'))->name('lacak');
 
 Route::get('/lacak/cari', function (Request $request) {
     $request->validate(['kode' => 'required|string']);
 
-    $tiket = \App\Models\Complaint::where('ticket_code', $request->kode)->first();
+    $tiket = Complaint::where('ticket_code', $request->kode)->first();
 
-    if (!$tiket) {
+    if (! $tiket) {
         return view('lacak', ['notFound' => true]);
     }
 
@@ -138,7 +166,7 @@ Route::get('/admin', function () {
     if (Auth::guard('resident')->check()) {
         if (request()->expectsJson()) {
             return response()->json([
-                'message' => 'Anda sedang masuk sebagai warga. Silakan logout terlebih dahulu untuk masuk ke area admin.'
+                'message' => 'Anda sedang masuk sebagai warga. Silakan logout terlebih dahulu untuk masuk ke area admin.',
             ], 403);
         }
         abort(403, 'Akses ditolak. Anda sedang masuk sebagai warga. Silakan logout terlebih dahulu untuk mengakses area admin.');
@@ -152,70 +180,73 @@ Route::get('/admin', function () {
     return view('login');
 })->name('admin.login');
 
-Route::post('/admin/login', [App\Http\Controllers\Api\AuthController::class, 'login'])->name('admin.login.submit');
-Route::post('/admin/logout', [App\Http\Controllers\Api\AuthController::class, 'logout'])->name('admin.logout');
+Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.submit');
+Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');
 
 Route::middleware('admin.auth')->group(function () {
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])
         ->name('admin.dashboard');
 
     Route::get('/admin/api/notifications', function () {
-        $items = \App\Models\Complaint::where('status', 'submitted')->latest()->take(5)->get();
+        $items = Complaint::where('status', 'submitted')->latest()->take(5)->get();
+
         return response()->json([
             'count' => $items->count(),
-            'items' => $items->map(fn($i) => [
+            'items' => $items->map(fn ($i) => [
                 'ticket_code' => $i->ticket_code,
                 'title' => $i->title,
-                'time' => optional($i->created_at)->diffForHumans() ?? '-'
-            ])
+                'time' => optional($i->created_at)->diffForHumans() ?? '-',
+            ]),
         ]);
     })->name('admin.api.notifications');
 
-    Route::get('/admin/notifikasi', function (\Illuminate\Http\Request $request) {
+    Route::get('/admin/notifikasi', function (Request $request) {
         $statusFilter = $request->get('filter', 'all');
-        $query = \App\Models\Complaint::latest();
+        $query = Complaint::latest();
         if ($statusFilter !== 'all') {
             $query->where('status', $statusFilter);
         }
         $notifikasiList = $query->paginate(10)->withQueryString();
+
         return view('admin.notifikasi', compact('notifikasiList', 'statusFilter'));
     })->name('admin.notifikasi');
 
     Route::get('/admin/laporan',
-        [ComplaintController::class,'index'])
+        [ComplaintController::class, 'index'])
         ->name('admin.laporan');
 
     Route::put('/admin/laporan/{complaint:ticket_code}/status',
-        [ComplaintController::class,'updateStatus'])
+        [ComplaintController::class, 'updateStatus'])
         ->name('admin.laporan.status');
 
     Route::put('/admin/laporan/{complaint:ticket_code}/catatan',
-        [ComplaintController::class,'saveHandling'])
+        [ComplaintController::class, 'saveHandling'])
         ->name('admin.laporan.catatan');
 
     Route::put('/admin/laporan/{complaint:ticket_code}/selesaikan',
-        [ComplaintController::class,'complete'])
+        [ComplaintController::class, 'complete'])
         ->name('admin.laporan.selesaikan');
 
     Route::delete('/admin/laporan/{ticketCode}',
-        [ComplaintController::class,'destroy'])
+        [ComplaintController::class, 'destroy'])
         ->name('admin.laporan.destroy');
 
-    Route::get('/admin/kata-terlarang', fn() => view('admin.kata-terlarang'))->name('admin.kata-terlarang');
+    Route::get('/admin/kata-terlarang', [ProhibitedWordController::class, 'index'])->name('admin.kata-terlarang');
+    Route::post('/admin/kata-terlarang', [ProhibitedWordController::class, 'update'])->name('admin.kata-terlarang.update');
 
-    Route::get('/admin/akun-unit', fn() => view('admin.akun-unit'))->name('admin.akun-unit');
+    Route::get('/admin/akun-unit', fn () => view('admin.akun-unit'))->name('admin.akun-unit');
 
     Route::get('/admin/warga', [ResidentController::class, 'page'])->name('admin.warga');
     Route::get('/admin/warga/template', [ResidentController::class, 'downloadTemplate'])->name('admin.warga.template');
 
     // Pengaturan Batas Pengaduan Harian Warga
-    Route::post('/admin/pengaturan/batas-harian', [\App\Http\Controllers\Admin\ComplaintSettingController::class, 'update'])
+    Route::post('/admin/pengaturan/batas-harian', [ComplaintSettingController::class, 'update'])
         ->name('admin.pengaturan.batas-harian');
 });
 
-Route::get('/admin/lupa-kata-sandi', fn() => view('forgot-password'))->name('admin.forgot-password');
+Route::get('/admin/lupa-kata-sandi', fn () => view('forgot-password'))->name('admin.forgot-password');
 
-Route::get('/admin/periksa-email', fn() => view('check-email'))->name('admin.check-email');
+Route::get('/admin/periksa-email', fn () => view('check-email'))->name('admin.check-email');
 
 Route::get('/forgot-password', [ForgotPasswordController::class, 'create'])
     ->name('password.request');

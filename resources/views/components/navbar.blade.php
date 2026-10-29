@@ -27,14 +27,14 @@ $menus = [
 ];
 @endphp
 <nav class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100 shadow-[0_4px_70px_-10px_rgba(0,71,171,0.20)]">
-    <div class="mx-auto w-full max-w-[1283px] px-6 sm:px-8 lg:px-4 h-[81px] flex items-center justify-between">
+    <div class="mx-auto w-full max-w-[1283px] px-4 sm:px-8 lg:px-4 h-14 md:h-[81px] flex items-center justify-between">
 
         <!-- Logo -->
-        <a href="{{ url('/')}}" class="flex items-center gap-2 sm:gap-3 group shrink-0">
-                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-transparent shadow-sm">
-                    <img src="{{ asset('images/LurahOnline-logo.png') }}" alt="Logo" width="32" height="32" class="w-6 h-6 sm:w-8 sm:h-8 object-contain">
+        <a href="{{ url('/')}}" class="flex items-center gap-1.5 sm:gap-3 group shrink-0">
+                <div class="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-transparent shadow-sm">
+                    <img src="{{ asset('images/LurahOnline-logo.png') }}" alt="Logo" width="32" height="32" class="w-5 h-5 sm:w-8 sm:h-8 object-contain">
                 </div>
-            <span class="text-lg sm:text-xl font-bold tracking-tight bg-gradient-to-r from-[#0047AB] to-[#001D45] bg-clip-text text-transparent">
+            <span class="text-base sm:text-xl font-bold tracking-tight bg-gradient-to-r from-[#0047AB] to-[#001D45] bg-clip-text text-transparent">
                 LurahOnline
             </span>
         </a>
@@ -108,13 +108,13 @@ $menus = [
 
         <!-- Mobile Hamburger Button -->
         <button id="menu-button" type="button" aria-label="Buka menu"
-            class="md:hidden inline-flex items-center justify-center p-2 -mr-2 rounded-lg text-[#464646] hover:bg-slate-100 transition-colors shrink-0">
-            <svg id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-7 h-7">
+            class="md:hidden inline-flex items-center justify-center p-1.5 -mr-1.5 rounded-lg text-[#464646] hover:bg-slate-100 transition-colors shrink-0">
+            <svg id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
                 <line x1="3" y1="6" x2="21" y2="6"/>
                 <line x1="3" y1="12" x2="21" y2="12"/>
                 <line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
-            <svg id="menu-icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden w-7 h-7">
+            <svg id="menu-icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden w-5 h-5">
                 <line x1="18" y1="6" x2="6" y2="18"/>
                 <line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
@@ -122,10 +122,10 @@ $menus = [
     </div>
 
     <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-6 py-4 space-y-1">
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-1">
         @foreach ($menus as $menu)
             <a href="{{ url($menu['url']) }}"
-               class="flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-colors {{ $menu['active'] ? 'bg-[#0047AB]/10 text-[#0047AB]' : 'text-[#464646] hover:bg-slate-50' }}">
+               class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-bold transition-colors {{ $menu['active'] ? 'bg-[#0047AB]/10 text-[#0047AB]' : 'text-[#464646] hover:bg-slate-50' }}">
                 {!! $menu['icon'] !!}
                 <span>{{ $menu['title'] }}</span>
             </a>
@@ -168,16 +168,16 @@ $menus = [
             </div>
         @else
             <a href="{{ route('warga.login') }}"
-                class="block mt-3 px-5 py-2.5 text-center rounded-[10px] border border-[#0047AB] text-[#0047AB] text-base font-semibold hover:bg-blue-50 transition-all">
+                class="block mt-3 px-4 py-2 text-center rounded-[10px] border border-[#0047AB] text-[#0047AB] text-sm font-semibold hover:bg-blue-50 transition-all">
                 Masuk Warga
             </a>
             <a href="{{ url('/admin') }}"
-                class="block mt-2 px-5 py-2.5 text-center rounded-[10px] bg-[#098A00] text-white text-base font-semibold hover:bg-[#076c00] transition-all shadow-sm">
+                class="block mt-2 px-4 py-2 text-center rounded-[10px] bg-[#098A00] text-white text-sm font-semibold hover:bg-[#076c00] transition-all shadow-sm">
                 Admin
             </a>
         @endif
 
-        <button id="pwa-install-btn-mobile" class="hidden w-full mt-3 px-5 py-2 text-center rounded-[10px] bg-[#0047AB] text-white text-[18px] font-semibold">
+        <button id="pwa-install-btn-mobile" class="hidden w-full mt-3 px-4 py-2 text-center rounded-[10px] bg-[#0047AB] text-white text-sm font-semibold">
             Pasang Aplikasi
         </button>
 
