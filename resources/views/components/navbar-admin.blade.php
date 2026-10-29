@@ -1,12 +1,12 @@
 <nav class="fixed top-0 left-0 right-0 z-50 bg-white shadow-[0_4px_70px_-10px_rgba(0,71,171,0.20)]">
-    <div class="w-full px-4 sm:px-6 lg:px-[59px] h-[81px] flex items-center justify-between gap-2 sm:gap-4 lg:gap-6">
+    <div class="w-full px-3 sm:px-6 lg:px-[59px] h-14 md:h-[81px] flex items-center justify-between gap-1.5 sm:gap-4 lg:gap-6">
 
         <!-- Logo -->
-        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
-            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-transparent shadow-sm">
-                <img src="{{ asset('images/LurahOnline-logo.png') }}" alt="Logo" class="w-6 h-6 sm:w-8 sm:h-8">
+        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-1.5 sm:gap-3 shrink-0 min-w-0">
+            <div class="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-transparent shadow-sm">
+                <img src="{{ asset('images/LurahOnline-logo.png') }}" alt="Logo" class="w-5 h-5 sm:w-8 sm:h-8">
             </div>
-            <span class="text-base sm:text-xl font-bold tracking-tight bg-gradient-to-r from-[#0047AB] to-[#001D45] bg-clip-text text-transparent truncate">
+            <span class="text-sm sm:text-xl font-bold tracking-tight bg-gradient-to-r from-[#0047AB] to-[#001D45] bg-clip-text text-transparent truncate">
                 LurahOnline
             </span>
         </a>
@@ -17,19 +17,19 @@
             'route' => 'admin.dashboard',
             'label' => 'Dashboard',
             'active' => Request::routeIs('admin.dashboard'),
-            'icon' => '<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>'
+            'icon' => '<svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>'
         ],
         [
             'route' => 'admin.laporan',
             'label' => 'Laporan',
             'active' => Request::routeIs('admin.laporan'),
-            'icon' => '<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>'
+            'icon' => '<svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>'
         ],
         [
             'route' => 'admin.kata-terlarang',
             'label' => 'Kata Terlarang',
             'active' => Request::routeIs('admin.kata-terlarang'),
-            'icon' => '<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+            'icon' => '<svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
         ],
         [
             'route' => 'admin.akun-unit',
@@ -37,7 +37,7 @@
             'active' => Request::routeIs('admin.akun-unit'),
             // Hanya admin kelurahan; akun unit tidak boleh melihat menu ini.
             'admin_only' => true,
-            'icon' => '<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
+            'icon' => '<svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
         ],
         [
             'route' => 'admin.warga',
@@ -45,7 +45,7 @@
             'active' => Request::routeIs('admin.warga*'),
             // Hanya admin kelurahan; akun unit tidak boleh melihat menu ini.
             'admin_only' => true,
-            'icon' => '<svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
+            'icon' => '<svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
         ],
     ];
 @endphp
@@ -66,8 +66,8 @@
         <!-- Actions -->
         <div class="flex items-center gap-2 sm:gap-3 lg:gap-5 shrink-0">
             <div class="relative">
-                <button type="button" id="notification-btn" aria-label="Notifikasi" class="relative text-[#464646] shrink-0 p-1 rounded-lg hover:bg-slate-100 transition-colors">
-                    <svg width="24" height="24" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" class="sm:w-7 sm:h-7">
+                <button type="button" id="notification-btn" aria-label="Notifikasi" class="relative text-[#464646] shrink-0 p-0.5 sm:p-1 rounded-lg hover:bg-slate-100 transition-colors">
+                    <svg width="20" height="20" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" class="sm:w-7 sm:h-7">
                         <path d="M7.5 23.75V12.5C7.5 10.5109 8.29018 8.60322 9.6967 7.1967C11.1032 5.79018 13.0109 5 15 5C16.9891 5 18.8968 5.79018 20.3033 7.1967C21.7098 8.60322 22.5 10.5109 22.5 12.5V23.75M7.5 23.75H22.5M7.5 23.75H5M22.5 23.75H25M13.75 27.5H16.25" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M15 5C15.6904 5 16.25 4.44036 16.25 3.75C16.25 3.05964 15.6904 2.5 15 2.5C14.3096 2.5 13.75 3.05964 13.75 3.75C13.75 4.44036 14.3096 5 15 5Z" stroke="currentColor" stroke-width="2"/>
                     </svg>
@@ -95,7 +95,7 @@
                 @csrf
             </form>
             <button type="button" id="admin-logout-btn"
-                class="whitespace-nowrap rounded-[10px] bg-[#D83D3D] px-3 py-1.5 text-sm sm:px-4 sm:text-base lg:px-[23px] lg:py-[8px] lg:text-[20px] font-semibold text-white hover:bg-red-700 transition shrink-0 shadow-sm">
+                class="whitespace-nowrap rounded-[10px] bg-[#D83D3D] px-2 py-1 text-xs sm:px-4 sm:py-1.5 sm:text-base lg:px-[23px] lg:py-[8px] lg:text-[20px] font-semibold text-white hover:bg-red-700 transition shrink-0 shadow-sm">
                 Keluar
             </button>
 
@@ -103,12 +103,12 @@
             <!-- Mobile Hamburger Button -->
             <button id="admin-menu-button" type="button" aria-label="Buka menu"
                 class="md:hidden inline-flex items-center justify-center p-1.5 -mr-1 rounded-lg text-[#464646] hover:bg-slate-100 transition-colors shrink-0">
-                <svg id="admin-menu-icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
+                <svg id="admin-menu-icon-open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"                 class="w-5 h-5">
                     <line x1="3" y1="6" x2="21" y2="6"/>
                     <line x1="3" y1="12" x2="21" y2="12"/>
                     <line x1="3" y1="18" x2="21" y2="18"/>
                 </svg>
-                <svg id="admin-menu-icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden w-6 h-6">
+                <svg id="admin-menu-icon-close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden w-5 h-5">
                     <line x1="18" y1="6" x2="6" y2="18"/>
                     <line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
@@ -120,7 +120,7 @@
     <div id="admin-mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 py-3 space-y-1">
         @foreach ($adminNavs as $nav)
             <a href="{{ route($nav['route']) }}" @if ($nav['admin_only'] ?? false) data-admin-only hidden @endif
-               class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-base font-bold transition-colors {{ $nav['active'] ? 'bg-[#0047AB]/10 text-[#0047AB]' : 'text-[#464646] hover:bg-slate-50' }}">
+               class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm font-bold transition-colors {{ $nav['active'] ? 'bg-[#0047AB]/10 text-[#0047AB]' : 'text-[#464646] hover:bg-slate-50' }}">
                 {!! $nav['icon'] !!}
                 <span>{{ $nav['label'] }}</span>
             </a>

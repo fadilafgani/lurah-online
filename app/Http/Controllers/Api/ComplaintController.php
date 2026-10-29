@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Complaint;
+use App\Models\ProhibitedWord;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 
 class ComplaintController extends Controller
@@ -20,6 +22,19 @@ class ComplaintController extends Controller
             'category' => 'required',
             'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
+
+        $kataTerlarang = ProhibitedWord::matchingWord([
+            $request->input('title', ''),
+            $request->input('description', ''),
+            $request->input('location', ''),
+            $request->input('category', ''),
+        ]);
+
+        if ($kataTerlarang !== null) {
+            throw ValidationException::withMessages([
+                'title' => 'Laporan belum dapat dikirim. Silakan perbaiki kata-kata dalam laporan agar lebih sopan, lalu coba kirim kembali.',
+            ]);
+        }
 
         $photoPath = null;
 

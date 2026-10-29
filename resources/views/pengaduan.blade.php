@@ -36,12 +36,12 @@
                 </div>
             <?php endif; ?>
 
-            @if (!empty($errors) && ((is_object($errors) && method_exists($errors, 'any') && $errors->any()) || (is_array($errors) && count($errors) > 0)))
-                <div class="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-sm">
-                    <p class="font-bold mb-1">Terdapat kesalahan pada formulir pengaduan:</p>
-                    <ul class="list-disc list-inside space-y-0.5 text-xs">
-                        @foreach ((is_object($errors) && method_exists($errors, 'all')) ? $errors->all() : (array) $errors as $error)
-                            <li>{{ is_array($error) ? implode(', ', $error) : $error }}</li>
+            @if ($errors->any())
+                <div role="alert" aria-live="polite" class="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-sm">
+                    <p class="font-bold mb-1">Mohon periksa kembali laporan Anda</p>
+                    <ul class="list-disc list-inside space-y-0.5 text-sm">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
                         @endforeach
                     </ul>
                 </div>

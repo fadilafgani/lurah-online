@@ -24,14 +24,6 @@
 
     <div class="mx-auto flex w-full max-w-[979px] flex-col items-center gap-[34px] px-6 sm:px-8 lg:px-4">
 
-        @php
-            $kataTerlarang = $kataTerlarang ?? [
-                'tai', 'anjing', 'babi', 'sialan', 'bajingan', 'cino', 'bodat',
-                'monyet', 'cina', 'tahi', 'kafir', 'jancok', 'cok',
-                'goblok', 'asu', 'sialan', 'bego',
-            ];
-        @endphp
-
         {{-- ── Page Header ── --}}
         <div class="flex w-full items-center justify-center gap-3.5">
             <div class="flex h-[53px] w-[53px] shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#0047AB] to-[#153655]">
@@ -47,7 +39,22 @@
             </div>
         </div>
 
-        {{-- ── Tambah Kata Baru ── --}}
+        @if (session('success'))
+            <div class="w-full rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="w-full rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
+                @foreach ($errors->all() as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
+
+        <form id="kata-terlarang-form" method="POST" action="{{ route('admin.kata-terlarang.update') }}" class="w-full">
+            @csrf
+            {{-- ── Tambah Kata Baru ── --}}
         <div class="w-full rounded-[20px] border-[0.5px] border-[#A19E9E] bg-white p-[37px] shadow-[0_4px_10px_0_rgba(0,0,0,0.20)] sm:p-8">
             <div class="flex flex-col items-start gap-[15px]">
                 <h2 class="self-stretch text-[20px] font-extrabold text-[#153655]">Tambah Kata Baru</h2>
@@ -60,6 +67,10 @@
                     </button>
                 </div>
                 <p class="self-stretch text-[15px] font-medium text-[#464646]">Tip: kata dicocokkan tanpa membedakan huruf besar/kecil dan tahan bypass leetspeak (mis. 4nj1ng).</p>
+                <button type="submit"
+                    class="rounded-[10px] bg-gradient-to-r from-[#0047AB] to-[#153655] px-6 py-2.5 text-sm font-semibold text-white shadow-sm">
+                    Simpan Perubahan
+                </button>
             </div>
         </div>
 
@@ -90,6 +101,8 @@
                 @endforeach
             </div>
         </div>
+            <div id="kata-terlarang-hidden-inputs"></div>
+        </form>
 
     </div>
 </main>
@@ -101,6 +114,8 @@
     var input = document.getElementById('kata-baru-input');
     var addBtn = document.getElementById('tambah-kata-btn');
     var searchInput = document.getElementById('cari-kata-input');
+    var form = document.getElementById('kata-terlarang-form');
+    var hiddenInputs = document.getElementById('kata-terlarang-hidden-inputs');
 
     function updateCount() {
         title.textContent = 'Daftar Kata (' + list.querySelectorAll('.kata-pill').length + ')';
@@ -157,6 +172,17 @@
         list.querySelectorAll('.kata-pill').forEach(function (pill) {
             var word = pill.querySelector('.kata-pill-label').textContent.trim().toLowerCase();
             pill.style.display = word.indexOf(query) !== -1 ? '' : 'none';
+        });
+    });
+
+    form.addEventListener('submit', function () {
+        hiddenInputs.replaceChildren();
+        list.querySelectorAll('.kata-pill-label').forEach(function (label) {
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'words[]';
+            input.value = label.textContent.trim();
+            hiddenInputs.appendChild(input);
         });
     });
 })();
