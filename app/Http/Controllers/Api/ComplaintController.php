@@ -92,6 +92,13 @@ class ComplaintController extends Controller
             ], 404);
         }
 
+        $user = auth('web')->user() ?? auth('sanctum')->user();
+        $resident = auth('resident')->user();
+
+        if (!$complaint->isResultPhotoVisibleTo($user, $resident)) {
+            $complaint->result_photo = null;
+        }
+
         return response()->json($complaint);
     }
 

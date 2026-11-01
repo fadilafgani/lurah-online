@@ -140,18 +140,13 @@ Route::get('/pengaduan/sukses/{kode}', function (string $kode) {
 })->name('pengaduan.sukses');
 
 Route::get('/lacak', fn () => view('lacak'))->name('lacak');
+Route::get('/lacak/cari', [LacakController::class, 'cari'])->name('lacak.cari');
 
-Route::get('/lacak/cari', function (Request $request) {
-    $request->validate(['kode' => 'required|string']);
-
-    $tiket = Complaint::where('ticket_code', $request->kode)->first();
-
-    if (! $tiket) {
-        return view('lacak', ['notFound' => true]);
-    }
-
-    return view('lacak', compact('tiket'));
-})->name('lacak.cari');
+// Endpoint Foto Terproteksi untuk Bukti dan Hasil Penanganan
+Route::get('/pengaduan/{ticket_code}/foto/bukti', [LacakController::class, 'fotoBukti'])
+    ->name('pengaduan.foto-bukti');
+Route::get('/pengaduan/{ticket_code}/foto/hasil', [LacakController::class, 'fotoHasil'])
+    ->name('pengaduan.foto-hasil');
 
 Route::post('/lacak/{ticket_code}/nilai', [LacakController::class, 'nilai'])
     ->name('lacak.nilai');

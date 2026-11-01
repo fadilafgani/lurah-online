@@ -194,7 +194,11 @@
                             <tr class="border-t-[0.5px] border-[#A19E9E]">
                                 <td class="py-5 pr-4">
                                     @if ($lap['foto'] ?? null)
-                                        <img src="{{ $lap['foto'] }}" alt="Foto {{ $lap['judul'] }}" class="h-14 w-14 rounded-[10px] object-cover">
+                                        <img src="{{ $lap['foto'] }}"
+                                             alt="Foto {{ $lap['judul'] }}"
+                                             class="h-14 w-14 rounded-[10px] object-cover cursor-pointer hover:opacity-80 transition hover:scale-105 shadow-sm"
+                                             onclick="openImageViewer([{ url: '{{ $lap['foto'] }}', title: 'Foto Laporan: {{ $lap['judul'] }} ({{ $lap['kode'] }})' }])"
+                                             title="Klik untuk memperbesar">
                                     @else
                                         <div class="flex h-14 w-14 items-center justify-center rounded-[10px] bg-[#F1F1F1] text-[11px] font-medium text-[#A19E9E]">Tanpa foto</div>
                                     @endif
@@ -222,6 +226,8 @@
 
     </div>
 </main>
+
+@include('components.image-viewer')
 
 @include('components.footer')
 

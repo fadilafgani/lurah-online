@@ -302,12 +302,22 @@
                             </div>
 
                             <div class="flex w-full flex-col items-start gap-[10px]">
-                                <p class="text-[15px] font-medium text-[#656565]">Foto Bukti</p>
+                                <p class="text-[15px] font-medium text-[#656565]">Foto Bukti Pengaduan</p>
                                 @if ($item['foto'])
-                                    <img src="{{ $item['foto'] }}" alt="Foto bukti pengaduan" loading="lazy" class="h-[271px] w-full rounded-[20px] object-cover">
+                                    <div class="relative group cursor-pointer w-full overflow-hidden rounded-[20px] bg-slate-100 border border-slate-200"
+                                         onclick="openAdminGallery('{{ $item['kode'] }}', 'bukti')"
+                                         title="Klik untuk memperbesar">
+                                        <img src="{{ $item['foto'] }}" alt="Foto bukti pengaduan" loading="lazy" class="h-[271px] w-full rounded-[20px] object-cover transition duration-300 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white font-medium text-sm backdrop-blur-[2px]">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3-3H7"/>
+                                            </svg>
+                                            <span>Perbesar Foto Bukti</span>
+                                        </div>
+                                    </div>
                                 @else
-                                    <div class="flex h-[271px] w-full items-center justify-center rounded-[20px] bg-[#F1F1F1] text-[15px] font-medium text-[#A19E9E]">
-                                        Tidak ada foto bukti
+                                    <div class="flex h-[271px] w-full items-center justify-center rounded-[20px] bg-[#F1F1F1] text-[15px] font-medium text-[#A19E9E] border border-dashed border-[#D1D5DB]">
+                                        Tidak ada foto bukti pengaduan
                                     </div>
                                 @endif
                             </div>
@@ -431,19 +441,82 @@
                                             <div class="flex w-full flex-col items-start gap-[11px]">
                                                 <label for="tanggapan-{{ $item['kode'] }}" class="text-[15px] font-medium text-[#464646]">Tanggapan untuk Warga</label>
                                                 <textarea id="tanggapan-{{ $item['kode'] }}" name="tanggapan" rows="3" placeholder="Penjelasan dan solusi yang akan disampaikan ke pelapor..." class="w-full rounded-[15px] border-[0.5px] border-[#656565] px-[23px] py-[18px] text-[15px] font-medium text-[#464646] placeholder:text-[#A19E9E] focus:outline-none focus:ring-1 focus:ring-[#0047AB]">{{ $item['tanggapan'] }}</textarea>
-                                            </div>
+                                                      <div class="flex w-full flex-col items-start gap-[11px]">
+                                                <label class="text-[15px] font-medium text-[#464646]">Foto Hasil Penanganan (Opsional)</label>
 
-                                            <div class="flex w-full flex-col items-start gap-[11px]">
-                                                <label class="text-[15px] font-medium text-[#464646]">Foto Hasil (Opsional)</label>
-                                                <label for="foto-hasil-{{ $item['kode'] }}" class="flex w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-[15px] border border-dashed border-[#A19E9E] px-6 py-[18px] text-center">
-                                                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M12 16V4M12 4L7 9M12 4L17 9" stroke="#464646" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                                        <path d="M5 20H19" stroke="#464646" stroke-width="2" stroke-linecap="round"/>
-                                                    </svg>
-                                                    <span data-foto-hasil-label="{{ $item['kode'] }}" class="text-[15px] font-medium text-[#464646]">Klik untuk unggah foto</span>
-                                                    <span class="text-[12px] font-medium text-[#656565]">JPG, PNG • Maks 5MB</span>
-                                                </label>
-                                                <input type="file" id="foto-hasil-{{ $item['kode'] }}" name="foto_hasil" accept="image/jpeg,image/png" class="hidden" onchange="showFotoHasilName('{{ $item['kode'] }}', this)">
+                                                @if ($item['foto_hasil'])
+                                                    <div class="w-full flex flex-col sm:flex-row items-start sm:items-center gap-4 p-3.5 rounded-[15px] border border-slate-200 bg-white">
+                                                        <div class="relative group cursor-pointer w-28 h-20 rounded-[10px] overflow-hidden bg-slate-100 shrink-0 border border-slate-200"
+                                                             onclick="openAdminGallery('{{ $item['kode'] }}', 'hasil')"
+                                                             title="Klik untuk memperbesar">
+                                                            <img src="{{ $item['foto_hasil'] }}" alt="Foto hasil saat ini" class="w-full h-full object-cover">
+                                                            <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3-3H7"/></svg>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-1 flex flex-col min-w-0">
+                                                            <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full w-fit">Foto Hasil Terunggah</span>
+                                                            <span class="text-xs text-slate-500 mt-1">Dokumentasi: {{ $item['foto_hasil_tanggal'] }} WIB</span>
+                                                            <label class="inline-flex items-center gap-2 mt-2 cursor-pointer text-xs font-semibold text-rose-600 hover:text-rose-700">
+                                                                <input type="checkbox" name="hapus_foto_hasil" value="1" class="rounded border-slate-300 text-rose-600 focus:ring-rose-500">
+                                                                <span>Hapus / batalkan foto hasil ini</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                @endif
+
+                                                <div class="w-full" x-data="{ previewUrl: null, fileName: '', fileSize: '', error: '' }">
+                                                    <label for="foto-hasil-{{ $item['kode'] }}"
+                                                           x-show="!previewUrl"
+                                                           class="flex w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-[15px] border border-dashed border-[#A19E9E] px-6 py-[18px] text-center hover:bg-slate-50 transition">
+                                                        <svg class="w-8 h-8 text-slate-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M12 16V4M12 4L7 9M12 4L17 9" stroke="#464646" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            <path d="M5 20H19" stroke="#464646" stroke-width="2" stroke-linecap="round"/>
+                                                        </svg>
+                                                        <span class="text-[15px] font-medium text-[#464646]">{{ $item['foto_hasil'] ? 'Klik untuk mengganti foto hasil' : 'Klik untuk unggah foto hasil' }}</span>
+                                                        <span class="text-[12px] font-medium text-[#656565]">JPG, PNG, WEBP • Maks 5MB</span>
+                                                    </label>
+                                                    <input type="file"
+                                                           id="foto-hasil-{{ $item['kode'] }}"
+                                                           name="foto_hasil"
+                                                           accept="image/jpeg,image/png,image/webp"
+                                                           class="hidden"
+                                                           @change="
+                                                               const file = $event.target.files[0];
+                                                               if (!file) { previewUrl = null; return; }
+                                                               if (file.size > 5 * 1024 * 1024) {
+                                                                   error = 'Ukuran file melebihi 5MB!';
+                                                                   $event.target.value = '';
+                                                                   previewUrl = null;
+                                                                   return;
+                                                               }
+                                                               error = '';
+                                                               fileName = file.name;
+                                                               fileSize = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+                                                               previewUrl = URL.createObjectURL(file);
+                                                           ">
+
+                                                    {{-- Live File Preview Before Submit --}}
+                                                    <div x-show="previewUrl" class="flex items-center gap-4 p-3 rounded-[15px] border border-blue-200 bg-blue-50/50 mt-2" style="display: none;">
+                                                        <img :src="previewUrl" alt="Preview foto baru" class="w-20 h-16 object-cover rounded-lg border border-blue-200">
+                                                        <div class="flex-1 truncate">
+                                                            <p class="text-xs font-bold text-slate-800 truncate" x-text="fileName"></p>
+                                                            <p class="text-xs text-slate-500" x-text="fileSize"></p>
+                                                            <span class="text-[11px] text-blue-700 font-semibold">Siap disimpan</span>
+                                                        </div>
+                                                        <button type="button"
+                                                                @click="
+                                                                    previewUrl = null;
+                                                                    fileName = '';
+                                                                    fileSize = '';
+                                                                    document.getElementById('foto-hasil-{{ $item['kode'] }}').value = '';
+                                                                "
+                                                                class="px-3 py-1 rounded-lg text-xs font-semibold bg-rose-100 text-rose-700 hover:bg-rose-200 transition">
+                                                            Batal
+                                                        </button>
+                                                    </div>
+                                                    <p x-show="error" x-text="error" class="text-xs text-rose-600 font-medium mt-1" style="display: none;"></p>
+                                                </div>
                                             </div>
 
                                             <div class="flex w-full flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-[23px]">
@@ -462,6 +535,29 @@
                                 </div>
                             @elseif ($status === 'selesai')
                                 <div class="flex w-full flex-col items-start gap-5">
+                                    {{-- Foto Hasil Penanganan di Tab Selesai --}}
+                                    <div class="flex w-full flex-col items-start gap-[10px]">
+                                        <p class="text-[15px] font-bold text-[#153655]">Foto Hasil Penanganan</p>
+                                        @if ($item['foto_hasil'])
+                                            <div class="relative group cursor-pointer w-full overflow-hidden rounded-[20px] bg-slate-100 border border-slate-200"
+                                                 onclick="openAdminGallery('{{ $item['kode'] }}', 'hasil')"
+                                                 title="Klik untuk memperbesar">
+                                                <img src="{{ $item['foto_hasil'] }}" alt="Foto hasil penanganan" loading="lazy" class="h-[271px] w-full rounded-[20px] object-cover transition duration-300 group-hover:scale-105">
+                                                <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white font-medium text-sm backdrop-blur-[2px]">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3-3H7"/>
+                                                    </svg>
+                                                    <span>Perbesar Foto Hasil</span>
+                                                </div>
+                                            </div>
+                                            <span class="text-xs text-slate-500">Terdokumentasi pada: {{ $item['foto_hasil_tanggal'] }} WIB</span>
+                                        @else
+                                            <div class="flex h-[140px] w-full flex-col items-center justify-center rounded-[20px] bg-[#F1F1F1] text-[15px] font-medium text-[#A19E9E] p-4 text-center border border-dashed border-[#D1D5DB]">
+                                                <p>Foto hasil penanganan belum tersedia.</p>
+                                            </div>
+                                        @endif
+                                    </div>
+
                                     <div class="w-full rounded-[20px] border-[0.5px] border-[#0047AB] bg-[#0047AB]/20 px-[30px] py-[22px]">
                                         <p class="text-[15px] font-bold text-[#001D45]">Tanggapan</p>
                                         <p class="mt-[5px] text-[15px] font-medium text-[#464646]">{{ $item['tanggapan'] ?: 'Belum ada tanggapan.' }}</p>
@@ -550,10 +646,35 @@ function showFotoHasilName(kode, input) {
     if (label) label.textContent = input.files[0] ? input.files[0].name : 'Klik untuk unggah foto';
 }
 
+const adminGalleries = {
+    @foreach ($laporanList as $lap)
+        '{{ $lap['kode'] }}': [
+            @if ($lap['foto'])
+                { url: @json($lap['foto']), title: 'Foto Bukti Pengaduan ({{ $lap['kode'] }})' },
+            @endif
+            @if ($lap['foto_hasil'])
+                { url: @json($lap['foto_hasil']), title: 'Foto Hasil Penanganan ({{ $lap['kode'] }})' },
+            @endif
+        ],
+    @endforeach
+};
+
+function openAdminGallery(kode, type) {
+    const list = adminGalleries[kode] || [];
+    if (list.length === 0) return;
+    let index = 0;
+    if (type === 'hasil' && list.length > 1) {
+        index = list.length - 1;
+    }
+    window.openImageViewer(list, index);
+}
+
 @if ($selectedKode)
     showVerifikasiDetail(@json($selectedKode));
 @endif
 </script>
+
+@include('components.image-viewer')
 
 @include('components.footer')
 

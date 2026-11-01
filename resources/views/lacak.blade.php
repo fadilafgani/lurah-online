@@ -94,11 +94,31 @@
                 {{-- DETAIL LAPORAN --}}
                 <div class="mt-8 bg-white rounded-[20px] border-[0.5px] border-[#E5E5E5] shadow-[0_0_4px_rgba(0,0,0,0.25)] px-6 py-8 md:px-[50px] md:py-[41px] text-left">
                     <div class="flex flex-col md:flex-row gap-10">
-                        @if($tiket->photo)
                         <div class="md:w-[45%] shrink-0">
-                            <img src="{{ asset('storage/' . $tiket->photo) }}" alt="Foto laporan" class="w-full h-[234px] object-cover rounded-[20px]">
+                            <p class="text-[#656565] text-sm font-semibold uppercase tracking-wider mb-2">Foto Bukti Pengaduan</p>
+                            @if($tiket->photo)
+                                <div class="relative group cursor-pointer overflow-hidden rounded-[20px] bg-slate-100 border border-slate-200 shadow-sm"
+                                     onclick="openGallery('bukti')"
+                                     title="Klik untuk memperbesar">
+                                    <img src="{{ route('pengaduan.foto-bukti', $tiket->ticket_code) }}"
+                                         alt="Foto Bukti Pengaduan {{ $tiket->ticket_code }}"
+                                         class="w-full h-[234px] object-cover rounded-[20px] transition duration-300 group-hover:scale-105">
+                                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white font-medium text-sm backdrop-blur-[2px]">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3-3H7"/>
+                                        </svg>
+                                        <span>Perbesar Foto</span>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="flex h-[234px] w-full flex-col items-center justify-center gap-2 rounded-[20px] bg-[#F1F1F1] text-[15px] font-medium text-[#A19E9E] p-6 text-center border border-dashed border-[#D1D5DB]">
+                                    <svg class="w-10 h-10 text-[#A19E9E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <span>Tidak ada foto bukti pengaduan</span>
+                                </div>
+                            @endif
                         </div>
-                        @endif
 
                         <div class="flex-1 flex flex-col gap-5">
                             <div class="flex items-start gap-[7px]">
@@ -149,6 +169,77 @@
                         <p class="text-[#656565] text-[20px] font-medium text-left">Deskripsi</p>
                         <p class="text-[#464646] text-[20px] font-bold text-left">{{ $tiket->description }}</p>
                     </div>
+                </div>
+
+                {{-- FOTO HASIL PENANGANAN --}}
+                @php
+                    $canSeeResultPhoto = $tiket->isResultPhotoVisibleTo(auth('web')->user(), auth('resident')->user());
+                @endphp
+                <div class="mt-8 bg-white rounded-[20px] border-[0.5px] border-[#E5E5E5] shadow-[0_0_4px_rgba(0,0,0,0.25)] px-6 py-8 md:px-[50px] md:py-[41px] text-left">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                        <div>
+                            <h2 class="text-[22px] font-extrabold text-[#153655]">Foto Hasil Penanganan</h2>
+                            <p class="text-sm font-medium text-[#656565]">Dokumentasi bukti penyelesaian atau tindak lanjut penanganan oleh petugas</p>
+                        </div>
+                        @if($canSeeResultPhoto && $tiket->result_photo)
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                Terdokumentasi
+                            </span>
+                        @endif
+                    </div>
+
+                    @if($canSeeResultPhoto && $tiket->result_photo)
+                        <div class="flex flex-col md:flex-row gap-8 items-start">
+                            <div class="w-full md:w-[45%] shrink-0">
+                                <div class="relative group cursor-pointer overflow-hidden rounded-[20px] bg-slate-100 border border-slate-200 shadow-sm"
+                                     onclick="openGallery('hasil')"
+                                     title="Klik untuk memperbesar">
+                                    <img src="{{ route('pengaduan.foto-hasil', $tiket->ticket_code) }}"
+                                         alt="Foto Hasil Penanganan {{ $tiket->ticket_code }}"
+                                         class="w-full h-[234px] object-cover rounded-[20px] transition duration-300 group-hover:scale-105">
+                                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white font-medium text-sm backdrop-blur-[2px]">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3-3H7"/>
+                                        </svg>
+                                        <span>Perbesar Foto</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex-1 flex flex-col gap-4">
+                                <div class="flex flex-col gap-1">
+                                    <p class="text-[#656565] text-sm font-medium">Tanggal Dokumentasi</p>
+                                    <p class="text-[#464646] text-base font-bold">{{ optional($tiket->updated_at)->translatedFormat('d F Y, H.i') ?? '-' }} WIB</p>
+                                </div>
+
+                                @if($tiket->unit)
+                                <div class="flex flex-col gap-1">
+                                    <p class="text-[#656565] text-sm font-medium">Unit Penindak</p>
+                                    <p class="text-[#464646] text-base font-bold">{{ $tiket->unit }}</p>
+                                </div>
+                                @endif
+
+                                @if($tiket->response_note || $tiket->handling_note)
+                                <div class="flex flex-col gap-1">
+                                    <p class="text-[#656565] text-sm font-medium">Keterangan Hasil Penanganan</p>
+                                    <div class="rounded-[16px] bg-[#EAF6F2] border border-[#CFEBE1] px-5 py-4">
+                                        <p class="text-[#0F766E] text-sm font-bold mb-1">Catatan Petugas:</p>
+                                        <p class="text-[#464646] text-sm leading-relaxed">{{ $tiket->response_note ?: $tiket->handling_note }}</p>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                    @else
+                        <div class="flex min-h-[140px] w-full flex-col items-center justify-center gap-2 rounded-[20px] bg-[#F9FAFB] text-[15px] font-medium text-[#656565] p-6 text-center border border-dashed border-[#E5E7EB]">
+                            <svg class="w-10 h-10 text-[#9CA3AF]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span class="text-[#464646] font-semibold">Foto hasil penanganan belum tersedia.</span>
+                            <span class="text-xs text-[#9CA3AF] max-w-md">Dokumentasi hasil tindak lanjut akan ditampilkan di sini setelah penanganan laporan selesai diproses oleh petugas.</span>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- TINDAK LANJUT --}}
@@ -263,6 +354,38 @@
 
             </div>
         </main>
+
+        @include('components.image-viewer')
+
+        @isset($tiket)
+        <script>
+            function openGallery(startType) {
+                const gallery = [];
+                @if($tiket->photo)
+                    gallery.push({
+                        url: "{{ route('pengaduan.foto-bukti', $tiket->ticket_code) }}",
+                        title: "Foto Bukti Pengaduan ({{ $tiket->ticket_code }})"
+                    });
+                @endif
+                @if($canSeeResultPhoto && $tiket->result_photo)
+                    gallery.push({
+                        url: "{{ route('pengaduan.foto-hasil', $tiket->ticket_code) }}",
+                        title: "Foto Hasil Penanganan ({{ $tiket->ticket_code }})"
+                    });
+                @endif
+
+                if (gallery.length === 0) return;
+
+                let index = 0;
+                if (startType === 'hasil' && gallery.length > 1) {
+                    index = gallery.length - 1;
+                }
+
+                window.openImageViewer(gallery, index);
+            }
+        </script>
+        @endisset
+
         @include('components.footer')
     </body>
 </html>

@@ -79,6 +79,8 @@ class DashboardController extends Controller
             'kategori' => $item->category,
             'status' => self::STATUS_LABELS[$item->status] ?? $item->status,
             'foto' => $item->photo ? asset('storage/' . $item->photo) : null,
+            'foto_hasil' => $item->result_photo ? asset('storage/' . $item->result_photo) : null,
+            'foto_hasil_tanggal' => optional($item->updated_at)->translatedFormat('d M Y, H.i') ?? '-',
             'lokasi' => $item->location,
             'pelapor' => $item->admin_reporter_name,
             'nik' => $item->resident?->nik ?? '-',
@@ -88,6 +90,8 @@ class DashboardController extends Controller
             'catatan' => $item->handling_note,
             'tanggapan' => $item->response_note,
             'alasan' => $item->rejection_reason,
+            'rating' => $item->rating,
+            'rating_comment' => $item->rating_comment,
         ]);
 
     $selectedComplaint = $laporanList->firstWhere('kode', $selectedKode) ?? $laporanList->first();

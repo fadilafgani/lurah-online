@@ -76,17 +76,29 @@ class ComplaintController extends Controller
         $request->validate([
             'catatan' => 'nullable|string',
             'tanggapan' => 'nullable|string',
+            'foto_hasil' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
+
+        $resultPhotoPath = $complaint->result_photo;
+
+        if ($request->boolean('hapus_foto_hasil')) {
+            $resultPhotoPath = null;
+        }
+
+        if ($request->hasFile('foto_hasil')) {
+            $resultPhotoPath = $request->file('foto_hasil')->store('complaints', 'public');
+        }
 
         $complaint->update([
             'handling_note' => $request->catatan,
             'response_note' => $request->tanggapan,
+            'result_photo' => $resultPhotoPath,
         ]);
 
         return redirect()->route('admin.dashboard', [
             'status' => 'penanganan',
             'kode' => $complaint->ticket_code,
-        ])->with('success', 'Catatan berhasil disimpan');
+        ])->with('success', 'Catatan penanganan berhasil disimpan');
     }
 
     public function complete(Request $request, Complaint $complaint)
@@ -96,10 +108,14 @@ class ComplaintController extends Controller
         $request->validate([
             'catatan' => 'nullable|string',
             'tanggapan' => 'nullable|string',
-            'foto_hasil' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'foto_hasil' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
         $resultPhotoPath = $complaint->result_photo;
+
+        if ($request->boolean('hapus_foto_hasil')) {
+            $resultPhotoPath = null;
+        }
 
         if ($request->hasFile('foto_hasil')) {
             $resultPhotoPath = $request->file('foto_hasil')->store('complaints', 'public');

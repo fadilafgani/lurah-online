@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Complaint;
 
 class LacakController extends Controller
@@ -21,6 +23,41 @@ class LacakController extends Controller
         }
 
         return view('lacak', compact('tiket'));
+    }
+
+    /**
+     * Tampilkan / unduh foto bukti pengaduan dengan validasi keberadaan file.
+     */
+    public function fotoBukti(Request $request, string $ticket_code)
+    {
+        $complaint = Complaint::where('ticket_code', $ticket_code)->firstOrFail();
+
+        if (!$complaint->photo || !Storage::disk('public')->exists($complaint->photo)) {
+            abort(404, 'Foto bukti pengaduan tidak ditemukan.');
+        }
+
+        return response()->file(Storage::disk('public')->path($complaint->photo));
+    }
+
+    /**
+     * Tampilkan / unduh foto hasil penanganan dengan pemeriksaan hak akses dan aturan publikasi.
+     */
+    public function fotoHasil(Request $request, string $ticket_code)
+    {
+        $complaint = Complaint::where('ticket_code', $ticket_code)->firstOrFail();
+
+        $user = Auth::guard('web')->user();
+        $resident = Auth::guard('resident')->user();
+
+        if (!$complaint->isResultPhotoVisibleTo($user, $resident)) {
+            abort(403, 'Akses ditolak. Anda tidak memiliki izin untuk melihat foto hasil penanganan laporan ini.');
+        }
+
+        if (!$complaint->result_photo || !Storage::disk('public')->exists($complaint->result_photo)) {
+            abort(404, 'Foto hasil penanganan belum tersedia.');
+        }
+
+        return response()->file(Storage::disk('public')->path($complaint->result_photo));
     }
 
     /**
