@@ -3,7 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Masuk Warga – LurahOnline</title>
+    <title>Masuk Warga – KaDes Online</title>
+    <meta name="description" content="Platform Layanan Digital dan Pengaduan Masyarakat Desa Banjarsari, Garut.">
+    <link rel="icon" type="image/png" href="{{ asset('images/KaDesOnline-logo.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -139,7 +141,7 @@
         </div>
 
         <p class="text-center text-xs text-gray-500 mt-6">
-            Belum terdaftar sebagai warga Desa Banjarsari? Hubungi kantor desa/kelurahan setempat.
+            Belum terdaftar sebagai warga Desa Banjarsari? Hubungi kantor desa setempat.
         </p>
     </div>
 </main>

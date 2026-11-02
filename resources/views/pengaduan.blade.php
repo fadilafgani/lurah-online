@@ -3,7 +3,9 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Lurah Online</title>
+        <title>Buat Pengaduan – KaDes Online</title>
+        <meta name="description" content="Platform Layanan Digital dan Pengaduan Masyarakat Desa Banjarsari, Garut.">
+        <link rel="icon" type="image/png" href="{{ asset('images/KaDesOnline-logo.png') }}">
 
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
@@ -283,7 +285,7 @@
                                 <div>
                                     <h4 class="text-sm font-semibold text-blue-950">Kirim sebagai Anonim?</h4>
                                     <p class="text-xs text-gray-500" x-show="!isAnonim">Nama Anda ({{ $resident->name ?? 'Warga' }}) akan ditampilkan.</p>
-                                    <p class="text-xs text-blue-800 font-medium" x-show="isAnonim">Identitas disembunyikan di tampilan publik, namun tetap tercatat bagi petugas kelurahan.</p>
+                                    <p class="text-xs text-blue-800 font-medium" x-show="isAnonim">Identitas disembunyikan di tampilan publik, namun tetap tercatat bagi petugas desa.</p>
                                 </div>
                             </div>
                             <button type="button" @click="isAnonim = !isAnonim"

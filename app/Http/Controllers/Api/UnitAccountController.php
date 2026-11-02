@@ -78,7 +78,7 @@ class UnitAccountController extends Controller
     /**
      * Terbitkan kata sandi sementara.
      *
-     * Email unit umumnya internal (mis. @lurah.local) dan belum tentu bisa
+     * Email unit umumnya internal (mis. @kades.local) dan belum tentu bisa
      * menerima surat, jadi sandi baru dikembalikan sekali ke admin untuk
      * diserahkan langsung — bukan dikirim sebagai tautan reset.
      */

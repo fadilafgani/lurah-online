@@ -74,7 +74,7 @@ class ResidentAuthController extends Controller
         if (!$resident->isActive()) {
             return back()
                 ->withInput($request->only('nik'))
-                ->withErrors(['nik' => 'Akun warga berstatus nonaktif. Silakan hubungi kantor kelurahan/desa.']);
+                ->withErrors(['nik' => 'Akun warga berstatus nonaktif. Silakan hubungi kantor desa setempat.']);
         }
 
         if (!Hash::check($credentials['password'], $resident->password)) {

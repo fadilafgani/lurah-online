@@ -15,7 +15,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * Admin kelurahan: boleh mengelola akun unit.
+     * Admin Desa: boleh mengelola akun unit.
      */
     public const ROLE_ADMIN = 'admin';
 

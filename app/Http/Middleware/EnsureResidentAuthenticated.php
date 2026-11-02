@@ -46,7 +46,7 @@ class EnsureResidentAuthenticated
             }
 
             return redirect()->route('warga.login')
-                ->withErrors(['nik' => 'Akun warga berstatus nonaktif. Silakan hubungi kantor desa/kelurahan.']);
+                ->withErrors(['nik' => 'Akun warga berstatus nonaktif. Silakan hubungi kantor desa setempat.']);
         }
 
         // Jika warga masih memakai kata sandi awal (NIK), wajibkan ganti kata sandi

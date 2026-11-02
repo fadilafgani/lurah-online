@@ -32,10 +32,10 @@ $menus = [
         <!-- Logo -->
         <a href="{{ url('/')}}" class="flex items-center gap-1.5 sm:gap-3 group shrink-0">
                 <div class="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl bg-transparent shadow-sm">
-                    <img src="{{ asset('images/LurahOnline-logo.png') }}" alt="Logo" width="32" height="32" class="w-5 h-5 sm:w-8 sm:h-8 object-contain">
+                    <img src="{{ asset('images/KaDesOnline-logo.png') }}" alt="Logo" width="32" height="32" class="w-5 h-5 sm:w-8 sm:h-8 object-contain">
                 </div>
             <span class="text-base sm:text-xl font-bold tracking-tight bg-gradient-to-r from-[#0047AB] to-[#001D45] bg-clip-text text-transparent">
-                LurahOnline
+                KaDes Online
             </span>
         </a>
 
@@ -80,7 +80,7 @@ $menus = [
                     </div>
                     <div class="flex flex-col text-left leading-tight">
                         <span class="text-xs font-bold text-[#153655] max-w-[130px] truncate">{{ $adminUser->name ?: $adminUser->email }}</span>
-                        <span class="text-[10px] text-blue-700 font-semibold">{{ $adminUser->isAdmin() ? 'Admin Kelurahan' : ($adminUser->unit ?: 'Petugas') }}</span>
+                        <span class="text-[10px] text-blue-700 font-semibold">{{ $adminUser->isAdmin() ? 'Admin Desa' : ($adminUser->unit ?: 'Petugas') }}</span>
                     </div>
                     <a href="{{ route('admin.dashboard') }}" class="ml-1 px-2.5 py-1 text-xs font-bold bg-[#0047AB] text-white rounded-lg hover:bg-[#003780] transition">
                         Dashboard
@@ -152,7 +152,7 @@ $menus = [
                 <div>
                     <p class="text-[11px] text-gray-500 font-medium">Masuk Sebagai Staf/Admin:</p>
                     <p class="text-sm font-bold text-[#153655] truncate max-w-[170px]">{{ $adminUser->email }}</p>
-                    <p class="text-xs text-[#0047AB] font-semibold">{{ $adminUser->isAdmin() ? 'Admin Kelurahan' : ($adminUser->unit ?: 'Petugas') }}</p>
+                    <p class="text-xs text-[#0047AB] font-semibold">{{ $adminUser->isAdmin() ? 'Admin Desa' : ($adminUser->unit ?: 'Petugas') }}</p>
                 </div>
                 <div class="flex items-center gap-1">
                     <a href="{{ route('admin.dashboard') }}" class="px-3 py-1.5 bg-[#0047AB] text-white rounded-lg text-xs font-semibold hover:bg-blue-800 transition">

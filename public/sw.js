@@ -1,5 +1,6 @@
-const CACHE_NAME = 'lurah-online-v3';
+const CACHE_NAME = 'kades-online-v1';
 const ASSETS = [
+    '/images/KaDesOnline-logo.png',
     '/images/LurahOnline-logo.png',
     '/favicon.ico'
 ];

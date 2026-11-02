@@ -3,7 +3,11 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Lurah Online</title>
+        <title>KaDes Online - Platform Pengaduan Masyarakat Desa Banjarsari</title>
+        <meta name="description" content="Platform Layanan Digital dan Pengaduan Masyarakat Desa Banjarsari, Garut.">
+        <meta property="og:title" content="KaDes Online">
+        <meta property="og:description" content="Platform Layanan Digital dan Pengaduan Masyarakat Desa Banjarsari, Garut.">
+        <link rel="icon" type="image/png" href="{{ asset('images/KaDesOnline-logo.png') }}">
 
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
@@ -225,7 +229,7 @@
                         </h3>
 
                         <p class="mt-4 text-base leading-relaxed text-slate-600">
-                            Admin kelurahan
+                            Admin Desa
                             memverifikasi laporan.
                         </p>
                     </div>

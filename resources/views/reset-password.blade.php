@@ -3,7 +3,9 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Atur Ulang Kata Sandi - Lurah Online</title>
+        <title>Atur Ulang Kata Sandi - KaDes Online</title>
+        <meta name="description" content="Platform Layanan Digital dan Pengaduan Masyarakat Desa Banjarsari, Garut.">
+        <link rel="icon" type="image/png" href="{{ asset('images/KaDesOnline-logo.png') }}">
 
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -59,7 +61,7 @@
                                     name="email"
                                     type="email"
                                     value="{{ old('email', $request->email) }}"
-                                    placeholder="admin@lurah.local"
+                                    placeholder="admin@kades.local"
                                     required
                                     readonly
                                     class="flex-1 bg-transparent border-0 outline-none text-[19px] font-medium text-[#464646] placeholder:text-[#A19E9E]"
@@ -134,7 +136,7 @@
                 </div>
 
                 <p class="self-stretch text-center text-[15px] font-medium text-[#464646]">
-                    © {{ date('Y') }} Lurah Online — Platform Pengaduan Warga Desa Banjarsari.
+                    © {{ date('Y') }} KaDes Online — Platform Layanan Digital dan Pengaduan Masyarakat Desa Banjarsari, Garut.
                 </p>
             </div>
         </main>

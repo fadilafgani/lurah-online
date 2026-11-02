@@ -3,7 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Akun Unit Admin – LurahOnline</title>
+    <title>Akun Unit Admin – KaDes Online</title>
+    <meta name="description" content="Platform Layanan Digital dan Pengaduan Masyarakat Desa Banjarsari, Garut.">
+    <link rel="icon" type="image/png" href="{{ asset('images/KaDesOnline-logo.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -65,7 +67,7 @@
                         <svg class="shrink-0" width="20" height="16" viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M30 3C30 1.35 28.65 0 27 0H3C1.35 0 0 1.35 0 3V21C0 22.65 1.35 24 3 24H27C28.65 24 30 22.65 30 21V3ZM27 3L15 10.5L3 3H27ZM27 21H3V6L15 13.5L27 6V21Z" fill="#656565"/>
                         </svg>
-                        <input id="akun-email" name="email" type="email" placeholder="unit@lurah.local" required
+                        <input id="akun-email" name="email" type="email" placeholder="unit@kades.local" required
                             class="flex-1 bg-transparent border-0 outline-none text-[19px] font-medium text-[#464646] placeholder:text-[#A19E9E]">
                     </div>
                 </div>

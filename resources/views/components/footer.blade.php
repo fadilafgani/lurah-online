@@ -7,18 +7,18 @@
 
                 <a href="{{ url('/') }}" class="flex items-center gap-3">
                     <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-transparent shadow-sm">
-                        <img src="{{ asset('images/LurahOnline-logo.png') }}" alt="Logo" width="32" height="32" class="w-6 h-6 sm:w-8 sm:h-8 object-contain">
+                        <img src="{{ asset('images/KaDesOnline-logo.png') }}" alt="Logo" width="32" height="32" class="w-6 h-6 sm:w-8 sm:h-8 object-contain">
                     </div>
 
                     <span class="text-xl font-bold tracking-tight bg-gradient-to-r from-[#0047AB] to-[#001D45] bg-clip-text text-transparent">
-                        LurahOnline
+                        KaDes Online
                     </span>
                 </a>
 
                 <div class="hidden h-10 w-px bg-slate-200 md:block"></div>
 
                 <p class="hidden md:block">
-                    Platform Pengaduan Warga Desa Banjarsari
+                    Platform Layanan Digital dan Pengaduan Masyarakat Desa Banjarsari, Garut.
                 </p>
 
             </div>

@@ -3,7 +3,9 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Masuk Admin/Unit - Lurah Online</title>
+        <title>Masuk Admin/Unit - KaDes Online</title>
+        <meta name="description" content="Platform Layanan Digital dan Pengaduan Masyarakat Desa Banjarsari, Garut.">
+        <link rel="icon" type="image/png" href="{{ asset('images/KaDesOnline-logo.png') }}">
 
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -32,7 +34,7 @@
                             Masuk Admin/Unit
                         </h1>
                         <p class="text-[19px] font-medium text-[#464646]">
-                            Khusus untuk staf kelurahan yang berwenang.
+                            Khusus untuk staf desa yang berwenang.
                         </p>
                     </div>
 
@@ -43,7 +45,7 @@
                                 <svg class="shrink-0" width="24" height="19" viewBox="0 0 30 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M30 3C30 1.35 28.65 0 27 0H3C1.35 0 0 1.35 0 3V21C0 22.65 1.35 24 3 24H27C28.65 24 30 22.65 30 21V3ZM27 3L15 10.5L3 3H27ZM27 21H3V6L15 13.5L27 6V21Z" fill="#656565"/>
                                 </svg>
-                                <input id="email" name="email" type="email" placeholder="admin@lurah.local" required
+                                <input id="email" name="email" type="email" placeholder="admin@kades.local" required
                                     class="flex-1 bg-transparent border-0 outline-none text-[19px] font-medium text-[#464646] placeholder:text-[#A19E9E]">
                             </div>
                         </div>
@@ -81,7 +83,7 @@
                 </div>
 
                 <p class="self-stretch text-center text-[15px] font-medium text-[#464646]">
-                    © {{ date('Y') }} Lurah Online — Platform Pengaduan Warga Desa Banjarsari.
+                    © {{ date('Y') }} KaDes Online — Platform Layanan Digital dan Pengaduan Masyarakat Desa Banjarsari, Garut.
                 </p>
             </div>
         </main>

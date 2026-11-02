@@ -4,7 +4,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Daftar Unit Kelurahan
+    | Daftar Unit Desa
     |--------------------------------------------------------------------------
     |
     | Sumber tunggal daftar unit. Dipakai untuk validasi akun unit, filter

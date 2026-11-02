@@ -57,7 +57,7 @@ Route::post('/pengaduan/simpan', function (Request $request) {
     // 1. Validasi status warga aktif
     if (! $resident->isActive()) {
         return redirect()->route('warga.login')
-            ->withErrors(['nik' => 'Akun warga berstatus nonaktif. Silakan hubungi kantor desa/kelurahan.']);
+            ->withErrors(['nik' => 'Akun warga berstatus nonaktif. Silakan hubungi kantor desa setempat.']);
     }
 
     // 2. Transaksi atomik dan locking baris resident untuk mencegah race condition

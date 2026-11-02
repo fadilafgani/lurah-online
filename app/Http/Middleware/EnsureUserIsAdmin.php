@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 class EnsureUserIsAdmin
 {
     /**
-     * Hanya admin kelurahan yang boleh mengelola akun unit; akun unit sendiri
+     * Hanya admin desa yang boleh mengelola akun unit; akun unit sendiri
      * tidak boleh membuat atau menghapus akun lain.
      */
     public function handle(Request $request, Closure $next): Response
