@@ -1,7 +1,7 @@
-const CACHE_NAME = 'kades-online-v1';
+const CACHE_NAME = 'kades-online-v2';
 const ASSETS = [
+    '/manifest.json',
     '/images/KaDesOnline-logo.png',
-    '/images/LurahOnline-logo.png',
     '/favicon.ico'
 ];
 
@@ -25,8 +25,8 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-    // Navigasi halaman HTML selalu utamakan jaringan (Network First)
-    if (e.request.mode === 'navigate') {
+    // Navigasi HTML dan manifest selalu utamakan jaringan (Network First)
+    if (e.request.mode === 'navigate' || e.request.url.includes('manifest.json')) {
         e.respondWith(
             fetch(e.request).catch(() => caches.match(e.request))
         );

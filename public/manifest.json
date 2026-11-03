@@ -1,9 +1,12 @@
 {
+  "id": "/",
   "name": "KaDes Online",
   "short_name": "KaDes Online",
   "description": "Platform Layanan Digital dan Pengaduan Masyarakat Desa Banjarsari, Garut.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#153655",
   "theme_color": "#0047AB",
   "icons": [
@@ -11,13 +14,13 @@
       "src": "/images/KaDesOnline-logo.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/images/KaDesOnline-logo.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }

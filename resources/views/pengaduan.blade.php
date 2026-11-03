@@ -10,7 +10,13 @@
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <link rel="manifest" href="/manifest.json">
+        <meta name="application-name" content="KaDes Online">
+        <meta name="apple-mobile-web-app-title" content="KaDes Online">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="theme-color" content="#0047AB">
+        <link rel="apple-touch-icon" href="{{ asset('images/KaDesOnline-logo.png') }}">
+        <link rel="manifest" href="/manifest.json?v=2">
 
         <style>
             body { font-family: 'Plus Jakarta Sans', sans-serif; }
